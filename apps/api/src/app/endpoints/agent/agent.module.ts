@@ -25,6 +25,8 @@ import { Module } from '@nestjs/common';
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
+import { ResponseFormatter } from './formatters/response-formatter';
+import { ConversationMemory } from './memory/conversation-memory';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
@@ -52,6 +54,7 @@ import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
     AccountBalanceService,
     AccountService,
     AgentService,
+    ConversationMemory,
     CurrentRateService,
     GetHoldingsTool,
     GetRulesReportTool,
@@ -59,6 +62,7 @@ import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
     PortfolioCalculatorFactory,
     PortfolioPerformanceTool,
     PortfolioService,
+    ResponseFormatter,
     RulesService
   ]
 })
