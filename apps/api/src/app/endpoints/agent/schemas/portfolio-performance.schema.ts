@@ -12,8 +12,15 @@ export const PortfolioPerformanceInputSchema = z.object({
     .describe('Filter by specific account IDs')
 });
 
+const AssetClassBreakdownItemSchema = z.object({
+  assetClass: z.string(),
+  allocationInPercentage: z.number(),
+  valueInBaseCurrency: z.number()
+});
+
 export const PortfolioPerformanceOutputSchema = z.object({
   annualizedPerformancePercent: z.number().optional(),
+  assetClassBreakdown: z.array(AssetClassBreakdownItemSchema).optional(),
   currentNetWorth: z.number().optional(),
   currentValueInBaseCurrency: z.number(),
   netPerformance: z.number(),

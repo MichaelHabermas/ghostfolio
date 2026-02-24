@@ -47,6 +47,45 @@ describe('Agent Zod Schemas', () => {
       });
       expect(output.netPerformance).toBe(5000);
     });
+
+    it('should accept output with optional assetClassBreakdown', () => {
+      const output = PortfolioPerformanceOutputSchema.parse({
+        currentValueInBaseCurrency: 100000,
+        netPerformance: 5000,
+        netPerformancePercentage: 0.05,
+        netPerformancePercentageWithCurrencyEffect: 0.048,
+        netPerformanceWithCurrencyEffect: 4800,
+        totalInvestment: 95000,
+        totalInvestmentValueWithCurrencyEffect: 94500,
+        assetClassBreakdown: [
+          {
+            assetClass: 'EQUITY',
+            allocationInPercentage: 0.6,
+            valueInBaseCurrency: 60000
+          },
+          {
+            assetClass: 'FIXED_INCOME',
+            allocationInPercentage: 0.4,
+            valueInBaseCurrency: 40000
+          }
+        ]
+      });
+      expect(output.assetClassBreakdown).toHaveLength(2);
+      expect(output.assetClassBreakdown[0].assetClass).toBe('EQUITY');
+    });
+
+    it('should accept output without assetClassBreakdown', () => {
+      const output = PortfolioPerformanceOutputSchema.parse({
+        currentValueInBaseCurrency: 100000,
+        netPerformance: 5000,
+        netPerformancePercentage: 0.05,
+        netPerformancePercentageWithCurrencyEffect: 0.048,
+        netPerformanceWithCurrencyEffect: 4800,
+        totalInvestment: 95000,
+        totalInvestmentValueWithCurrencyEffect: 94500
+      });
+      expect(output.assetClassBreakdown).toBeUndefined();
+    });
   });
 
   describe('GetHoldingsSchema', () => {
