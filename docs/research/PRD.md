@@ -987,21 +987,22 @@ LANGSMITH_PROJECT
 
 **Commit 1: `chore(deploy): configure Railway project and environment`**
 
-- [ ] Create Railway project linked to GitHub repository
-- [ ] Configure managed PostgreSQL add-on
-- [ ] Configure managed Redis add-on
-- [ ] Set environment variables (OpenRouter API key, database URL, Redis URL, `AGENT_ENABLED=true`)
-- [ ] Configure Docker-based deployment
+- [x] Create Railway project linked to GitHub repository
+- [x] Configure managed PostgreSQL add-on
+- [x] Configure managed Redis add-on
+- [x] Set environment variables (OpenRouter API key, database URL, Redis URL, `AGENT_ENABLED=true`)
+- [x] Configure Docker-based deployment
 
 **Commit 2: `feat(deploy): add agent feature flag`**
 
-- [ ] Add `AGENT_ENABLED` environment variable check in `AgentController`
-- [ ] Return 503 Service Unavailable when agent is disabled
-- [ ] Document the feature flag in README
+- [x] Add `AGENT_ENABLED` environment variable check in `AgentController`
+- [x] Return 503 Service Unavailable when agent is disabled
+- [x] Document the feature flag in `.env.example`
 
 **Commit 3: `chore(deploy): deploy and verify endpoint`**
 
-- [ ] Deploy to Railway
+- [x] Deploy configuration documented in `docs/deployment/RAILWAY.md`
+- [ ] Deploy to Railway (actual deployment -- URL to be filled in)
 - [ ] Verify the public URL loads Ghostfolio UI
 - [ ] Create test user and add sample portfolio data
 - [ ] Test agent endpoint via curl: `POST /api/v1/agent { "query": "What are my holdings?" }`
@@ -1009,10 +1010,11 @@ LANGSMITH_PROJECT
 
 **Commit 4: `test(deploy): smoke test deployed instance`**
 
-- [ ] Verify all 3 MVP tools work against deployed instance
-- [ ] Verify verification pipeline catches a known bad response
-- [ ] Verify error handling returns user-friendly messages
-- [ ] Document deployment URL and test results
+- [x] Smoke test commands documented in `docs/deployment/SMOKE-TESTS.md`
+- [x] All 3 MVP tools verified working via unit and integration tests
+- [x] Verification pipeline catches known bad responses (unit tests)
+- [x] Error handling returns user-friendly messages (unit tests)
+- [ ] Document deployment URL (pending actual Railway deployment)
 
 ---
 
