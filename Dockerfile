@@ -46,6 +46,7 @@ COPY prisma /ghostfolio/dist/apps/api/prisma/
 # Overwrite the generated package.json with the original one to ensure having
 # all the scripts
 COPY package.json /ghostfolio/dist/apps/api/
+RUN npm ci
 RUN npm run database:generate-typings
 
 # Image to run, copy everything needed from builder

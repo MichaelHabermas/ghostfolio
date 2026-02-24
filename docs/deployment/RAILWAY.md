@@ -222,6 +222,7 @@ To test the agent with real data:
 | `503 Service Unavailable` on agent endpoint | `AGENT_ENABLED` not set or not `"true"` | Set `AGENT_ENABLED=true` in Railway variables |
 | `401 Unauthorized` on agent endpoint | Missing or invalid JWT token | Ensure `Authorization: Bearer <token>` header is included |
 | Database connection errors | `DATABASE_URL` misconfigured | Verify `DATABASE_URL` references the Railway PostgreSQL internal hostname |
+| Container crash: `Cannot find module '@prisma/config'` | `node_modules` in image missing prisma (install used generated package.json only) | Ensure Dockerfile runs `npm ci` after copying the root `package.json` into `dist/apps/api` so prisma and @prisma/config are installed before the final image is built. |
 | Agent returns "OpenRouter API key not configured" | Key not set in admin settings | Follow Step 7: set `API_KEY_OPENROUTER` in Ghostfolio admin settings |
 | Agent returns LLM error | `API_KEY_OPENROUTER` invalid | Check key is valid at [openrouter.ai/keys](https://openrouter.ai/keys) |
 | Build fails | Docker build error | Check Railway build logs; common issue is Node.js version mismatch |
