@@ -503,7 +503,7 @@ flowchart TD
 
 ### Commit Message Convention
 
-```
+```bash
 <type>(scope): <description>
 
 Types: feat, fix, test, refactor, docs, chore
@@ -685,6 +685,18 @@ chore(deploy): configure Railway environment variables
 - [ ] ~~Wire `AgentExecutor` with `DynamicStructuredTool` definitions~~ (N/A -- SPIKE PASSED)
 - [ ] ~~Confirm tool-calling round-trip works with LangChain~~ (N/A -- SPIKE PASSED)
 - [ ] ~~Update Decision Log with framework switch rationale~~ (N/A -- SPIKE PASSED)
+
+#### Env vas currently configured and available in .env
+
+```bash
+LANGFUSE_SECRET_KEY
+LANGFUSE_PUBLIC_KEY
+LANGFUSE_BASE_URL
+LANGSMITH_TRACING
+LANGSMITH_ENDPOINT
+LANGSMITH_API_KEY
+LANGSMITH_PROJECT
+```
 
 ---
 
