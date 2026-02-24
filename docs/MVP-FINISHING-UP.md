@@ -1,81 +1,114 @@
 # MVP Finishing Up — Slack Insights & Action Items
 
-This doc distills useful information, open questions, insights, and action items from the #agentforge-ghostfolioiscooler Slack channel as they relate to finishing the Ghostfolio agent MVP and submission.
+Important information from #agentforge-ghostfolioiscooler for finishing the Ghostfolio agent MVP and submission.
 
 ---
 
-## Architecture and integration approaches
+## Master checklist (high-level)
 
-- **Smit's question:** Integrate the agent directly into Ghostfolio (NestJS endpoints) vs. a separate agent service that talks to the Ghostfolio backend?
-- **Relevance to this repo:** This project uses the former (in-repo NestJS AgentModule, per [PRD](PRD.md)). Tradeoff: in-repo = single deploy, shared auth/DB; side-car = separate scaling and stack (e.g. FastAPI Python).
-- **Other approaches mentioned:**
-  - **G. Sebastian Garces:** Separate **widget** — React app served as static bundle, integrated via one line in the Angular app; communication via Ghostfolio API. Can be open-sourced outside the Ghostfolio repo.
-  - **Scott Humphries:** **CLI-first** — get the agent working by itself, then add UI (e.g. Tampermonkey userscript, Chrome extension, or "AI playground" where you point at your instance and log in).
-  - **Nathan Koerschner:** Working **directly in the repo** (like this project), dealing with pre-commit hooks.
-  - **Aaron Harbaugh:** Mix of both; mostly side-car with plans to surface insights inside Ghostfolio later.
-- **Jean-Paul:** Suggested FastAPI Python for the agent stack; this repo is locked to NestJS/TypeScript per PRD.
+- [ ] **Deploy:** Ghostfolio + Agent publicly accessible (e.g. Railway)
+- [ ] **Test subject:** Shared demo account on deployed instance (stable login, password, token; pre-populated investments); credentials documented for testers
+- [ ] **Data providers:** Yahoo Finance (and any other sources) working on deployed instance; rate limits / connectivity verified or documented
+- [ ] **Evals exposed to testers:** Eval cases and/or results visible in repo or docs; testers can run or review evals (see [Exposing evals to testers](#exposing-evals-to-testers) below)
+- [ ] **Week 2 admin:** Pre-search done, interview prep (Slack paragraph), PAT in portal, Week 1 AI interview if applicable
+- [ ] **Submission:** PRD checklist complete (demo video with eval results, architecture doc, cost analysis, eval dataset, open source link, deployed app, social post)
 
 ---
 
-## Open questions from Slack (with brief answers where applicable)
+## Exposing evals to testers
 
-- **"What does 'conversation history maintained across turns' mean?" (Megha)**  
-  - **Answer:** Per [G4-Week-2-AgentForge](G4-Week-2-AgentForge.md) and [PRD](PRD.md), the agent must keep conversation context within a session (e.g. in-memory store, cap at 20 turns) so follow-up questions work without re-stating context.
-- **"What does 'domain specific verification check' mean?" (Sandesh)**  
-  - **Answer:** At least one check that enforces domain rules before returning a response. For this project: RulesService validation (cross-check agent claims vs. actual rule violations). Other examples: math consistency, source citation, human-in-the-loop escalation (all in PRD verification pipeline).
-- **"Where is the portal submission for the PAT?" (Tyler)**  
-  - **Answer (Olivia):** Profile picture on the portal → "Github PAT" — instructions and the field to paste the token are there.
-- **"Anyone using Railway for Ghostfolio + Agent + DB + Redis — do we need a paid monthly plan?" (Megha)**  
-  - **Note:** Open question. Railway free tier may not cover all services; the PRD assumes Railway with managed Postgres + Redis (~$5–20/month for demo).
-- **"Yahoo Finance rate limiting — works locally, fails when deployed. Good workaround?" (Cade)**  
-  - **Note:** Open question. Check Ghostfolio's data provider config, caching, and alternative data sources or rate-limit handling for production.
-- **"Is [Tom's pre-search / tie-in link] actually dead?" (Tom)**  
-  - **Note:** Verify link and relevance if the URL was meant for pre-search or external integration.
+Testers/reviewers need a way to see or run the eval suite:
+
+- [ ] **In the repo:** Eval test cases live under `apps/api/src/app/endpoints/agent/eval/` (e.g. `eval/cases/mvp-cases.json`, Jest runner). Document in README or `docs/` how to run the evals (e.g. `npm test -- --testPathPattern=eval` or the project’s equivalent) so testers can run the same suite locally.
+- [ ] **Documented results:** Provide pass rate and brief failure analysis somewhere testers can see it (README, `docs/`, or a dedicated eval-results doc). Final submission expects “Eval Dataset (50+ test cases with results)”.
+- [ ] **Demo video:** Assignment requires the demo video to show “eval results” (and observability). Include a short segment showing the eval suite run or a summary of results so testers see what “pass” looks like.
 
 ---
 
-## Insights and ideas
+## Architecture options
 
-- **System prompt and weaker models (Duke Ian):** Dumber LLMs failed tests until the system prompt was redefined; improving the system prompt fixed behavior. **Takeaway:** If evals fail with a cheaper/smaller model, try refining the system prompt before changing architecture.
-- **CLI-first (Duke Ian, Scott):** "CLI is goat" — validating the agent in isolation (e.g. CLI or API-only) before building UI is a valid strategy and matches "ship the dumbest thing that works first" from the PRD.
-- **Widget as open source (G. Sebastian):** A standalone widget that talks to the Ghostfolio API can count as the required open-source contribution and doesn't need to live in the Ghostfolio repo.
-- **OpenAPI/Swagger (James Allen):** Suggesting Ghostfolio expose Swagger/OpenAPI would help third-party agents and widgets; "maybe they already do" — worth checking for API docs.
-- **claude.md / agents.md (Aaron):** Some report these as "mostly bloat"; experimenting with removing them is a team choice — this repo's source of truth is the PRD and `.cursor/rules`.
-
----
-
-## Demo and deliverables (from Duke Ian)
-
-- Demo: Loom link shared in channel.
-- **Deliverables to confirm:**
-  - Week 2 Pre-search + project start
-  - Interview prep: send Slack paragraph and wait for reach out
-  - Upload PAT to portal (profile → Github PAT)
-  - AI interview for Week 1 project due midnight CT if not yet done
-- **Note:** Felipe's point that submit items get lost — use this doc and PRD submission checklist to avoid missing items.
+- **In-repo (this project):** Agent in Ghostfolio via NestJS endpoints. Single deploy, shared auth/DB. Per [PRD](PRD.md).
+- **Side-car:** Separate agent service (e.g. FastAPI) talking to Ghostfolio API. Separate scaling/stack.
+- **Widget:** React app as static bundle, one line in Angular; talks to Ghostfolio API. Can be open-sourced outside the repo.
+- **CLI-first:** Get agent working (CLI/API), add UI later (Tampermonkey, Chrome extension, or “AI playground” pointing at your instance).
 
 ---
 
-## Technical and tooling notes
+## MVP term definitions
 
-- **Recursive types / TypeScript (Olivia, Scott):** Suggestion to try <https://github.com/microsoft/typescript-go> if hitting recursive type issues (reference only; no code change).
-- **CI duration (G. Sebastian):** "CI takes like 10 mins" — relevant for planning PR and eval runs; no action specified here.
-- **Railway:** Deployment (Ghostfolio + Agent + DB + Redis) is assumed in the PRD; confirm whether free tier is sufficient or a paid plan is needed.
-
----
-
-## Action items (checklist)
-
-- [ ] Confirm all Week 2 deliverables: pre-search, interview prep (Slack paragraph), PAT in portal, Week 1 AI interview if applicable.
-- [ ] Clarify for team/docs: "conversation history maintained across turns" and "domain specific verification check" (use the short definitions above in this doc or in PRD).
-- [ ] If using Railway: verify plan (free vs paid) for Ghostfolio + Agent + DB + Redis.
-- [ ] If using Yahoo Finance in production: investigate rate-limit workarounds (caching, provider config, or alternatives).
-- [ ] Optional: Check if Ghostfolio exposes OpenAPI/Swagger for API consumers and widgets.
-- [ ] Before submission: Run through PRD submission checklist (demo video, architecture doc, cost analysis, eval dataset, open source link, deployed app, social post) so nothing is missed.
+- **Conversation history maintained across turns:** Keep context within a session (e.g. in-memory, cap ~20 turns) so follow-ups work without re-stating. See [G4-Week-2-AgentForge](G4-Week-2-AgentForge.md) and [PRD](PRD.md).
+- **Domain-specific verification check:** At least one check that enforces domain rules before returning a response. Here: RulesService validation (agent claims vs. actual rule violations). Others in PRD: math consistency, source citation, human-in-the-loop escalation.
 
 ---
 
-## Scope and UI (from Xian)
+## Answers
 
-- **"Improving the UI or only working on the AI agent?"**  
-  - **Note:** Per PRD, MVP gate is agent-focused (NL queries, tools, verification, evals, deployment). UI improvements are optional/post-MVP; several participants are CLI or API-first.
+- **Portal PAT submission:** Profile picture on portal → “Github PAT” (instructions + field to paste token).
+- **Railway:** Open. Free tier may not cover everything; PRD assumes managed Postgres + Redis (~$5–20/month for demo).
+- **Yahoo Finance rate limiting (local OK, deployed fails):** Open. Check data provider config, caching, alternatives, or rate-limit handling.
+- **Pre-search / tie-in link:** Verify link and relevance if using for pre-search or integration.
+
+---
+
+## Test subject (shared demo account)
+
+On the **deployed** instance, create a stable test account that all project testers can use:
+
+- [ ] **Stable credentials:** Fixed login (username + password) and, if needed, security/access token for API or demo access.
+- [ ] **Pre-populated dataset:** Account already has a set of investments (holdings, accounts, maybe rules) so testers see real agent behavior without importing data.
+- [ ] **Document and share:** Put login details (or where to get them) in a single place (e.g. README, deployment doc, or secure shared note) so reviewers can log in and try the agent against the same data.
+
+---
+
+## Data providers on deployed instance
+
+Verify connectivity from the **deployed** app to:
+
+- [ ] **Yahoo Finance** (or configured market data provider): confirm quotes/symbol data load; if rate limited, see Answers above (caching, config, alternatives).
+- [ ] **Any other data sources** in use (e.g. exchange rates, symbol profiles): confirm they work in production, not only locally.
+
+---
+
+## Insights
+
+- If evals fail with a weaker/cheaper model, try refining the system prompt before changing architecture.
+- CLI/API-only first is valid; matches “ship the dumbest thing that works first” in the PRD.
+- A standalone widget using the Ghostfolio API can satisfy the open-source contribution requirement.
+- Check if Ghostfolio already exposes OpenAPI/Swagger for API consumers.
+- This repo’s source of truth: PRD and `.cursor/rules` (not claude.md/agents.md).
+
+---
+
+## Week 2 deliverables
+
+- [ ] Week 2 Pre-search + project start
+- [ ] Interview prep: send Slack paragraph, wait for reach out
+- [ ] Upload PAT to portal (profile → Github PAT)
+- [ ] AI interview for Week 1 project due midnight CT if not done
+- [ ] Use PRD submission checklist so nothing gets lost
+
+---
+
+## Technical notes
+
+- **Recursive TypeScript types:** <https://github.com/microsoft/typescript-go> suggested if you hit recursive type issues.
+- **CI:** Can run ~10 mins; factor into PR/eval planning.
+- [ ] **Railway:** Confirm free vs paid for Ghostfolio + Agent + DB + Redis.
+
+---
+
+## MVP scope
+
+MVP gate is agent-focused: NL queries, tools, verification, evals, deployment. UI improvements are optional/post-MVP.
+
+---
+
+## Action items
+
+- [ ] Confirm Week 2 deliverables (pre-search, interview prep, PAT, Week 1 AI interview).
+- [ ] If Railway: verify plan for Ghostfolio + Agent + DB + Redis.
+- [ ] **Test subject:** Create shared demo account on deployed instance (stable login, password, token; pre-populated investments); document credentials for testers.
+- [ ] **Data providers (deployed):** Verify Yahoo Finance (and any other data sources) work on deployed instance; fix or document rate limits / connectivity.
+- [ ] **Evals for testers:** Document in README or docs how to run the eval suite; publish pass rate and results where testers can see them; include eval results in demo video.
+- [ ] Optional: Check Ghostfolio OpenAPI/Swagger.
+- [ ] Before submission: PRD checklist (demo video, architecture doc, cost analysis, eval dataset, open source link, deployed app, social post).

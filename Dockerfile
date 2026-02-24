@@ -46,7 +46,8 @@ COPY prisma /ghostfolio/dist/apps/api/prisma/
 # Overwrite the generated package.json with the original one to ensure having
 # all the scripts
 COPY package.json /ghostfolio/dist/apps/api/
-RUN npm ci
+# Use npm install: root lockfile is for workspace root, so npm ci fails here (package.json vs lockfile sync).
+RUN npm install --omit=optional
 RUN npm run database:generate-typings
 
 # Image to run, copy everything needed from builder
