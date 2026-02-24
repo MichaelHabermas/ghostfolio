@@ -30,6 +30,8 @@ import { ConversationMemory } from './memory/conversation-memory';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
+import { RulesValidationChecker } from './verification/rules-validation.checker';
+import { VerificationService } from './verification/verification.service';
 
 @Module({
   controllers: [AgentController],
@@ -63,7 +65,14 @@ import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
     PortfolioPerformanceTool,
     PortfolioService,
     ResponseFormatter,
-    RulesService
+    RulesService,
+    RulesValidationChecker,
+    {
+      inject: [RulesValidationChecker],
+      provide: VerificationService,
+      useFactory: (rulesChecker: RulesValidationChecker) =>
+        new VerificationService([rulesChecker])
+    }
   ]
 })
 export class AgentModule {}

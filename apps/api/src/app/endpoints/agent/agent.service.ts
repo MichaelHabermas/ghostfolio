@@ -15,10 +15,15 @@ import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
 import { createToolRegistry } from './tools/tool-registry';
-import type { AgentResponse } from './types';
+import type { AgentResponse, ToolResponse } from './types';
+import { VerificationService } from './verification/verification.service';
+import type { StructuredAgentResponse } from './verification/verification.types';
 
 const DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet';
 const DEFAULT_MAX_STEPS = 5;
+
+const VERIFICATION_FAILURE_MESSAGE =
+  'I detected an inconsistency in my analysis and stopped to avoid giving you incorrect information. Please try your question again.';
 
 @Injectable()
 export class AgentService {
@@ -30,7 +35,8 @@ export class AgentService {
     private readonly holdingsTool: GetHoldingsTool,
     private readonly rulesReportTool: GetRulesReportTool,
     private readonly conversationMemory: ConversationMemory,
-    private readonly responseFormatter: ResponseFormatter
+    private readonly responseFormatter: ResponseFormatter,
+    private readonly verificationService: VerificationService
   ) {}
 
   public async processQuery({
@@ -49,13 +55,16 @@ export class AgentService {
       const userMessage: CoreMessage = { role: 'user', content: query };
       const messages: CoreMessage[] = [...history, userMessage];
 
+      const toolOutputs = new Map<string, ToolResponse<unknown>>();
+
       const tools = createToolRegistry(
         {
           performanceTool: this.performanceTool,
           holdingsTool: this.holdingsTool,
           rulesReportTool: this.rulesReportTool
         },
-        userId
+        userId,
+        toolOutputs
       );
 
       const result = await this.callLlm({
@@ -63,6 +72,27 @@ export class AgentService {
         system: SYSTEM_PROMPT,
         tools
       });
+
+      const formatted = this.responseFormatter.format(result.text);
+      const structuredOutput = this.toStructuredAgentResponse(result.text);
+
+      const verificationResult = await this.verificationService.verify(
+        structuredOutput,
+        toolOutputs
+      );
+
+      if (!verificationResult.passed) {
+        this.logger.warn(
+          `Verification failed: ${verificationResult.reason}`
+        );
+
+        return {
+          response: VERIFICATION_FAILURE_MESSAGE,
+          sources: [],
+          flags: ['verification_failed'],
+          sessionId: resolvedSessionId
+        };
+      }
 
       const assistantMessage: CoreMessage = {
         role: 'assistant',
@@ -73,8 +103,6 @@ export class AgentService {
         userMessage,
         assistantMessage
       ]);
-
-      const formatted = this.responseFormatter.format(result.text);
 
       return {
         response: formatted.narrative,
@@ -93,6 +121,22 @@ export class AgentService {
         sessionId: resolvedSessionId
       };
     }
+  }
+
+  private toStructuredAgentResponse(text: string): StructuredAgentResponse {
+    try {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      const candidate = jsonMatch ? jsonMatch[0] : text.trim();
+      const parsed = JSON.parse(candidate);
+
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed as StructuredAgentResponse;
+      }
+    } catch {
+      // Not JSON -- return empty structure; verification checkers handle gracefully
+    }
+
+    return { claims: [], narrative: text };
   }
 
   public async callLlm({

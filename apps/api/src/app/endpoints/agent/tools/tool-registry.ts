@@ -1,5 +1,6 @@
 import { tool } from 'ai';
 
+import type { ToolResponse } from '../types';
 import {
   GetHoldingsInputSchema,
   GetRulesReportInputSchema,
@@ -23,12 +24,24 @@ export interface ToolInstances {
  * The factory closes over userId so each tool execute() call is user-scoped.
  * Tool descriptions are written as prompts — the LLM reads them to decide
  * which tool to invoke.
+ *
+ * When toolOutputs is provided, each tool result is recorded into that Map
+ * by tool name so the VerificationService can cross-reference outputs.
  */
 export function createToolRegistry(
   tools: ToolInstances,
-  userId: string
+  userId: string,
+  toolOutputs?: Map<string, ToolResponse<unknown>>
 ): ToolRegistry {
   const { performanceTool, holdingsTool, rulesReportTool } = tools;
+
+  const capture = (name: string, result: ToolResponse<unknown>) => {
+    if (toolOutputs) {
+      toolOutputs.set(name, result);
+    }
+
+    return result;
+  };
 
   return {
     portfolio_performance: tool({
@@ -38,7 +51,8 @@ export function createToolRegistry(
         'and annualized performance. Use this tool when the user asks about returns, gains/losses, ' +
         'portfolio growth, net worth, TWR/MWR, or how well their investments have performed over a time period.',
       parameters: PortfolioPerformanceInputSchema,
-      execute: async (args) => performanceTool.execute(args, userId)
+      execute: async (args) =>
+        capture('portfolio_performance', await performanceTool.execute(args, userId))
     }),
 
     get_holdings: tool({
@@ -49,7 +63,8 @@ export function createToolRegistry(
         'holdings, portfolio composition, asset class breakdown, allocation percentages, ' +
         'concentration risks, or diversification.',
       parameters: GetHoldingsInputSchema,
-      execute: async (args) => holdingsTool.execute(args, userId)
+      execute: async (args) =>
+        capture('get_holdings', await holdingsTool.execute(args, userId))
     }),
 
     get_rules_report: tool({
@@ -60,7 +75,8 @@ export function createToolRegistry(
         'Use this tool when the user asks about portfolio risks, rule violations, compliance status, ' +
         'portfolio health checks, or whether their portfolio meets any guidelines or benchmarks.',
       parameters: GetRulesReportInputSchema,
-      execute: async (args) => rulesReportTool.execute(args, userId)
+      execute: async (args) =>
+        capture('get_rules_report', await rulesReportTool.execute(args, userId))
     })
   };
 }

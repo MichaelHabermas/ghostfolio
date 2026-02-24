@@ -17,6 +17,8 @@ import { ConversationMemory } from './memory/conversation-memory';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
+import { RulesValidationChecker } from './verification/rules-validation.checker';
+import { VerificationService } from './verification/verification.service';
 
 class TestJwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   public constructor() {
@@ -47,6 +49,13 @@ describe('AgentModule', () => {
           { provide: GetHoldingsTool, useValue: { execute: jest.fn() } },
           { provide: GetRulesReportTool, useValue: { execute: jest.fn() } },
           { provide: PortfolioPerformanceTool, useValue: { execute: jest.fn() } },
+          RulesValidationChecker,
+          {
+            inject: [RulesValidationChecker],
+            provide: VerificationService,
+            useFactory: (rulesChecker: RulesValidationChecker) =>
+              new VerificationService([rulesChecker])
+          },
           {
             provide: 'REQUEST',
             useValue: {

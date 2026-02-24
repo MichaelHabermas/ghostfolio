@@ -21,6 +21,7 @@ import { generateText } from 'ai';
 import { AgentService } from './agent.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
+import { VerificationService } from './verification/verification.service';
 
 const mockGenerateText = generateText as jest.MockedFunction<typeof generateText>;
 
@@ -34,6 +35,12 @@ const makePropertyService = () => ({
 
 const makeToolMock = () => ({ execute: jest.fn().mockResolvedValue({ success: true, data: {} }) });
 
+const makePassingVerificationService = () => {
+  const svc = new VerificationService([]);
+  jest.spyOn(svc, 'verify').mockResolvedValue({ passed: true });
+  return svc;
+};
+
 const buildService = () => {
   const propertyService = makePropertyService();
   const performanceTool = makeToolMock();
@@ -41,6 +48,7 @@ const buildService = () => {
   const rulesReportTool = makeToolMock();
   const memory = new ConversationMemory();
   const formatter = new ResponseFormatter();
+  const verificationService = makePassingVerificationService();
 
   const service = new AgentService(
     propertyService as any,
@@ -48,10 +56,11 @@ const buildService = () => {
     holdingsTool as any,
     rulesReportTool as any,
     memory,
-    formatter
+    formatter,
+    verificationService
   );
 
-  return { service, memory, performanceTool, holdingsTool, rulesReportTool };
+  return { service, memory, performanceTool, holdingsTool, rulesReportTool, verificationService };
 };
 
 describe('Agent loop integration', () => {
