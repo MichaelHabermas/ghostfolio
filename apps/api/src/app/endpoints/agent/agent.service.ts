@@ -11,6 +11,11 @@ import type { AgentResponse } from './types';
 export class AgentService {
   private readonly logger = new Logger(AgentService.name);
 
+  // TODO(Epic 4): Replace direct domain service injection with a tool registry
+  // (AgentToolsService). Per SOLID/ISP, the orchestrator should depend on the
+  // tool registry abstraction, not on PortfolioService/RulesService/MarketDataService
+  // directly. Those services move into individual tool wrappers in Epic 3-4.
+  // PropertyService stays for LLM provider configuration.
   public constructor(
     private readonly portfolioService: PortfolioService,
     private readonly rulesService: RulesService,
