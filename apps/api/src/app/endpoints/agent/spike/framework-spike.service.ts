@@ -8,7 +8,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, tool } from 'ai';
 import { z } from 'zod';
 
-import { PropertyService } from '../../../../../../services/property/property.service';
+import { PropertyService } from '@ghostfolio/api/services/property/property.service';
 
 const PINNED_MODEL = 'anthropic/claude-3.5-sonnet';
 
