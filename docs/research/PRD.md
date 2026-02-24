@@ -863,47 +863,47 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(verification): implement RulesService hallucination detection`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/verification/rules-validation.checker.ts`
-- [ ] Implement `VerificationCheck` interface: `check(agentOutput, toolOutputs) -> VerificationResult`
-- [ ] Extract violation claims from agent output (structured JSON)
-- [ ] Compare each claim against actual `get_rules_report` tool output
-- [ ] Require exact match on violation type and affected holdings
-- [ ] Return `{ passed: false, reason: "..." }` on mismatch
+- [x] Create `apps/api/src/app/endpoints/agent/verification/rules-validation.checker.ts`
+- [x] Implement `VerificationCheck` interface: `check(agentOutput, toolOutputs) -> VerificationResult`
+- [x] Extract violation claims from agent output (structured JSON)
+- [x] Compare each claim against actual `get_rules_report` tool output
+- [x] Require exact match on violation type and affected holdings
+- [x] Return `{ passed: false, reason: "..." }` on mismatch
 
 **Commit 2: `feat(verification): implement VerificationService pipeline`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/verification/verification.service.ts`
-- [ ] Register all verification checkers (MVP: just RulesService validation)
-- [ ] Run all checkers sequentially against agent output
-- [ ] If any checker fails: block response, return failure details
-- [ ] Wire into `AgentService.processQuery()` after LLM response
+- [x] Create `apps/api/src/app/endpoints/agent/verification/verification.service.ts`
+- [x] Register all verification checkers (MVP: just RulesService validation)
+- [x] Run all checkers sequentially against agent output
+- [x] If any checker fails: block response, return failure details
+- [x] Wire into `AgentService.processQuery()` after LLM response
 
 **Commit 3: `feat(agent): implement fail-fast error handling`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/errors/error-mapper.service.ts`
-- [ ] Define error message map:
+- [x] Create `apps/api/src/app/endpoints/agent/errors/error-mapper.service.ts`
+- [x] Define error message map:
   - DB timeout -> "I'm unable to access your portfolio data right now. Please try again in a moment."
   - LLM rate limit -> "The analysis service is temporarily busy. Please try again shortly."
   - Verification mismatch -> "I detected an inconsistency in my analysis and stopped to avoid giving you incorrect information."
   - Context overflow -> "Your portfolio is very large. I'll focus on your top holdings for this analysis."
   - Market data down -> "Market data is temporarily unavailable. My analysis will be limited to your most recent portfolio snapshot."
   - Malformed LLM output -> "Something went wrong generating the analysis. Please try again."
-- [ ] Wire error mapper into AgentService and AgentController
+- [x] Wire error mapper into AgentService and AgentController
 
 **Commit 4: `feat(agent): add basic input validation`**
 
-- [ ] Add query length validation (max 2000 characters)
-- [ ] Add basic sanitization (strip control characters)
-- [ ] Return 400 Bad Request for invalid inputs
-- [ ] Add session ID validation
+- [x] Add query length validation (max 2000 characters)
+- [x] Add basic sanitization (strip control characters)
+- [x] Return 400 Bad Request for invalid inputs
+- [x] Add session ID validation
 
 **Commit 5: `test(verification): add tests for verification and error handling`**
 
-- [ ] Test: verification passes when agent claims match RulesService output
-- [ ] Test: verification blocks response when agent claims don't match
-- [ ] Test: error mapper returns correct user-facing messages for each error type
-- [ ] Test: input validation rejects oversized queries
-- [ ] Run tests and verify they pass
+- [x] Test: verification passes when agent claims match RulesService output
+- [x] Test: verification blocks response when agent claims don't match
+- [x] Test: error mapper returns correct user-facing messages for each error type
+- [x] Test: input validation rejects oversized queries
+- [x] Run tests and verify they pass
 
 ---
 
