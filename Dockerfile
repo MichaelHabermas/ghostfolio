@@ -60,7 +60,8 @@ RUN apt-get update && apt-get install -y --no-install-suggests \
 
 COPY --chown=node:node --from=builder /ghostfolio/dist/apps /ghostfolio/apps/
 COPY --chown=node:node ./docker/entrypoint.sh /ghostfolio/
+RUN chmod +x /ghostfolio/entrypoint.sh && sed -i 's/\r$//' /ghostfolio/entrypoint.sh 2>/dev/null || true
 WORKDIR /ghostfolio/apps/api
 EXPOSE ${PORT:-3333}
 USER node
-CMD [ "/ghostfolio/entrypoint.sh" ]
+CMD ["sh", "/ghostfolio/entrypoint.sh"]

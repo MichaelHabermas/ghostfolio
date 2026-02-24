@@ -94,7 +94,7 @@ The existing `Dockerfile` builds the NestJS API and Angular client. Railway:
 In Railway project settings → Build:
 
 - **Build Command**: (leave empty, uses Dockerfile)
-- **Start Command**: (leave empty, uses Dockerfile CMD)
+- **Start Command**: (leave empty; the repo's `railway.toml` sets `sh /ghostfolio/entrypoint.sh` so the script runs under shell, not Node)
 - **Port**: `3333`
 
 ### Trigger Deployment
@@ -218,6 +218,7 @@ To test the agent with real data:
 
 | Issue | Cause | Fix |
 | --- | --- | --- |
+| Container crash: `SyntaxError: Unexpected string` on `entrypoint.sh` | Railway/Node ran the shell script as JavaScript | The repo's `railway.toml` and Dockerfile `CMD ["sh", "/ghostfolio/entrypoint.sh"]` force the script to run with `sh`. Ensure Start Command in Railway is empty so config-as-code is used. |
 | `503 Service Unavailable` on agent endpoint | `AGENT_ENABLED` not set or not `"true"` | Set `AGENT_ENABLED=true` in Railway variables |
 | `401 Unauthorized` on agent endpoint | Missing or invalid JWT token | Ensure `Authorization: Bearer <token>` header is included |
 | Database connection errors | `DATABASE_URL` misconfigured | Verify `DATABASE_URL` references the Railway PostgreSQL internal hostname |

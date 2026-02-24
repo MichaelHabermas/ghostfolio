@@ -1,0 +1,3 @@
+# Railway deploy config: force entrypoint to run with sh so Node never executes the script
+[deploy]
+startCommand = "sh /ghostfolio/entrypoint.sh"
