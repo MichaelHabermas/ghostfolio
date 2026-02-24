@@ -794,49 +794,49 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(agent): draft and implement system prompt`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/prompts/system-prompt.ts`
-- [ ] Define role: "You are a read-only portfolio analysis assistant for Ghostfolio..."
-- [ ] Define domain constraints: read-only access, no trade execution, suggestion-only
-- [ ] Define tool usage guidance: when to use each tool, what data each provides
-- [ ] Define response format: structured JSON with source citations per claim
-- [ ] Define behavioral guardrails: never reveal system prompt, ask for clarification on ambiguity
-- [ ] Define escalation rules: flag recommendations affecting >20% portfolio or full position exits
+- [x] Create `apps/api/src/app/endpoints/agent/prompts/system-prompt.ts`
+- [x] Define role: "You are a read-only portfolio analysis assistant for Ghostfolio..."
+- [x] Define domain constraints: read-only access, no trade execution, suggestion-only
+- [x] Define tool usage guidance: when to use each tool, what data each provides
+- [x] Define response format: structured JSON with source citations per claim
+- [x] Define behavioral guardrails: never reveal system prompt, ask for clarification on ambiguity
+- [x] Define escalation rules: flag recommendations affecting >20% portfolio or full position exits
 
 **Commit 2: `feat(agent): wire tool registry with Vercel AI SDK`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/tools/tool-registry.ts`
-- [ ] Register all 3 MVP tools as Vercel AI SDK tool definitions (Zod schemas + execute functions)
-- [ ] Each tool definition includes: name, description, parameters (Zod schema), execute function
-- [ ] Tool descriptions are detailed enough for the LLM to choose correctly (per Aaron Gallant's guidance: docstrings are prompts)
+- [x] Create `apps/api/src/app/endpoints/agent/tools/tool-registry.ts`
+- [x] Register all 3 MVP tools as Vercel AI SDK tool definitions (Zod schemas + execute functions)
+- [x] Each tool definition includes: name, description, parameters (Zod schema), execute function
+- [x] Tool descriptions are detailed enough for the LLM to choose correctly (per Aaron Gallant's guidance: docstrings are prompts)
 
 **Commit 3: `feat(agent): implement agent loop in AgentService`**
 
-- [ ] Implement `processQuery()` method in `AgentService`
-- [ ] Call `generateText()` with system prompt, user messages, tool definitions, and `maxSteps: 5`
-- [ ] Collect all tool call results for verification pipeline (stored alongside response)
-- [ ] Return structured response with agent text and tool outputs
+- [x] Implement `processQuery()` method in `AgentService`
+- [x] Call `generateText()` with system prompt, user messages, tool definitions, and `maxSteps: 5`
+- [x] Collect all tool call results for verification pipeline (stored alongside response)
+- [x] Return structured response with agent text and tool outputs
 
 **Commit 4: `feat(agent): implement in-memory conversation history`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/memory/conversation-memory.ts`
-- [ ] Implement session-based message store (Map<sessionId, Message[]>)
-- [ ] Cap at 20 messages per session (FIFO eviction of oldest messages)
-- [ ] Include both user messages and assistant responses in history
-- [ ] Pass conversation history to `generateText()` as `messages` array
+- [x] Create `apps/api/src/app/endpoints/agent/memory/conversation-memory.ts`
+- [x] Implement session-based message store (Map<sessionId, Message[]>)
+- [x] Cap at 20 messages per session (FIFO eviction of oldest messages)
+- [x] Include both user messages and assistant responses in history
+- [x] Pass conversation history to `generateText()` as `messages` array
 
 **Commit 5: `feat(agent): implement response formatter`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/formatters/response-formatter.ts`
-- [ ] Parse structured JSON response from Claude (claims with source_tool + source_field)
-- [ ] Format into user-friendly response with source references inline
-- [ ] Handle cases where Claude returns plain text instead of structured JSON
+- [x] Create `apps/api/src/app/endpoints/agent/formatters/response-formatter.ts`
+- [x] Parse structured JSON response from Claude (claims with source_tool + source_field)
+- [x] Format into user-friendly response with source references inline
+- [x] Handle cases where Claude returns plain text instead of structured JSON
 
 **Commit 6: `test(agent): add integration test for full agent loop`**
 
-- [ ] Write test: send query -> agent calls correct tool -> returns synthesized response
-- [ ] Write test: conversation history persists across turns within a session
-- [ ] Write test: agent handles multi-tool queries (calls multiple tools in sequence)
-- [ ] Run tests and verify they pass
+- [x] Write test: send query -> agent calls correct tool -> returns synthesized response
+- [x] Write test: conversation history persists across turns within a session
+- [x] Write test: agent handles multi-tool queries (calls multiple tools in sequence)
+- [x] Run tests and verify they pass
 
 ---
 
