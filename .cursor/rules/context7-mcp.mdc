@@ -1,0 +1,35 @@
+---
+description: Context7 MCP usage rules — always fetch latest docs before using library APIs
+globs: ["**/*.ts"]
+alwaysApply: true
+---
+
+# Context7 MCP — Latest Documentation Lookup
+
+## Rule
+
+Before writing code that uses a library API, use Context7 MCP to fetch the latest stable documentation for that library. Do not rely on training data alone — APIs change between versions.
+
+## How to Use
+
+Use the Context7 MCP tool `resolve-library-id` to find the library, then `get-library-docs` to fetch docs for the specific topic you need.
+
+## Libraries to Look Up
+
+Always check Context7 for these libraries before using their APIs:
+
+| Library | Context7 Name | When to Look Up |
+|---|---|---|
+| **Vercel AI SDK** | `vercel/ai` | `generateText()`, `tool()`, `generateObject()`, streaming, provider config |
+| **NestJS** | `nestjs/nest` | Modules, DI, guards, interceptors, decorators, testing utilities |
+| **Langfuse** | `langfuse/langfuse` | Trace wrapping, scoring, SDK v4 APIs, Vercel AI integration |
+| **Zod** | `colinhacks/zod` | Schema definitions, `.describe()`, transforms, refinements |
+| **Prisma** | `prisma/prisma` | Client API, query patterns, relation loading |
+| **Jest** | `jestjs/jest` | Matchers, mocking, test utilities, async testing |
+| **OpenRouter** | `openrouter/ai-sdk-provider` | Provider setup, model selection, API key config |
+
+## When to Skip
+
+- Trivial operations you are confident about (e.g., `z.string()`, `z.number()`)
+- Standard TypeScript/JavaScript built-ins
+- Code that does not call any library-specific API

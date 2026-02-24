@@ -1,0 +1,86 @@
+---
+description: Tech stack conventions, version pins, and import patterns for the Ghostfolio Agent project
+globs: ["apps/api/src/**/*.ts", "libs/**/*.ts"]
+alwaysApply: false
+---
+
+# Tech Stack Conventions
+
+## Core Stack
+
+### NestJS (^10.x — Ghostfolio's version)
+- Use decorators: `@Module`, `@Controller`, `@Injectable`, `@Get`, `@Post`, `@UseGuards`
+- All services must be `@Injectable()` and registered as providers in their module
+- Use constructor injection for all dependencies — never instantiate services directly
+- Mirror existing patterns in `apps/api/src/app/endpoints/` for new endpoints
+- Reference: https://docs.nestjs.com
+
+### TypeScript (^5.x)
+- Strict mode: no `any` types — use `unknown` with type guards when the type is truly unknown
+- Use interfaces for contracts, types for unions/intersections
+- Prefer `readonly` for properties that should not be reassigned
+- All function parameters and return types must be explicitly typed
+- Use barrel exports (`index.ts`) for public module APIs
+
+### Nx (Ghostfolio's version)
+- Respect project boundaries: `apps/api` imports from `libs/common`, not from `apps/client`
+- Use `libs/common` for shared interfaces and types
+- Run tasks via Nx: `npx nx test api`, `npx nx lint api`
+- Reference: https://nx.dev/getting-started/intro
+
+### Prisma (Ghostfolio's version)
+- Use the existing `PrismaService` — never create raw SQL queries
+- All database access goes through Ghostfolio's existing service layer (PortfolioService, OrderService, etc.)
+- The agent does NOT modify data — all access is read-only
+- Reference: https://www.prisma.io/docs
+
+## AI / Agent Stack
+
+### Vercel AI SDK (`ai` v4.3.16 — already installed)
+- Use `generateText()` with `maxSteps` for agentic tool-calling loops
+- Use `tool()` helper to define tools with Zod schemas
+- Use `generateObject()` only when structured output is required without tool-calling
+- Access token usage from response: `result.usage.promptTokens`, `result.usage.completionTokens`
+- Import from `ai`: `import { generateText, tool } from 'ai'`
+- Reference: https://sdk.vercel.ai/docs
+
+### OpenRouter Provider (`@openrouter/ai-sdk-provider` v0.7.2 — already installed)
+- Use `createOpenRouter()` to create the provider instance
+- Pin model: `anthropic/claude-3.5-sonnet` (or the model set in admin panel)
+- API key is stored in Ghostfolio's PropertyService as `PROPERTY_API_KEY_OPENROUTER`
+- Import: `import { createOpenRouter } from '@openrouter/ai-sdk-provider'`
+- Reference: https://openrouter.ai/docs
+
+### Zod (^3.x — already installed)
+- Define all tool input/output schemas with Zod
+- Use `.describe()` on every schema field — these descriptions are LLM prompts
+- Export both the schema and the inferred TypeScript type: `z.infer<typeof MySchema>`
+- Reference: https://zod.dev
+
+### Langfuse (post-MVP — Epic 11)
+- Not used during MVP phase
+- When integrated: use `@langfuse/vercel` for Vercel AI SDK trace wrapping
+- Reference: https://langfuse.com/docs
+
+## Testing
+
+### Jest (Ghostfolio's version)
+- Test files: `*.spec.ts` co-located with source files
+- Use `describe` / `it` blocks with clear test names
+- Mock external services with `jest.fn()` or NestJS `Test.createTestingModule`
+- Follow TDD: write the failing test first, then implement
+- Reference: https://jestjs.io/docs/getting-started
+
+## MVP Observability (console-level)
+
+Until Langfuse is wired (post-MVP), all agent-related services should log structured data to console using NestJS `Logger`:
+- Tool calls: name, args summary, result success/fail, latency in ms
+- LLM calls: model, input/output token counts, latency
+- Verification: checker name, pass/fail, reason on failure
+- Errors: error type, user-facing message, stack trace at debug level
+
+```typescript
+import { Logger } from '@nestjs/common';
+const logger = new Logger('AgentService');
+logger.log(`Tool call: ${toolName} completed in ${ms}ms (success: ${result.success})`);
+```

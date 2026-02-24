@@ -1,0 +1,104 @@
+---
+description: SOLID principles and modular design rules for the Ghostfolio Agent architecture
+globs: ["apps/api/src/app/endpoints/agent/**/*.ts"]
+alwaysApply: false
+---
+
+# SOLID Principles — Agent Architecture
+
+## S — Single Responsibility Principle
+
+Every module, class, and function has exactly one reason to change.
+
+| Component | Responsibility | NOT Responsible For |
+|---|---|---|
+| `AgentController` | HTTP request/response, auth context extraction | Tool execution, LLM calls, verification |
+| `AgentService` | Orchestrating the agent loop (LLM → tools → verification → response) | Individual tool logic, database queries |
+| Each Tool class | Wrapping exactly one Ghostfolio service method, mapping I/O to tool schema | LLM reasoning, other tools, verification |
+| `VerificationService` | Running verification checks against agent output | Tool execution, LLM calls |
+| `RedactionService` | Sanitizing data before it enters the LLM context | Tool logic, verification |
+| `ErrorMapperService` | Translating internal errors to user-facing messages | Business logic, tool execution |
+
+When creating a new class, ask: "What is the single reason this class would need to change?" If the answer has an "and", split it.
+
+## O — Open/Closed Principle
+
+Software entities are open for extension but closed for modification.
+
+- **Tool Registry:** Add new tools by creating a new tool file and registering it in the tool array. Never modify existing tools to accommodate a new one.
+- **Verification Pipeline:** Add new checks by implementing the `VerificationCheck` interface. The pipeline iterates over all registered checkers — no switch/case on checker type.
+- **Error Message Map:** Add new error types to the map object. Do not modify the mapper logic itself.
+
+## L — Liskov Substitution Principle
+
+Subtypes must be substitutable for their base types.
+
+All tools return the same envelope:
+```typescript
+interface ToolResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+```
+
+All verification checkers implement the same interface:
+```typescript
+interface VerificationCheck {
+  name: string;
+  check(agentOutput: StructuredAgentResponse, toolOutputs: Map<string, ToolResponse<unknown>>): Promise<VerificationResult>;
+}
+```
+
+Any code consuming tool output or verification results must work with the interface, never with a specific implementation.
+
+## I — Interface Segregation Principle
+
+Clients should not depend on interfaces they do not use.
+
+- Tools depend on the specific Ghostfolio service methods they need, not on the entire service interface
+- `AgentService` depends on tool definitions (name + schema + execute), not on tool internals
+- The verification pipeline depends on `VerificationCheck`, not on individual checker implementation details
+
+## D — Dependency Inversion Principle
+
+High-level modules depend on abstractions, not low-level modules.
+
+- Use NestJS Dependency Injection for all wiring — never `new ServiceName()` directly
+- `AgentModule` declares its imports and providers; NestJS resolves the graph
+- Mirror the existing `AiModule` pattern at `apps/api/src/app/endpoints/ai/ai.module.ts`
+- Constructor injection for all services:
+
+```typescript
+@Injectable()
+export class AgentService {
+  constructor(
+    private readonly portfolioService: PortfolioService,
+    // ... other injected services
+  ) {}
+}
+```
+
+## Modular Design
+
+One module per concern. Clear boundaries between:
+- `agent/` — orchestration (AgentModule, AgentService, AgentController)
+- `agent/tools/` — tool wrappers (one file per tool + registry)
+- `agent/verification/` — verification pipeline (service + individual checkers)
+- `agent/redaction/` — data sanitization
+- `agent/errors/` — error mapping
+- `agent/memory/` — conversation history
+- `agent/prompts/` — system prompt definitions
+- `agent/schemas/` — Zod schemas for tool I/O
+- `agent/types/` — shared TypeScript interfaces
+- `agent/formatters/` — response formatting
+- `agent/eval/` — eval dataset and runner
+
+## Degraded Path for Structured Output
+
+When the LLM returns plain text instead of structured JSON:
+- Return the narrative text directly to the user
+- Run ONLY the RulesService (hallucination detection) verification
+- Skip math consistency, source citation, and escalation checks
+- Log the parse failure for prompt tuning
+- This is a safe fallback, not a crash

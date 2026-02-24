@@ -1,0 +1,78 @@
+---
+description: Git workflow, branch strategy, commit conventions, and TDD requirements
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Git Workflow
+
+## Branch Strategy
+
+```
+main  ←  dev  ←  feature/epic-N-descriptive-name
+```
+
+| Branch | Purpose | Merges Into |
+|---|---|---|
+| `main` | Production-ready releases only | N/A |
+| `dev` | Main development integration branch | `main` (after hardening) |
+| `feature/epic-N-*` | Individual epic feature branches | `dev` (after all tests pass) |
+
+## Commit Message Convention
+
+```
+<type>(scope): <description>
+```
+
+**Types:** feat, fix, test, refactor, docs, chore
+**Scopes:** agent, tools, verification, observability, deploy, rules, eval
+
+Examples:
+- `feat(tools): add portfolio_performance tool with Zod schema`
+- `test(tools): add unit tests for get_holdings tool`
+- `fix(verification): correct floating-point tolerance in math check`
+- `docs(agent): add system prompt for portfolio auditor role`
+- `chore(deploy): configure Railway environment variables`
+
+## Feature Branch Lifecycle
+
+1. `git checkout dev && git pull`
+2. `git checkout -b feature/epic-N-descriptive-name`
+3. Implement the feature across focused commits
+4. Write tests (TDD: tests first when practical)
+5. Run full test suite: `npm test`
+6. Fix any failures, re-run
+7. `git checkout dev && git merge feature/epic-N-descriptive-name`
+8. `git branch -d feature/epic-N-descriptive-name`
+9. Proceed to next epic
+
+## Test-Driven Development (TDD)
+
+Every feature follows Red-Green-Refactor:
+1. **Red:** Write a failing test that defines expected behavior
+2. **Green:** Write the minimum code to make the test pass
+3. **Refactor:** Clean up while keeping tests green
+
+Test pyramid:
+| Level | What | Target |
+|---|---|---|
+| Unit | Tool wrappers, verification checkers, redaction | 100% coverage on tools |
+| Integration | Agent loop E2E (query → tools → verification → response) | 50 eval cases |
+| Adversarial | Prompt injection, out-of-scope, bypass attempts | 10+ cases |
+
+## PRD as Map, Not Contract
+
+The PRD (docs/research/PRD.md) is a prioritized map, not a rigid contract.
+
+**If behind schedule, protect the 9 MVP hard-gate requirements first:**
+1. Agent responds to NL queries in finance domain
+2. At least 3 functional tools
+3. Tool calls execute successfully with structured results
+4. Agent synthesizes tool results into coherent responses
+5. Conversation history maintained across turns
+6. Basic error handling (graceful failure)
+7. At least one domain-specific verification check
+8. 5+ test cases with expected outcomes
+9. Deployed and publicly accessible
+
+Drop or defer non-gate items. Merge epics when it saves time. A simple agent with reliable tool execution beats a complex agent that hallucinates.
