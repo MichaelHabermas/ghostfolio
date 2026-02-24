@@ -549,41 +549,41 @@ chore(deploy): configure Railway environment variables
 
 **Commit 1: `chore(rules): add tech stack cursor rules`**
 
-- [ ] Create `.cursor/rules/tech-stack.mdc` with NestJS, TypeScript, Vercel AI SDK, Zod, Prisma conventions
-- [ ] Include version pins and import patterns
-- [ ] Reference official documentation links
+- [x] Create `.cursor/rules/tech-stack.mdc` with NestJS, TypeScript, Vercel AI SDK, Zod, Prisma conventions
+- [x] Include version pins and import patterns
+- [x] Reference official documentation links
 
 **Commit 2: `chore(rules): add SOLID principles and modular design rules`**
 
-- [ ] Create `.cursor/rules/solid-principles.mdc` with SRP, OCP, LSP, ISP, DIP guidelines
-- [ ] Include modular design rules (one module per concern, clean interfaces)
-- [ ] Add separation of concerns guidelines specific to agent architecture
+- [x] Create `.cursor/rules/solid-principles.mdc` with SRP, OCP, LSP, ISP, DIP guidelines
+- [x] Include modular design rules (one module per concern, clean interfaces)
+- [x] Add separation of concerns guidelines specific to agent architecture
 
 **Commit 3: `chore(rules): add git workflow rules`**
 
-- [ ] Create `.cursor/rules/git-workflow.mdc` with branch strategy (main <- dev <- feature/*)
-- [ ] Include commit message convention (type(scope): description)
-- [ ] Document feature branch lifecycle and TDD requirements
+- [x] Create `.cursor/rules/git-workflow.mdc` with branch strategy (main <- dev <- feature/*)
+- [x] Include commit message convention (type(scope): description)
+- [x] Document feature branch lifecycle and TDD requirements
 
 **Commit 4: `chore(rules): add Context7 MCP rules`**
 
-- [ ] Create `.cursor/rules/context7-mcp.mdc` with instructions to always use Context7 MCP for fetching latest stable docs
-- [ ] List the specific libraries to look up: Vercel AI SDK, NestJS, Langfuse, Zod, Prisma, Jest
+- [x] Create `.cursor/rules/context7-mcp.mdc` with instructions to always use Context7 MCP for fetching latest stable docs
+- [x] List the specific libraries to look up: Vercel AI SDK, NestJS, Langfuse, Zod, Prisma, Jest
 
 **Commit 5: `chore(env): verify local dev environment`**
 
-- [ ] Copy `.env.dev` to `.env` and populate with required keys (OpenRouter API key, Langfuse keys)
-- [ ] Run `docker compose -f docker/docker-compose.dev.yml up -d` to start Postgres and Redis
-- [ ] Run `npm install` and `npm run database:setup`
-- [ ] Start server (`npm run start:server`) and client (`npm run start:client`)
-- [ ] Verify <https://localhost:4200/en> loads successfully
-- [ ] Create initial admin user via Get Started
+- [x] Copy `.env.dev` to `.env` and populate with required keys (OpenRouter API key, Langfuse keys)
+- [x] Run `docker compose -f docker/docker-compose.dev.yml up -d` to start Postgres and Redis
+- [x] Run `npm install` and `npm run database:setup`
+- [x] Start server (`npm run start:server`) and client (`npm run start:client`)
+- [x] Verify <https://localhost:4200/en> loads successfully
+- [x] Create initial admin user via Get Started
 
 **Commit 6: `chore(git): initialize dev branch`**
 
-- [ ] Create `dev` branch from `main`
-- [ ] Push `dev` branch to remote
-- [ ] Set `dev` as default working branch
+- [x] Create `dev` branch from `main`
+- [x] Push `dev` branch to remote
+- [x] Set `dev` as default working branch
 
 ---
 
