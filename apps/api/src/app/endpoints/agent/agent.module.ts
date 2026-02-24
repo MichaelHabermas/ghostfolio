@@ -28,6 +28,7 @@ import { AgentService } from './agent.service';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
+import { InputValidationService } from './validation/input-validation.service';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
@@ -59,6 +60,7 @@ import { VerificationService } from './verification/verification.service';
     AgentService,
     ConversationMemory,
     ErrorMapperService,
+    InputValidationService,
     CurrentRateService,
     GetHoldingsTool,
     GetRulesReportTool,

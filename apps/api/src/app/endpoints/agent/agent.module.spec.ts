@@ -18,6 +18,7 @@ import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
 import { ErrorMapperService } from './errors/error-mapper.service';
+import { InputValidationService } from './validation/input-validation.service';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
 import { VerificationService } from './verification/verification.service';
 
@@ -51,6 +52,7 @@ describe('AgentModule', () => {
           { provide: GetRulesReportTool, useValue: { execute: jest.fn() } },
           { provide: PortfolioPerformanceTool, useValue: { execute: jest.fn() } },
           ErrorMapperService,
+          InputValidationService,
           RulesValidationChecker,
           {
             inject: [RulesValidationChecker],
@@ -89,6 +91,7 @@ describe('AgentModule', () => {
         providers: [
           TestJwtStrategy,
           HasPermissionGuard,
+          InputValidationService,
           Reflector,
           { provide: AgentService, useValue: { processQuery: jest.fn() } },
           { provide: 'REQUEST', useValue: {} }
