@@ -86,4 +86,33 @@ describe('createToolRegistry', () => {
     expect(holdingsDesc.toLowerCase()).toContain('holdings');
     expect(rulesDesc.toLowerCase()).toContain('risk');
   });
+
+  describe('toolOutputs capture', () => {
+    it('should record tool results into toolOutputs map when provided', async () => {
+      const toolOutputs = new Map();
+      const registryWithCapture = createToolRegistry(
+        {
+          performanceTool: mockPerformanceTool as any,
+          holdingsTool: mockHoldingsTool as any,
+          rulesReportTool: mockRulesReportTool as any
+        },
+        userId,
+        toolOutputs
+      );
+
+      await (registryWithCapture.portfolio_performance as any).execute({});
+      await (registryWithCapture.get_holdings as any).execute({});
+      await (registryWithCapture.get_rules_report as any).execute({});
+
+      expect(toolOutputs.has('portfolio_performance')).toBe(true);
+      expect(toolOutputs.has('get_holdings')).toBe(true);
+      expect(toolOutputs.has('get_rules_report')).toBe(true);
+    });
+
+    it('should not fail when toolOutputs is not provided', async () => {
+      await expect(
+        (registry.portfolio_performance as any).execute({})
+      ).resolves.toBeDefined();
+    });
+  });
 });

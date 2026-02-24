@@ -20,6 +20,8 @@ import type { GetRulesReportTool } from './tools/get-rules-report.tool';
 import type { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
 import { ConversationMemory } from './memory/conversation-memory';
 import { ResponseFormatter } from './formatters/response-formatter';
+import { ErrorMapperService } from './errors/error-mapper.service';
+import { VerificationService } from './verification/verification.service';
 
 const mockGenerateText = generateText as jest.MockedFunction<
   typeof generateText
@@ -35,6 +37,22 @@ const makeDefaultGenerateTextResult = (text = 'Your portfolio is well-diversifie
     usage: { promptTokens: 20, completionTokens: 10 }
   } as any);
 
+const makePassingVerificationService = () => {
+  const svc = new VerificationService([]);
+  jest.spyOn(svc, 'verify').mockResolvedValue({ passed: true });
+  return svc;
+};
+
+const makeFailingVerificationService = (reason = 'Hallucination detected') => {
+  const svc = new VerificationService([]);
+  jest.spyOn(svc, 'verify').mockResolvedValue({
+    passed: false,
+    failedChecker: 'rules_validation',
+    reason
+  });
+  return svc;
+};
+
 describe('AgentService', () => {
   let agentService: AgentService;
   let propertyService: jest.Mocked<Pick<PropertyService, 'getByKey'>>;
@@ -43,6 +61,8 @@ describe('AgentService', () => {
   let rulesReportTool: jest.Mocked<Pick<GetRulesReportTool, 'execute'>>;
   let conversationMemory: ConversationMemory;
   let responseFormatter: ResponseFormatter;
+  let verificationService: VerificationService;
+  let errorMapperService: ErrorMapperService;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -62,6 +82,8 @@ describe('AgentService', () => {
     rulesReportTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
     conversationMemory = new ConversationMemory();
     responseFormatter = new ResponseFormatter();
+    verificationService = makePassingVerificationService();
+    errorMapperService = new ErrorMapperService();
 
     agentService = new AgentService(
       propertyService as any,
@@ -69,7 +91,9 @@ describe('AgentService', () => {
       holdingsTool as any,
       rulesReportTool as any,
       conversationMemory,
-      responseFormatter
+      responseFormatter,
+      verificationService,
+      errorMapperService
     );
   });
 
@@ -179,6 +203,53 @@ describe('AgentService', () => {
       const userMessage = messages.find((m) => m.role === 'user');
       expect(userMessage).toBeDefined();
       expect(userMessage.content).toContain('What are my holdings?');
+    });
+
+    it('should call VerificationService.verify after LLM responds', async () => {
+      mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult());
+
+      await agentService.processQuery({
+        query: 'How is my portfolio?',
+        userId: 'user-123'
+      });
+
+      expect(verificationService.verify).toHaveBeenCalledTimes(1);
+    });
+
+    it('should block response and return error message when verification fails', async () => {
+      verificationService = makeFailingVerificationService('Agent fabricated a rule violation');
+      agentService = new AgentService(
+        propertyService as any,
+        performanceTool as any,
+        holdingsTool as any,
+        rulesReportTool as any,
+        conversationMemory,
+        responseFormatter,
+        verificationService,
+        errorMapperService
+      );
+
+      mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult());
+
+      const result = await agentService.processQuery({
+        query: 'Are there any violations?',
+        userId: 'user-123'
+      });
+
+      expect(result.flags).toContain('verification_failed');
+      expect(result.response).toContain('inconsistency');
+    });
+
+    it('should return normal response when verification passes', async () => {
+      mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult('Your portfolio is well-diversified.'));
+
+      const result = await agentService.processQuery({
+        query: 'How is my portfolio?',
+        userId: 'user-123'
+      });
+
+      expect(result.flags).not.toContain('verification_failed');
+      expect(result.response).toBeTruthy();
     });
   });
 
