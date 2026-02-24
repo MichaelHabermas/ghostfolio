@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
@@ -18,6 +18,7 @@ describe('AgentController', () => {
   let inputValidationService: InputValidationService;
 
   beforeAll(() => {
+    process.env['AGENT_ENABLED'] = 'true';
     agentService = new AgentService(
       null as any,
       null as any,
@@ -30,6 +31,10 @@ describe('AgentController', () => {
     );
     inputValidationService = new InputValidationService();
     agentController = new AgentController(agentService, mockRequest, inputValidationService);
+  });
+
+  afterAll(() => {
+    delete process.env['AGENT_ENABLED'];
   });
 
   it('should be defined', () => {
@@ -77,6 +82,53 @@ describe('AgentController', () => {
     expect(processQuerySpy).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-123' })
     );
+  });
+
+  describe('AGENT_ENABLED feature flag', () => {
+    afterEach(() => {
+      process.env['AGENT_ENABLED'] = 'true';
+    });
+
+    it('should return 503 when AGENT_ENABLED is not set', async () => {
+      delete process.env['AGENT_ENABLED'];
+      await expect(
+        agentController.query({ query: 'What are my holdings?' })
+      ).rejects.toThrow(ServiceUnavailableException);
+    });
+
+    it('should return 503 when AGENT_ENABLED is set to "false"', async () => {
+      process.env['AGENT_ENABLED'] = 'false';
+      await expect(
+        agentController.query({ query: 'What are my holdings?' })
+      ).rejects.toThrow(ServiceUnavailableException);
+    });
+
+    it('should return 503 with correct message when AGENT_ENABLED is not set', async () => {
+      expect.assertions(2);
+      delete process.env['AGENT_ENABLED'];
+      try {
+        await agentController.query({ query: 'What are my holdings?' });
+      } catch (err: unknown) {
+        expect(err).toBeInstanceOf(ServiceUnavailableException);
+        expect((err as ServiceUnavailableException).message).toBe(
+          'The agent feature is currently disabled.'
+        );
+      }
+    });
+
+    it('should proceed normally when AGENT_ENABLED is "true"', async () => {
+      process.env['AGENT_ENABLED'] = 'true';
+      jest.spyOn(agentService, 'processQuery').mockResolvedValue({
+        response: 'ok',
+        sources: [],
+        flags: [],
+        sessionId: 's1'
+      });
+
+      await expect(
+        agentController.query({ query: 'What are my holdings?' })
+      ).resolves.toBeDefined();
+    });
   });
 
   describe('input validation', () => {

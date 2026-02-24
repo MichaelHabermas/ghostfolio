@@ -11,6 +11,7 @@ import {
   HttpStatus,
   Inject,
   Post,
+  ServiceUnavailableException,
   UseGuards
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
@@ -39,6 +40,12 @@ export class AgentController {
   @HasPermission(permissions.readAiPrompt)
   @UseGuards(AuthGuard('jwt'), HasPermissionGuard)
   public async query(@Body() body: AgentRequest): Promise<AgentResponse> {
+    if (process.env['AGENT_ENABLED'] !== 'true') {
+      throw new ServiceUnavailableException(
+        'The agent feature is currently disabled.'
+      );
+    }
+
     const validation = this.inputValidationService.validate({
       query: body.query,
       sessionId: body.sessionId
