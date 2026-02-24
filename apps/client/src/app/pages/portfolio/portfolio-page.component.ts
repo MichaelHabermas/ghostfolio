@@ -9,6 +9,7 @@ import { addIcons } from 'ionicons';
 import {
   analyticsOutline,
   calculatorOutline,
+  chatbubbleOutline,
   pieChartOutline,
   scanOutline,
   swapVerticalOutline
@@ -67,6 +68,11 @@ export class PortfolioPageComponent implements OnDestroy, OnInit {
               iconName: 'scan-outline',
               label: internalRoutes.portfolio.subRoutes.xRay.title,
               routerLink: internalRoutes.portfolio.subRoutes.xRay.routerLink
+            },
+            {
+              iconName: 'chatbubble-outline',
+              label: internalRoutes.portfolio.subRoutes.agent.title,
+              routerLink: internalRoutes.portfolio.subRoutes.agent.routerLink
             }
           ];
           this.user = state.user;
@@ -78,6 +84,7 @@ export class PortfolioPageComponent implements OnDestroy, OnInit {
     addIcons({
       analyticsOutline,
       calculatorOutline,
+      chatbubbleOutline,
       pieChartOutline,
       scanOutline,
       swapVerticalOutline

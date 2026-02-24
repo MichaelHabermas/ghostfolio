@@ -1,4 +1,5 @@
 import type { Access } from './access.interface';
+import type { AgentResponse, AgentSource } from './agent-response.interface';
 import type { AccountBalance } from './account-balance.interface';
 import type { Activity, ActivityError } from './activities.interface';
 import type { AdminData } from './admin-data.interface';
@@ -100,6 +101,8 @@ import type { XRayRulesSettings } from './x-ray-rules-settings.interface';
 export {
   Access,
   AccessTokenResponse,
+  AgentResponse,
+  AgentSource,
   AccountBalance,
   AccountBalancesResponse,
   AccountResponse,

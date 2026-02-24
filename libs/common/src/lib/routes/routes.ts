@@ -127,6 +127,11 @@ export const internalRoutes: Record<string, InternalRoute> = {
         routerLink: ['/portfolio', 'activities'],
         title: $localize`Activities`
       },
+      agent: {
+        path: 'agent',
+        routerLink: ['/portfolio', 'agent'],
+        title: $localize`Agent`
+      },
       allocations: {
         path: 'allocations',
         routerLink: ['/portfolio', 'allocations'],

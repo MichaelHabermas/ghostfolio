@@ -20,6 +20,11 @@ export const routes: Routes = [
           import('./activities/activities-page.routes').then((m) => m.routes)
       },
       {
+        path: internalRoutes.portfolio.subRoutes.agent.path,
+        loadChildren: () =>
+          import('./agent/agent-page.routes').then((m) => m.routes)
+      },
+      {
         path: internalRoutes.portfolio.subRoutes.allocations.path,
         loadChildren: () =>
           import('./allocations/allocations-page.routes').then((m) => m.routes)

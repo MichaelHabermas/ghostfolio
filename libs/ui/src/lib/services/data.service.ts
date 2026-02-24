@@ -25,6 +25,7 @@ import {
   AccountsResponse,
   ActivitiesResponse,
   ActivityResponse,
+  AgentResponse,
   AiPromptResponse,
   ApiKeyResponse,
   AssetProfileIdentifier,
@@ -744,6 +745,16 @@ export class DataService {
     return this.http.post<OAuthResponse>('/api/v1/auth/anonymous', {
       accessToken
     });
+  }
+
+  public postAgentQuery({
+    query,
+    sessionId
+  }: {
+    query: string;
+    sessionId?: string;
+  }) {
+    return this.http.post<AgentResponse>('/api/v1/agent', { query, sessionId });
   }
 
   public postAccess(aAccess: CreateAccessDto) {

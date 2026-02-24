@@ -18,7 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AgentService } from './agent.service';
 import type { AgentRequest, AgentResponse } from './types';
 
-@Controller('v1/agent')
+@Controller('agent')
 export class AgentController {
   public constructor(
     private readonly agentService: AgentService,
