@@ -22,6 +22,7 @@ import { AgentService } from './agent.service';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
+import { RulesValidationChecker } from './verification/rules-validation.checker';
 import { VerificationService } from './verification/verification.service';
 
 const mockGenerateText = generateText as jest.MockedFunction<typeof generateText>;
@@ -39,6 +40,16 @@ const makeToolMock = () => ({ execute: jest.fn().mockResolvedValue({ success: tr
 const makePassingVerificationService = () => {
   const svc = new VerificationService([]);
   jest.spyOn(svc, 'verify').mockResolvedValue({ passed: true });
+  return svc;
+};
+
+const makeFailingVerificationService = (reason = 'Hallucination detected') => {
+  const svc = new VerificationService([]);
+  jest.spyOn(svc, 'verify').mockResolvedValue({
+    passed: false,
+    failedChecker: 'rules_validation',
+    reason
+  });
   return svc;
 };
 
@@ -63,6 +74,29 @@ const buildService = () => {
   );
 
   return { service, memory, performanceTool, holdingsTool, rulesReportTool, verificationService };
+};
+
+const buildServiceWithOptions = (options: { verificationService?: VerificationService }) => {
+  const propertyService = makePropertyService();
+  const performanceTool = makeToolMock();
+  const holdingsTool = makeToolMock();
+  const rulesReportTool = makeToolMock();
+  const memory = new ConversationMemory();
+  const formatter = new ResponseFormatter();
+  const verificationService = options.verificationService ?? makePassingVerificationService();
+
+  const service = new AgentService(
+    propertyService as any,
+    performanceTool as any,
+    holdingsTool as any,
+    rulesReportTool as any,
+    memory,
+    formatter,
+    verificationService,
+    new ErrorMapperService()
+  );
+
+  return { service, memory, verificationService };
 };
 
 describe('Agent loop integration', () => {
@@ -195,6 +229,95 @@ describe('Agent loop integration', () => {
       expect(historyA.some((m) => m.content === 'Session A message')).toBe(true);
       expect(historyB.some((m) => m.content === 'Session B message')).toBe(true);
       expect(historyA.some((m) => m.content === 'Session B message')).toBe(false);
+    });
+  });
+
+  describe('verification failure -> user-friendly error message', () => {
+    it('should return verification_failed flag and user-friendly message when verification fails', async () => {
+      const failingVerification = makeFailingVerificationService('Agent fabricated a rule violation');
+      const { service: svcWithFailingVerification } = buildServiceWithOptions({
+        verificationService: failingVerification
+      });
+
+      mockGenerateText.mockResolvedValue({
+        text: JSON.stringify({
+          claims: [
+            {
+              statement: 'You have an emergency fund violation',
+              source_tool: 'get_rules_report',
+              source_field: 'categories',
+              value: 'emergency_fund_FABRICATED'
+            }
+          ],
+          narrative: 'You have rule violations.'
+        }),
+        steps: [],
+        usage: { promptTokens: 30, completionTokens: 15 }
+      } as any);
+
+      const result = await svcWithFailingVerification.processQuery({
+        query: 'Are there any rule violations?',
+        userId: 'user-verify-test'
+      });
+
+      expect(result.flags).toContain('verification_failed');
+      expect(result.sources).toEqual([]);
+      expect(result.response).toContain('inconsistency');
+    });
+
+    it('should pass through normal response when verification passes', async () => {
+      const { service } = buildService();
+
+      mockGenerateText.mockResolvedValue({
+        text: JSON.stringify({
+          claims: [],
+          narrative: 'Your portfolio is healthy.'
+        }),
+        steps: [],
+        usage: { promptTokens: 20, completionTokens: 10 }
+      } as any);
+
+      const result = await service.processQuery({
+        query: 'How is my portfolio?',
+        userId: 'user-verify-pass'
+      });
+
+      expect(result.flags).not.toContain('verification_failed');
+      expect(result.response).toBe('Your portfolio is healthy.');
+    });
+
+    it('should use RulesValidationChecker directly to block fabricated claims', async () => {
+      // Tests the RulesValidationChecker + VerificationService integration directly
+      // (without the LLM layer since generateText is mocked and tools don't execute)
+      const rulesChecker = new RulesValidationChecker();
+      const realVerificationService = new VerificationService([rulesChecker]);
+
+      const agentOutput = {
+        claims: [
+          {
+            statement: 'emergency fund rule is violated',
+            source_tool: 'get_rules_report',
+            source_field: 'categories',
+            value: 'emergency_fund_check_FABRICATED'
+          }
+        ],
+        narrative: 'You have no emergency fund.'
+      };
+
+      // Simulate the tool output map that would be populated during a real request
+      const toolOutputs = new Map();
+      toolOutputs.set('get_rules_report', {
+        success: true,
+        data: {
+          categories: [],
+          statistics: { rulesActiveCount: 0, rulesFulfilledCount: 0 }
+        }
+      });
+
+      const verificationResult = await realVerificationService.verify(agentOutput, toolOutputs);
+
+      expect(verificationResult.passed).toBe(false);
+      expect(verificationResult.failedChecker).toBe('rules_validation');
     });
   });
 
