@@ -37,12 +37,14 @@ pre-existing open source project.
 
 One-week sprint
 
+
 | Checkpoint       | Deadline                        | Focus                          |
 | ---------------- | ------------------------------- | ------------------------------ |
 | Pre-Search       | 2 hours after receiving project | Architecture, Plan             |
 | MVP              | Tuesday (24 hours)              | Basic agent with tool use      |
 | Early Submission | Friday (4 days)                 | Eval framework + observability |
 | Final            | Sunday (7 days)                 | Production-ready + open source |
+
 
 ---
 
@@ -68,15 +70,18 @@ Hard gate — all required
 
 Your selected repository to fork. Your agent must add new meaningful features in that forked repo:
 
+
 | Domain  | GitHub Repository | URL                                                                                  |
 | ------- | ----------------- | ------------------------------------------------------------------------------------ |
 | Finance | Ghostfolio        | [https://github.com/ghostfolio/ghostfolio](https://github.com/ghostfolio/ghostfolio) |
+
 
 ---
 
 ## Core Agent Architecture
 
 ### Agent Components
+
 
 | Component          | Requirements                                                  |
 | ------------------ | ------------------------------------------------------------- |
@@ -86,6 +91,7 @@ Your selected repository to fork. Your agent must add new meaningful features in
 | Orchestrator       | Decides when to use tools, handles multi-step reasoning       |
 | Verification Layer | Domain-specific checks before returning responses             |
 | Output Formatter   | Structured responses with citations and confidence            |
+
 
 ---
 
@@ -107,6 +113,7 @@ Build domain-appropriate tools. Examples by domain (look through your chosen rep
 
 Production agents require systematic evaluation. Build an eval framework that tests:
 
+
 | Eval Type      | What to Test                                                                 |
 | -------------- | ---------------------------------------------------------------------------- |
 | Correctness    | Does the agent return accurate information? Fact-check against ground truth. |
@@ -116,6 +123,7 @@ Production agents require systematic evaluation. Build an eval framework that te
 | Consistency    | Same input → same output? Deterministic where expected?                      |
 | Edge Cases     | Handles missing data, invalid input, ambiguous queries?                      |
 | Latency        | Response time within acceptable bounds?                                      |
+
 
 ---
 
@@ -141,6 +149,7 @@ Each test case must include:
 
 Implement observability to debug and improve your agent:
 
+
 | Capability       | Requirements                                                        |
 | ---------------- | ------------------------------------------------------------------- |
 | Trace Logging    | Full trace of each request: input → reasoning → tool calls → output |
@@ -150,11 +159,13 @@ Implement observability to debug and improve your agent:
 | Eval Results     | Historical eval scores, regression detection                        |
 | User Feedback    | Mechanism to capture thumbs up/down, corrections                    |
 
+
 ## Verification Systems
 
 High-stakes domains require verification before responses are returned:
 
 ### Required Verification (Implement 3+)
+
 
 | Verification Type       | Implementation                                       |
 | ----------------------- | ---------------------------------------------------- |
@@ -165,7 +176,9 @@ High-stakes domains require verification before responses are returned:
 | Output Validation       | Schema validation, format checking, completeness     |
 | Human-in-the-Loop       | Escalation triggers for high-risk decisions          |
 
+
 ## Performance Targets
+
 
 | Metric                | Target                             |
 | --------------------- | ---------------------------------- |
@@ -175,6 +188,7 @@ High-stakes domains require verification before responses are returned:
 | Eval pass rate        | >80% on your test suite            |
 | Hallucination rate    | <5% unsupported claims             |
 | Verification accuracy | >90% correct flags                 |
+
 
 ## AI Cost Analysis (Required)
 
@@ -193,9 +207,11 @@ Track and report your actual spend during development:
 
 Estimate monthly costs at different user scales:
 
+
 | 100 Users  | 1,000 Users | 10,000 Users | 100,000 Users |
 | ---------- | ----------- | ------------ | ------------- |
 | $___/month | $___/month  | $___/month   | $___/month    |
+
 
 Include assumptions: queries per user per day, average tokens per query (input + output), tool  
 call frequency, verification overhead.
@@ -203,6 +219,7 @@ call frequency, verification overhead.
 ## Agent Frameworks
 
 Choose a framework or build custom. Document your selection:
+
 
 | Framework       | Best For                                                             |
 | --------------- | -------------------------------------------------------------------- |
@@ -213,9 +230,11 @@ Choose a framework or build custom. Document your selection:
 | Semantic Kernel | Enterprise integration, .NET/Python, plugins                         |
 | Custom          | Full control, learning exercise, specific requirements               |
 
+
 ## Observability Tools
 
 Implement observability using one of these tools:
+
 
 | Tool             | Capabilities                                                      |
 | ---------------- | ----------------------------------------------------------------- |
@@ -227,9 +246,11 @@ Implement observability using one of these tools:
 | Helicone         | Proxy-based logging, cost tracking, caching                       |
 | Custom Logging   | Build your own with structured logs + dashboards                  |
 
+
 ## Open Source Contribution (Required)
 
 Contribute to open source in ONE of these ways:
+
 
 | Contribution Type      | Requirements                                                 |
 | ---------------------- | ------------------------------------------------------------ |
@@ -239,9 +260,11 @@ Contribute to open source in ONE of these ways:
 | Tool Integration       | Build and release a reusable tool for your domain            |
 | Documentation          | Comprehensive guide/tutorial published publicly              |
 
+
 ## Technical Stack
 
 ### Recommended Path
+
 
 | Layer           | Technology                                         |
 | --------------- | -------------------------------------------------- |
@@ -252,6 +275,7 @@ Contribute to open source in ONE of these ways:
 | Backend         | Python/FastAPI or Node.js/Express                  |
 | Frontend        | React, Next.js, or Streamlit for rapid prototyping |
 | Deployment      | Vercel, Railway, Modal, or cloud provider          |
+
 
 Use whatever stack helps you ship. Complete the Pre-Search process to make informed  
 decisions.
@@ -283,6 +307,7 @@ decisions.
 
 Submit a 1-2 page document covering:
 
+
 | Section                  | Content                                           |
 | ------------------------ | ------------------------------------------------- |
 | Domain & Use Cases       | Why this domain, specific problems solved         |
@@ -292,9 +317,11 @@ Submit a 1-2 page document covering:
 | Observability Setup      | What you're tracking, insights gained             |
 | Open Source Contribution | What you released, where to find it               |
 
+
 ## Submission Requirements
 
 **Deadline:** Sunday 10:59 PM CT
+
 
 | Deliverable            | Requirements                                                                     |
 | ---------------------- | -------------------------------------------------------------------------------- |
@@ -307,6 +334,7 @@ Submit a 1-2 page document covering:
 | Open Source Link       | Published package, PR, or public dataset                                         |
 | Deployed Application   | Publicly accessible agent interface                                              |
 | Social Post            | Share on X or LinkedIn: description, features, demo/screenshots, tag @GauntletAI |
+
 
 ## Interview Preparation
 
@@ -467,3 +495,4 @@ The questions are there to provide guidance and perspective. They may not all be
   - Eval-driven improvement cycle?
   - Feature prioritization approach?
   - Long-term maintenance plan?
+
