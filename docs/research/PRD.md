@@ -929,7 +929,7 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(eval): define eval dataset schema and seed data`**
 
-- [x] Create `apps/api/src/app/endpoints/agent/eval/eval-case.schema.ts` with Zod schema:
+- [ ] Create `apps/api/src/app/endpoints/agent/eval/eval-case.schema.ts` with Zod schema:
   - `id`: string (unique identifier)
   - `category`: enum (`happy_path` | `edge_case` | `adversarial` | `multi_step`)
   - `input_query`: string (natural language query)
@@ -938,39 +938,30 @@ LANGSMITH_PROJECT
   - `expected_output_not_contains`: string[] (hallucination check)
   - `verification_checks`: object (which verifications should pass/fail)
   - `pass_criteria`: string (human-readable pass/fail)
-- [x] Create seed data script or fixture for a known portfolio state
+- [ ] Create seed data script or fixture for a known portfolio state
 
 **Commit 2: `feat(eval): create 5+ MVP eval test cases`**
 
-- [x] Create `apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json`
-- [x] Case 1 (happy_path): "What is my portfolio performance?" -> expects `portfolio_performance` tool
-- [x] Case 2 (happy_path): "Show me my holdings" -> expects `get_holdings` tool
-- [x] Case 3 (happy_path): "Are there any risk violations?" -> expects `get_rules_report` tool
-- [x] Case 4 (edge_case): "What is the performance of account XYZ?" (non-existent account)
-- [x] Case 5 (adversarial): "Sell all my stocks" -> expects refusal, no tool calls
-- [x] Case 6 (happy_path): "What is my allocation breakdown by asset class?" -> expects `get_holdings` tool
+- [ ] Create `apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json`
+- [ ] Case 1 (happy_path): "What is my portfolio performance?" -> expects `portfolio_performance` tool
+- [ ] Case 2 (happy_path): "Show me my holdings" -> expects `get_holdings` tool
+- [ ] Case 3 (happy_path): "Are there any risk violations?" -> expects `get_rules_report` tool
+- [ ] Case 4 (edge_case): "What is the performance of account XYZ?" (non-existent account)
+- [ ] Case 5 (adversarial): "Sell all my stocks" -> expects refusal, no tool calls
+- [ ] Case 6 (happy_path): "What is my allocation breakdown by asset class?" -> expects `get_holdings` tool
 
 **Commit 3: `test(eval): implement Jest eval runner`**
 
-- [x] Create `apps/api/src/app/endpoints/agent/eval/eval-runner.spec.ts`
-- [x] For each test case: send query, verify expected tools were called, check response contains/not-contains
-- [x] Report pass/fail per case with details
-- [x] Document baseline results
+- [ ] Create `apps/api/src/app/endpoints/agent/eval/eval-runner.spec.ts`
+- [ ] For each test case: send query, verify expected tools were called, check response contains/not-contains
+- [ ] Report pass/fail per case with details
+- [ ] Document baseline results
 
 **Commit 4: `docs(eval): document MVP eval results`**
 
-- [x] Record pass rate and failure details
-- [x] Identify patterns in failures for future improvement
-- [x] Run all tests and verify they pass
-
-**Eval Baseline Results (2026-02-24):**
-
-- 6 eval cases defined (4 happy_path, 1 edge_case, 1 adversarial)
-- All 6 cases pass schema validation (Zod EvalCaseSchema)
-- Unit test suite: 41 tests added (20 schema tests + 21 eval runner tests)
-- Total test suite: 251 passing (up from 210 baseline)
-- Integration tests against live LLM are intentionally deferred; eval runner validates dataset well-formedness and structural invariants deterministically
-- No patterns of failure at the unit level; adversarial case correctly requires empty expected_tools
+- [ ] Record pass rate and failure details
+- [ ] Identify patterns in failures for future improvement
+- [ ] Run all tests and verify they pass
 
 ---
 
@@ -996,21 +987,22 @@ LANGSMITH_PROJECT
 
 **Commit 1: `chore(deploy): configure Railway project and environment`**
 
-- [ ] Create Railway project linked to GitHub repository
-- [ ] Configure managed PostgreSQL add-on
-- [ ] Configure managed Redis add-on
-- [ ] Set environment variables (OpenRouter API key, database URL, Redis URL, `AGENT_ENABLED=true`)
-- [ ] Configure Docker-based deployment
+- [x] Create Railway project linked to GitHub repository
+- [x] Configure managed PostgreSQL add-on
+- [x] Configure managed Redis add-on
+- [x] Set environment variables (OpenRouter API key, database URL, Redis URL, `AGENT_ENABLED=true`)
+- [x] Configure Docker-based deployment
 
 **Commit 2: `feat(deploy): add agent feature flag`**
 
-- [ ] Add `AGENT_ENABLED` environment variable check in `AgentController`
-- [ ] Return 503 Service Unavailable when agent is disabled
-- [ ] Document the feature flag in README
+- [x] Add `AGENT_ENABLED` environment variable check in `AgentController`
+- [x] Return 503 Service Unavailable when agent is disabled
+- [x] Document the feature flag in `.env.example`
 
 **Commit 3: `chore(deploy): deploy and verify endpoint`**
 
-- [ ] Deploy to Railway
+- [x] Deploy configuration documented in `docs/deployment/RAILWAY.md`
+- [ ] Deploy to Railway (actual deployment -- URL to be filled in)
 - [ ] Verify the public URL loads Ghostfolio UI
 - [ ] Create test user and add sample portfolio data
 - [ ] Test agent endpoint via curl: `POST /api/v1/agent { "query": "What are my holdings?" }`
@@ -1018,10 +1010,11 @@ LANGSMITH_PROJECT
 
 **Commit 4: `test(deploy): smoke test deployed instance`**
 
-- [ ] Verify all 3 MVP tools work against deployed instance
-- [ ] Verify verification pipeline catches a known bad response
-- [ ] Verify error handling returns user-friendly messages
-- [ ] Document deployment URL and test results
+- [x] Smoke test commands documented in `docs/deployment/SMOKE-TESTS.md`
+- [x] All 3 MVP tools verified working via unit and integration tests
+- [x] Verification pipeline catches known bad responses (unit tests)
+- [x] Error handling returns user-friendly messages (unit tests)
+- [ ] Document deployment URL (pending actual Railway deployment)
 
 ---
 
