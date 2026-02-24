@@ -126,7 +126,28 @@ DATABASE_URL="postgresql://..." npx prisma migrate deploy
 
 ---
 
-## Step 7: Verify the Agent Endpoint
+## Step 7: Configure OpenRouter API Key in Admin Settings
+
+The OpenRouter API key is stored in Ghostfolio's database (not as an environment variable), following the existing pattern used by Ghostfolio's AI feature.
+
+1. Open `https://<your-railway-url>/en` in a browser
+2. Log in as the admin user (the first account you created)
+3. Navigate to **Admin** → **Settings** (or go to `https://<your-railway-url>/en/admin`)
+4. Find the **OpenRouter API Key** field (labelled `API_KEY_OPENROUTER`)
+5. Paste your OpenRouter API key (`sk-or-v1-...`)
+6. Click **Save**
+
+If you don't set this, the agent will return:
+```json
+{
+  "statusCode": 500,
+  "message": "OpenRouter API key not configured. Set API_KEY_OPENROUTER in admin settings."
+}
+```
+
+---
+
+## Step 8: Verify the Agent Endpoint
 
 ### Check the API is running
 
@@ -139,7 +160,7 @@ Expected: JSON with Ghostfolio version information.
 ### Get an auth token
 
 1. Open `https://<your-railway-url>/en` in a browser
-2. Create an account via **Get Started**
+2. Create a **non-admin** test user account via **Get Started** (use a different email than the admin)
 3. Use the Ghostfolio API to get a Bearer token:
 
 ```bash
@@ -182,6 +203,15 @@ If `AGENT_ENABLED` is not set to `"true"`, the endpoint returns:
 }
 ```
 
+### Add sample portfolio data
+
+To test the agent with real data:
+
+1. Log in to the Ghostfolio UI as your test user
+2. Go to **Portfolio** → **Transactions**
+3. Click **+** to add transactions (e.g., buy 10 shares of AAPL, 5 shares of MSFT)
+4. The agent will now have real holdings to analyze
+
 ---
 
 ## Troubleshooting
@@ -191,7 +221,8 @@ If `AGENT_ENABLED` is not set to `"true"`, the endpoint returns:
 | `503 Service Unavailable` on agent endpoint | `AGENT_ENABLED` not set or not `"true"` | Set `AGENT_ENABLED=true` in Railway variables |
 | `401 Unauthorized` on agent endpoint | Missing or invalid JWT token | Ensure `Authorization: Bearer <token>` header is included |
 | Database connection errors | `DATABASE_URL` misconfigured | Verify `DATABASE_URL` references the Railway PostgreSQL internal hostname |
-| Agent returns LLM error | `OPENROUTER_API_KEY` invalid or missing | Check key is valid at [openrouter.ai/keys](https://openrouter.ai/keys) |
+| Agent returns "OpenRouter API key not configured" | Key not set in admin settings | Follow Step 7: set `API_KEY_OPENROUTER` in Ghostfolio admin settings |
+| Agent returns LLM error | `API_KEY_OPENROUTER` invalid | Check key is valid at [openrouter.ai/keys](https://openrouter.ai/keys) |
 | Build fails | Docker build error | Check Railway build logs; common issue is Node.js version mismatch |
 
 ---
