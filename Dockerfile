@@ -44,8 +44,9 @@ COPY .config /ghostfolio/dist/apps/api/.config/
 COPY prisma /ghostfolio/dist/apps/api/prisma/
 
 # Overwrite the generated package.json with the original one to ensure having
-# all the scripts
+# all the scripts and Prisma CLI (migrate/seed) with @prisma/config for .config/prisma.ts
 COPY package.json /ghostfolio/dist/apps/api/
+RUN npm install --omit=dev
 RUN npm run database:generate-typings
 
 # Image to run, copy everything needed from builder
