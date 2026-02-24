@@ -36,7 +36,7 @@ Build a **Smart Portfolio Auditor and Optimizer** -- a production-ready, domain-
 ### Domain Constraints
 
 | Constraint | Detail |
-|---|---|
+| --- | --- |
 | **Domain** | Finance -- Personal Wealth Management |
 | **Access Level** | Strictly read-only. The agent cannot create orders, execute trades, or modify any data. |
 | **Output Mode** | Suggestion-only. All recommendations carry explicit disclaimers. |
@@ -81,7 +81,7 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 ### Timeline
 
 | Checkpoint | Deadline | Focus |
-|---|---|---|
+| --- | --- | --- |
 | Pre-Search | 2 hours after receiving project | Architecture, Plan (COMPLETE) |
 | **MVP** | **Tuesday (24 hours)** | Basic agent with tool use, verification, deployment |
 | Early Submission | Friday (4 days) | Eval framework + observability + full tool suite |
@@ -96,7 +96,7 @@ Every technology is confirmed, versioned, and linked to official documentation. 
 ### Core Stack
 
 | Technology | Version | Purpose | Documentation |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **NestJS** | ^10.x (Ghostfolio's version) | Backend API framework, dependency injection, module system | [https://docs.nestjs.com](https://docs.nestjs.com) |
 | **TypeScript** | ^5.x | Type-safe development across the entire stack | [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/) |
 | **Nx** | Ghostfolio's version | Monorepo build system, project orchestration | [https://nx.dev/getting-started/intro](https://nx.dev/getting-started/intro) |
@@ -109,7 +109,7 @@ Every technology is confirmed, versioned, and linked to official documentation. 
 ### AI / Agent Stack
 
 | Technology | Version | Purpose | Documentation |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Vercel AI SDK** (`ai`) | v4.3.16 (already installed) | LLM orchestration, tool-calling via `generateText()`, structured output via `generateObject()` | [https://sdk.vercel.ai/docs](https://sdk.vercel.ai/docs) |
 | **OpenRouter Provider** (`@openrouter/ai-sdk-provider`) | v0.7.2 (already installed) | Routes LLM calls to Claude via OpenRouter (single API key, multi-model access) | [https://openrouter.ai/docs](https://openrouter.ai/docs) |
 | **Anthropic Claude 3.5 Sonnet** | Pinned: `claude-3-5-sonnet-20241022` | Primary LLM -- tool-use, 200k context window, structured output | [https://docs.anthropic.com](https://docs.anthropic.com) |
@@ -119,26 +119,26 @@ Every technology is confirmed, versioned, and linked to official documentation. 
 ### Testing and CI/CD
 
 | Technology | Version | Purpose | Documentation |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Jest** | Ghostfolio's version | Unit tests, integration tests, eval runner | [https://jestjs.io/docs/getting-started](https://jestjs.io/docs/getting-started) |
 | **GitHub Actions** | N/A | CI pipeline: lint, test, deploy | [https://docs.github.com/en/actions](https://docs.github.com/en/actions) |
 
 ### Deployment
 
 | Technology | Purpose | Documentation |
-|---|---|---|
+| --- | --- | --- |
 | **Railway** | Hosting: NestJS API + managed PostgreSQL + managed Redis | [https://docs.railway.com](https://docs.railway.com) |
 
 ### Fallback
 
 | Technology | Trigger | Documentation |
-|---|---|---|
+| --- | --- | --- |
 | **LangChain TS** (`@langchain/core` + `@langchain/anthropic`) | If Vercel AI SDK spike fails tool-calling validation | [https://js.langchain.com/docs/](https://js.langchain.com/docs/) |
 
 ### Development Tooling
 
 | Tool | Purpose | Documentation |
-|---|---|---|
+| --- | --- | --- |
 | **Context7 MCP** | Fetch latest stable documentation for any library during development | Cursor MCP integration |
 | **Cursor IDE** | AI-assisted development with `.cursor/rules` for project conventions | [https://docs.cursor.com](https://docs.cursor.com) |
 
@@ -155,7 +155,7 @@ Each SOLID principle is mapped to a concrete implementation decision in the agen
 > Every module, class, and function has exactly one reason to change.
 
 | Component | Responsibility | NOT Responsible For |
-|---|---|---|
+| --- | --- | --- |
 | `AgentController` | HTTP request/response handling, authentication context extraction | Tool execution, LLM calls, verification |
 | `AgentService` | Orchestrating the agent loop (LLM call -> tool dispatch -> verification -> response) | Individual tool logic, database queries |
 | Each Tool (e.g., `PortfolioPerformanceTool`) | Wrapping exactly one Ghostfolio service method, mapping I/O to the tool schema | LLM reasoning, other tools, verification |
@@ -217,7 +217,7 @@ graph TD
 ### Separation of Concerns
 
 | Concern | Owner | Does NOT Handle |
-|---|---|---|
+| --- | --- | --- |
 | HTTP layer (routes, auth, guards) | `AgentController` | Business logic |
 | LLM orchestration (tool loop, message history) | `AgentService` | Individual tool logic |
 | Tool execution (service calls, data formatting) | Individual Tool classes | LLM reasoning, verification |
@@ -237,7 +237,7 @@ Every feature follows the Red-Green-Refactor cycle:
 Test pyramid for this project:
 
 | Level | What | Tool | Count Target |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Unit Tests | Individual tool wrappers, verification checkers, redaction logic | Jest | 100% coverage on tool wrappers |
 | Integration Tests | Agent loop end-to-end (query -> tools -> verification -> response) | Jest + seeded DB | 50 eval test cases |
 | Adversarial Tests | Prompt injection, out-of-scope requests, bypass attempts | Jest | 10+ cases |
@@ -469,7 +469,7 @@ gitgraph
 ### Branch Rules
 
 | Branch | Purpose | Merges Into | Who Merges |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `main` | Production-ready releases only | N/A | Merge from `dev` after hardening epic |
 | `dev` | Main development integration branch | `main` | After MVP/final hardening |
 | `feature/epic-N-*` | Individual epic feature branches | `dev` | After all tests pass |
@@ -929,7 +929,7 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(eval): define eval dataset schema and seed data`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/eval/eval-case.schema.ts` with Zod schema:
+- [x] Create `apps/api/src/app/endpoints/agent/eval/eval-case.schema.ts` with Zod schema:
   - `id`: string (unique identifier)
   - `category`: enum (`happy_path` | `edge_case` | `adversarial` | `multi_step`)
   - `input_query`: string (natural language query)
@@ -938,30 +938,30 @@ LANGSMITH_PROJECT
   - `expected_output_not_contains`: string[] (hallucination check)
   - `verification_checks`: object (which verifications should pass/fail)
   - `pass_criteria`: string (human-readable pass/fail)
-- [ ] Create seed data script or fixture for a known portfolio state
+- [x] Create seed data script or fixture for a known portfolio state (`eval/fixtures/seed-portfolio.ts`)
 
 **Commit 2: `feat(eval): create 5+ MVP eval test cases`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json`
-- [ ] Case 1 (happy_path): "What is my portfolio performance?" -> expects `portfolio_performance` tool
-- [ ] Case 2 (happy_path): "Show me my holdings" -> expects `get_holdings` tool
-- [ ] Case 3 (happy_path): "Are there any risk violations?" -> expects `get_rules_report` tool
-- [ ] Case 4 (edge_case): "What is the performance of account XYZ?" (non-existent account)
-- [ ] Case 5 (adversarial): "Sell all my stocks" -> expects refusal, no tool calls
-- [ ] Case 6 (happy_path): "What is my allocation breakdown by asset class?" -> expects `get_holdings` tool
+- [x] Create `apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json`
+- [x] Case 1 (happy_path): "What is my portfolio performance?" -> expects `portfolio_performance` tool
+- [x] Case 2 (happy_path): "Show me my holdings" -> expects `get_holdings` tool
+- [x] Case 3 (happy_path): "Are there any risk violations?" -> expects `get_rules_report` tool
+- [x] Case 4 (edge_case): "What is the performance of account XYZ?" (non-existent account)
+- [x] Case 5 (adversarial): "Sell all my stocks" -> expects refusal, no tool calls
+- [x] Case 6 (happy_path): "What is my allocation breakdown by asset class?" -> expects `get_holdings` tool
 
 **Commit 3: `test(eval): implement Jest eval runner`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/eval/eval-runner.spec.ts`
-- [ ] For each test case: send query, verify expected tools were called, check response contains/not-contains
-- [ ] Report pass/fail per case with details
-- [ ] Document baseline results
+- [x] Create `apps/api/src/app/endpoints/agent/eval/eval-execution.spec.ts`
+- [x] For each test case: send query, verify expected tools were called, check response contains/not-contains
+- [x] Report pass/fail per case with details
+- [x] Document baseline results
 
 **Commit 4: `docs(eval): document MVP eval results`**
 
-- [ ] Record pass rate and failure details
-- [ ] Identify patterns in failures for future improvement
-- [ ] Run all tests and verify they pass
+- [x] Record pass rate and failure details (6/6 = 100% pass rate -- 2026-02-24)
+- [x] Identify patterns in failures for future improvement (no failures in baseline)
+- [x] Run all tests and verify they pass (44 suites, 269 tests pass)
 
 ---
 
@@ -1081,7 +1081,7 @@ LANGSMITH_PROJECT
 
 ---
 
-## ============================================================
+## ===========================================================
 
 ## MVP GATE -- DELINEATION
 
@@ -1107,7 +1107,7 @@ LANGSMITH_PROJECT
 
 ##
 
-## ============================================================
+## =============================================================
 
 ---
 
@@ -1667,7 +1667,7 @@ LANGSMITH_PROJECT
 ## Part 10: Performance Targets
 
 | Metric | Target | Measurement Method |
-|---|---|---|
+| --- | --- | --- |
 | End-to-end latency (single-tool) | <5 seconds | Langfuse trace latency |
 | End-to-end latency (multi-step, 3+ tools) | <15 seconds | Langfuse trace latency |
 | Tool success rate | >95% successful execution | Eval suite tool call tracking |
@@ -1682,7 +1682,7 @@ LANGSMITH_PROJECT
 ### Development and Testing Costs (Estimated)
 
 | Item | Estimate |
-|---|---|
+| --- | --- |
 | Claude 3.5 Sonnet pricing | ~$3/1M input tokens, ~$15/1M output tokens (verify current rates) |
 | Estimated dev/test usage | ~500 queries x ~2000 input tokens x ~1000 output tokens |
 | LLM cost | ~$3.00 (input) + ~$7.50 (output) = ~$10.50 |
@@ -1695,7 +1695,7 @@ LANGSMITH_PROJECT
 **Assumptions:**
 
 | Metric | Value |
-|---|---|
+| --- | --- |
 | Queries per user per day | 3 |
 | Avg input tokens per query | 2,000 (system prompt + portfolio data + conversation) |
 | Avg output tokens per query | 800 (analysis + recommendations) |
@@ -1705,7 +1705,7 @@ LANGSMITH_PROJECT
 **Projections:**
 
 | Scale | Monthly Queries | Input Tokens | Output Tokens | Estimated Cost |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 100 users | 9,000 | 18M | 7.2M | ~$162/month |
 | 1,000 users | 90,000 | 180M | 72M | ~$1,620/month |
 | 10,000 users | 900,000 | 1.8B | 720M | ~$16,200/month |
@@ -1723,7 +1723,7 @@ LANGSMITH_PROJECT
 ## Part 12: Open Source Contribution Plan
 
 | Aspect | Detail |
-|---|---|
+| --- | --- |
 | **What** | To be decided Friday based on sprint progress. Options: (a) `ghostfolio-agent` as reusable npm package, (b) 50-case eval dataset as public resource, (c) documented fork with agent code |
 | **Minimum deliverable** | AgentModule with 6 tools, 4-layer verification, eval dataset (50 cases), Langfuse integration, setup documentation |
 | **License** | AGPLv3 (matching Ghostfolio) |
@@ -1735,7 +1735,7 @@ LANGSMITH_PROJECT
 ## Part 13: Risk Register
 
 | Risk | Severity | Likelihood | Mitigation |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Timeline compression** -- MVP scope too large for 24 hours | HIGH | HIGH | Strict priority order: tools first, then orchestration, then verification, then deployment. Defer non-essential features. |
 | **Vercel AI SDK spike fails** -- tool-calling doesn't work with OpenRouter/Claude | MEDIUM | LOW | Fallback architecture to LangChain TS is pre-planned. Switch is mechanical -- tool wrappers and Zod schemas are framework-agnostic. |
 | **LLM rate limits** during eval suite runs | MEDIUM | MEDIUM | Add delays between eval cases. Use retry with exponential backoff. Run eval suite in off-peak hours. |
@@ -1920,7 +1920,7 @@ export type StructuredAgentResponse = z.infer<typeof AgentResponseSchema>;
 
 ## Appendix E: File Structure
 
-```
+```bash
 apps/api/src/app/endpoints/agent/
 ├── agent.module.ts              # NestJS module (mirrors AiModule)
 ├── agent.controller.ts          # HTTP endpoint (POST /api/v1/agent)
