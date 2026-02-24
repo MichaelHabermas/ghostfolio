@@ -609,33 +609,33 @@ chore(deploy): configure Railway environment variables
 
 **Commit 1: `feat(agent): create AgentModule skeleton with DI wiring`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/agent.module.ts` mirroring `AiModule` imports
-- [ ] Create `apps/api/src/app/endpoints/agent/agent.controller.ts` with `POST /api/v1/agent` endpoint
-- [ ] Create `apps/api/src/app/endpoints/agent/agent.service.ts` with constructor-injected services
-- [ ] Register `AgentModule` in the app module
+- [x] Create `apps/api/src/app/endpoints/agent/agent.module.ts` mirroring `AiModule` imports
+- [x] Create `apps/api/src/app/endpoints/agent/agent.controller.ts` with `POST /api/v1/agent` endpoint
+- [x] Create `apps/api/src/app/endpoints/agent/agent.service.ts` with constructor-injected services
+- [x] Register `AgentModule` in the app module
 
 **Commit 2: `feat(agent): define shared ToolResponse envelope and base types`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/types/tool-response.ts` with `ToolResponse<T>` interface
-- [ ] Create `apps/api/src/app/endpoints/agent/types/agent-request.ts` with request DTO
-- [ ] Create `apps/api/src/app/endpoints/agent/types/agent-response.ts` with response DTO
-- [ ] Create barrel export `apps/api/src/app/endpoints/agent/types/index.ts`
+- [x] Create `apps/api/src/app/endpoints/agent/types/tool-response.ts` with `ToolResponse<T>` interface
+- [x] Create `apps/api/src/app/endpoints/agent/types/agent-request.ts` with request DTO
+- [x] Create `apps/api/src/app/endpoints/agent/types/agent-response.ts` with response DTO
+- [x] Create barrel export `apps/api/src/app/endpoints/agent/types/index.ts`
 
 **Commit 3: `feat(agent): define Zod schemas for all tool inputs and outputs`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/schemas/portfolio-performance.schema.ts` (input: date range, account filter; output: totals, TWR/MWR, asset class breakdown)
-- [ ] Create `apps/api/src/app/endpoints/agent/schemas/get-holdings.schema.ts` (input: account filter; output: holdings array with symbol, name, allocation %, value, asset class)
-- [ ] Create `apps/api/src/app/endpoints/agent/schemas/get-rules-report.schema.ts` (input: account filter; output: violations array with rule name, severity, affected holdings)
-- [ ] Create `apps/api/src/app/endpoints/agent/schemas/market-data.schema.ts` (input: symbols[], date range; output: price data per symbol)
-- [ ] Create `apps/api/src/app/endpoints/agent/schemas/transaction-history.schema.ts` (input: date range, account filter; output: transactions array)
-- [ ] Create `apps/api/src/app/endpoints/agent/schemas/rebalance-simulator.schema.ts` (input: target allocations; output: proposed trades, before/after)
-- [ ] Create barrel export `apps/api/src/app/endpoints/agent/schemas/index.ts`
+- [x] Create `apps/api/src/app/endpoints/agent/schemas/portfolio-performance.schema.ts` (input: date range, account filter; output: totals, TWR/MWR, asset class breakdown)
+- [x] Create `apps/api/src/app/endpoints/agent/schemas/get-holdings.schema.ts` (input: account filter; output: holdings array with symbol, name, allocation %, value, asset class)
+- [x] Create `apps/api/src/app/endpoints/agent/schemas/get-rules-report.schema.ts` (input: account filter; output: violations array with rule name, severity, affected holdings)
+- [x] Create `apps/api/src/app/endpoints/agent/schemas/market-data.schema.ts` (input: symbols[], date range; output: price data per symbol)
+- [x] Create `apps/api/src/app/endpoints/agent/schemas/transaction-history.schema.ts` (input: date range, account filter; output: transactions array)
+- [x] Create `apps/api/src/app/endpoints/agent/schemas/rebalance-simulator.schema.ts` (input: target allocations; output: proposed trades, before/after)
+- [x] Create barrel export `apps/api/src/app/endpoints/agent/schemas/index.ts`
 
 **Commit 4: `test(agent): add smoke test for AgentModule initialization`**
 
-- [ ] Write Jest test that the `AgentModule` compiles and all providers resolve
-- [ ] Write Jest test that `POST /api/v1/agent` returns 401 without auth
-- [ ] Run tests and verify they pass
+- [x] Write Jest test that the `AgentModule` compiles and all providers resolve
+- [x] Write Jest test that `POST /api/v1/agent` returns 401 without auth
+- [x] Run tests and verify they pass
 
 ---
 
