@@ -8,6 +8,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, type CoreMessage, type LanguageModel } from 'ai';
 
+import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { SYSTEM_PROMPT } from './prompts/system-prompt';
@@ -36,7 +37,8 @@ export class AgentService {
     private readonly rulesReportTool: GetRulesReportTool,
     private readonly conversationMemory: ConversationMemory,
     private readonly responseFormatter: ResponseFormatter,
-    private readonly verificationService: VerificationService
+    private readonly verificationService: VerificationService,
+    private readonly errorMapperService: ErrorMapperService
   ) {}
 
   public async processQuery({
@@ -114,8 +116,7 @@ export class AgentService {
       this.logger.error(`Agent processing failed: ${error}`);
 
       return {
-        response:
-          'I was unable to process your request at this time. Please try again shortly.',
+        response: this.errorMapperService.toUserMessageFromError(error),
         sources: [],
         flags: ['error'],
         sessionId: resolvedSessionId

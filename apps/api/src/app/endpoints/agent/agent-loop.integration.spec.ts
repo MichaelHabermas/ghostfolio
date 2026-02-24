@@ -19,6 +19,7 @@ jest.mock('@openrouter/ai-sdk-provider', () => ({
 import { generateText } from 'ai';
 
 import { AgentService } from './agent.service';
+import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { VerificationService } from './verification/verification.service';
@@ -57,7 +58,8 @@ const buildService = () => {
     rulesReportTool as any,
     memory,
     formatter,
-    verificationService
+    verificationService,
+    new ErrorMapperService()
   );
 
   return { service, memory, performanceTool, holdingsTool, rulesReportTool, verificationService };

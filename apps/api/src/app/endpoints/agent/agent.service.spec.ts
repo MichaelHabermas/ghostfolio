@@ -20,6 +20,7 @@ import type { GetRulesReportTool } from './tools/get-rules-report.tool';
 import type { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
 import { ConversationMemory } from './memory/conversation-memory';
 import { ResponseFormatter } from './formatters/response-formatter';
+import { ErrorMapperService } from './errors/error-mapper.service';
 import { VerificationService } from './verification/verification.service';
 
 const mockGenerateText = generateText as jest.MockedFunction<
@@ -61,6 +62,7 @@ describe('AgentService', () => {
   let conversationMemory: ConversationMemory;
   let responseFormatter: ResponseFormatter;
   let verificationService: VerificationService;
+  let errorMapperService: ErrorMapperService;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -81,6 +83,7 @@ describe('AgentService', () => {
     conversationMemory = new ConversationMemory();
     responseFormatter = new ResponseFormatter();
     verificationService = makePassingVerificationService();
+    errorMapperService = new ErrorMapperService();
 
     agentService = new AgentService(
       propertyService as any,
@@ -89,7 +92,8 @@ describe('AgentService', () => {
       rulesReportTool as any,
       conversationMemory,
       responseFormatter,
-      verificationService
+      verificationService,
+      errorMapperService
     );
   });
 
@@ -221,7 +225,8 @@ describe('AgentService', () => {
         rulesReportTool as any,
         conversationMemory,
         responseFormatter,
-        verificationService
+        verificationService,
+        errorMapperService
       );
 
       mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult());

@@ -20,6 +20,7 @@ describe('AgentController', () => {
       null as any,
       null as any,
       null as any,
+      null as any,
       null as any
     );
     agentController = new AgentController(agentService, mockRequest);

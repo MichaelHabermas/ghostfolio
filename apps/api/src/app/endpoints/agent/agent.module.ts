@@ -25,6 +25,7 @@ import { Module } from '@nestjs/common';
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
+import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
@@ -57,6 +58,7 @@ import { VerificationService } from './verification/verification.service';
     AccountService,
     AgentService,
     ConversationMemory,
+    ErrorMapperService,
     CurrentRateService,
     GetHoldingsTool,
     GetRulesReportTool,
