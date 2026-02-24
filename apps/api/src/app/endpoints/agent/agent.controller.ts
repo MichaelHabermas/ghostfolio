@@ -16,6 +16,7 @@ import { REQUEST } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AgentService } from './agent.service';
+import type { AgentRequest, AgentResponse } from './types';
 
 @Controller('v1/agent')
 export class AgentController {
@@ -28,14 +29,7 @@ export class AgentController {
   @HttpCode(HttpStatus.OK)
   @HasPermission(permissions.readAiPrompt)
   @UseGuards(AuthGuard('jwt'), HasPermissionGuard)
-  public async query(
-    @Body() body: { query: string; sessionId?: string }
-  ): Promise<{
-    response: string;
-    sources: Array<{ tool: string; field: string }>;
-    flags: string[];
-    sessionId: string;
-  }> {
+  public async query(@Body() body: AgentRequest): Promise<AgentResponse> {
     return this.agentService.processQuery({
       query: body.query,
       sessionId: body.sessionId,

@@ -5,6 +5,8 @@ import { PropertyService } from '@ghostfolio/api/services/property/property.serv
 
 import { Injectable } from '@nestjs/common';
 
+import type { AgentResponse } from './types';
+
 @Injectable()
 export class AgentService {
   public constructor(
@@ -22,12 +24,7 @@ export class AgentService {
     query: string;
     sessionId?: string;
     userId: string;
-  }): Promise<{
-    response: string;
-    sources: Array<{ tool: string; field: string }>;
-    flags: string[];
-    sessionId: string;
-  }> {
+  }): Promise<AgentResponse> {
     const resolvedSessionId = sessionId ?? crypto.randomUUID();
 
     return {
