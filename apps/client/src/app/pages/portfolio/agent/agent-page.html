@@ -1,0 +1,94 @@
+<div class="container py-3">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0" i18n>AI Portfolio Assistant</h1>
+    <button
+      mat-stroked-button
+      [disabled]="isLoading"
+      i18n-matTooltip
+      matTooltip="Start a new conversation"
+      (click)="onReset()"
+    >
+      <mat-icon class="mr-1">refresh</mat-icon>
+      <span i18n>New Chat</span>
+    </button>
+  </div>
+
+  <mat-card class="chat-card mb-3">
+    <mat-card-content class="p-0">
+      <div #messageList class="message-list">
+        @for (message of messages; track $index) {
+          <div
+            class="message-row"
+            [class.message-row--user]="message.role === 'user'"
+            [class.message-row--assistant]="message.role === 'assistant'"
+          >
+            <div class="bubble">
+              <p class="mb-0 message-text">{{ message.text }}</p>
+
+              @if (message.sources?.length) {
+                <div class="sources mt-2">
+                  @for (source of message.sources; track source.tool + source.field) {
+                    <span class="source-chip">{{ source.tool }}</span>
+                  }
+                </div>
+              }
+
+              @if (message.flags?.length) {
+                <div class="flags mt-1">
+                  @for (flag of message.flags; track flag) {
+                    <span class="flag-chip">{{ flag }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (isLoading) {
+          <div class="message-row message-row--assistant">
+            <div class="bubble bubble--loading">
+              <mat-progress-spinner
+                color="accent"
+                mode="indeterminate"
+                [diameter]="20"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="input-row">
+    <mat-form-field appearance="outline" class="flex-grow-1">
+      <textarea
+        matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"
+        placeholder="Ask about your portfolio..."
+        i18n-placeholder
+        [(ngModel)]="queryInput"
+        [disabled]="isLoading"
+        (keydown)="onInputKeydown($event)"
+      ></textarea>
+    </mat-form-field>
+    <button
+      class="send-button ml-2"
+      mat-fab
+      color="primary"
+      [disabled]="!queryInput.trim() || isLoading"
+      i18n-matTooltip
+      matTooltip="Send"
+      (click)="onSend()"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+
+  <p class="disclaimer mt-2 text-muted" i18n>
+    AI responses are for informational purposes only and do not constitute
+    financial advice. All recommendations are read-only suggestions. Always
+    consult a qualified financial advisor before making investment decisions.
+  </p>
+</div>
