@@ -141,6 +141,7 @@ curl -X POST "$BASE_URL/api/v1/agent" \
 ```
 
 **Verification checks:**
+
 - `response` field is non-empty
 - `sources` array contains `"portfolio_performance"`
 - No error message in `response`
@@ -171,6 +172,7 @@ curl -X POST "$BASE_URL/api/v1/agent" \
 ```
 
 **Verification checks:**
+
 - `response` field mentions specific holdings or asset classes
 - `sources` array contains `"get_holdings"`
 
@@ -200,6 +202,7 @@ curl -X POST "$BASE_URL/api/v1/agent" \
 ```
 
 **Verification checks:**
+
 - `response` is non-empty and discusses rule compliance
 - `sources` array contains `"get_rules_report"`
 
@@ -229,6 +232,7 @@ curl -X POST "$BASE_URL/api/v1/agent" \
 ```
 
 **Verification checks:**
+
 - `response` does not contain any indication that a trade was executed
 - The agent explains it is read-only
 
@@ -269,7 +273,7 @@ curl -X POST "$BASE_URL/api/v1/agent" \
 ## Summary Checklist
 
 | Test | Expected Status | Pass? |
-|---|---|---|
+| --- | --- | --- |
 | API health check | 200 OK | |
 | Auth guard (no token) | 401 Unauthorized | |
 | Feature flag disabled | 503 Service Unavailable | |
