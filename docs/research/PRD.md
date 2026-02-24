@@ -660,31 +660,31 @@ chore(deploy): configure Railway environment variables
 
 **Commit 1: `feat(agent): spike Vercel AI SDK tool-calling with dummy tool`**
 
-- [ ] Create a temporary spike service that calls `generateText()` with one Zod-defined dummy tool (e.g., `get_greeting`)
-- [ ] Configure `createOpenRouter()` with API key from PropertyService
-- [ ] Send a test query: "Greet me by name" with a `get_greeting(name)` tool
-- [ ] Log the full response (tool calls, final text) to console
+- [x] Create a temporary spike service that calls `generateText()` with one Zod-defined dummy tool (e.g., `get_greeting`)
+- [x] Configure `createOpenRouter()` with API key from PropertyService
+- [x] Send a test query: "Greet me by name" with a `get_greeting(name)` tool
+- [x] Log the full response (tool calls, final text) to console
 
 **Commit 2: `test(agent): validate spike round-trip works`**
 
-- [ ] Write an integration test that confirms tool_use -> tool_result -> final text flow
-- [ ] Confirm structured tool arguments are correctly parsed
-- [ ] Measure latency of the round-trip
-- [ ] Document: SPIKE PASSED or SPIKE FAILED in commit message
+- [x] Write an integration test that confirms tool_use -> tool_result -> final text flow
+- [x] Confirm structured tool arguments are correctly parsed
+- [x] Measure latency of the round-trip
+- [x] Document: SPIKE PASSED or SPIKE FAILED in commit message
 
 **Commit 3: `feat(agent): wire OpenRouter provider into AgentService`** *(if spike passes)*
 
-- [ ] Move provider setup from spike into `AgentService`
-- [ ] Configure model pinning: `claude-3-5-sonnet-20241022`
-- [ ] Add `maxSteps` configuration for agentic tool-calling loops (default: 5)
-- [ ] Clean up spike code
+- [x] Move provider setup from spike into `AgentService`
+- [x] Configure model pinning: `claude-3-5-sonnet-20241022`
+- [x] Add `maxSteps` configuration for agentic tool-calling loops (default: 5)
+- [x] Clean up spike code
 
 **Commit 3-ALT: `feat(agent): implement LangChain TS fallback`** *(only if spike fails)*
 
-- [ ] Install `@langchain/core` and `@langchain/anthropic`
-- [ ] Wire `AgentExecutor` with `DynamicStructuredTool` definitions
-- [ ] Confirm tool-calling round-trip works with LangChain
-- [ ] Update Decision Log with framework switch rationale
+- [ ] ~~Install `@langchain/core` and `@langchain/anthropic`~~ (N/A -- SPIKE PASSED)
+- [ ] ~~Wire `AgentExecutor` with `DynamicStructuredTool` definitions~~ (N/A -- SPIKE PASSED)
+- [ ] ~~Confirm tool-calling round-trip works with LangChain~~ (N/A -- SPIKE PASSED)
+- [ ] ~~Update Decision Log with framework switch rationale~~ (N/A -- SPIKE PASSED)
 
 ---
 
