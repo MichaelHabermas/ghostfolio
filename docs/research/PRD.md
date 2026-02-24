@@ -722,52 +722,52 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(tools): implement portfolio_performance tool`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/tools/portfolio-performance.tool.ts`
-- [ ] Inject `PortfolioService` via DI
-- [ ] Map input schema (date range, account filter) to `getPerformance()` parameters
-- [ ] Map service response to output schema (totals, TWR/MWR, asset class breakdown)
-- [ ] Wrap in `ToolResponse<T>` envelope with error handling
-- [ ] Return `{ success: false, error: "..." }` on service failures
+- [x] Create `apps/api/src/app/endpoints/agent/tools/portfolio-performance.tool.ts`
+- [x] Inject `PortfolioService` via DI
+- [x] Map input schema (date range, account filter) to `getPerformance()` parameters
+- [x] Map service response to output schema (totals, TWR/MWR, asset class breakdown)
+- [x] Wrap in `ToolResponse<T>` envelope with error handling
+- [x] Return `{ success: false, error: "..." }` on service failures
 
 **Commit 2: `test(tools): add unit tests for portfolio_performance tool`**
 
-- [ ] Mock `PortfolioService.getPerformance()` with known return data
-- [ ] Test: correct service method is called with mapped parameters
-- [ ] Test: output matches expected Zod schema
-- [ ] Test: error case returns proper error envelope
-- [ ] Run tests and verify they pass
+- [x] Mock `PortfolioService.getPerformance()` with known return data
+- [x] Test: correct service method is called with mapped parameters
+- [x] Test: output matches expected Zod schema
+- [x] Test: error case returns proper error envelope
+- [x] Run tests and verify they pass
 
 **Commit 3: `feat(tools): implement get_holdings tool`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/tools/get-holdings.tool.ts`
-- [ ] Inject `PortfolioService` via DI
-- [ ] Map input schema (account filter) to `getHoldings()` + `getDetails()` parameters
-- [ ] Map service response to output schema (holdings array with symbol, name, allocation %, value, asset class)
-- [ ] Wrap in `ToolResponse<T>` envelope with error handling
+- [x] Create `apps/api/src/app/endpoints/agent/tools/get-holdings.tool.ts`
+- [x] Inject `PortfolioService` via DI
+- [x] Map input schema (account filter) to `getHoldings()` + `getDetails()` parameters
+- [x] Map service response to output schema (holdings array with symbol, name, allocation %, value, asset class)
+- [x] Wrap in `ToolResponse<T>` envelope with error handling
 
 **Commit 4: `test(tools): add unit tests for get_holdings tool`**
 
-- [ ] Mock `PortfolioService` methods with known return data
-- [ ] Test: correct service methods are called
-- [ ] Test: output matches expected Zod schema
-- [ ] Test: error case returns proper error envelope
-- [ ] Run tests and verify they pass
+- [x] Mock `PortfolioService` methods with known return data
+- [x] Test: correct service methods are called
+- [x] Test: output matches expected Zod schema
+- [x] Test: error case returns proper error envelope
+- [x] Run tests and verify they pass
 
 **Commit 5: `feat(tools): implement get_rules_report tool`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/tools/get-rules-report.tool.ts`
-- [ ] Inject `PortfolioService` and `RulesService` via DI
-- [ ] Call `getReport()` -> `evaluate()` and map to output schema
-- [ ] Map service response to output schema (violations array with rule name, severity, affected holdings, details)
-- [ ] Wrap in `ToolResponse<T>` envelope with error handling
+- [x] Create `apps/api/src/app/endpoints/agent/tools/get-rules-report.tool.ts`
+- [x] Inject `PortfolioService` and `RulesService` via DI
+- [x] Call `getReport()` -> `evaluate()` and map to output schema
+- [x] Map service response to output schema (violations array with rule name, severity, affected holdings, details)
+- [x] Wrap in `ToolResponse<T>` envelope with error handling
 
 **Commit 6: `test(tools): add unit tests for get_rules_report tool`**
 
-- [ ] Mock `PortfolioService.getReport()` and `RulesService.evaluate()` with known return data
-- [ ] Test: correct service methods are called in sequence
-- [ ] Test: output matches expected Zod schema
-- [ ] Test: error case returns proper error envelope
-- [ ] Run tests and verify they pass
+- [x] Mock `PortfolioService.getReport()` and `RulesService.evaluate()` with known return data
+- [x] Test: correct service methods are called in sequence
+- [x] Test: output matches expected Zod schema
+- [x] Test: error case returns proper error envelope
+- [x] Run tests and verify they pass
 
 ---
 
