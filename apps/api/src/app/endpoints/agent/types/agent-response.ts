@@ -4,8 +4,9 @@ export interface AgentSource {
 }
 
 export interface AgentResponse {
-  response: string;
-  sources: AgentSource[];
   flags: string[];
+  response: string;
   sessionId: string;
+  sources: AgentSource[];
+  toolsCalled: string[];
 }

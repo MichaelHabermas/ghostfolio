@@ -31,13 +31,17 @@ export interface ToolInstances {
 export function createToolRegistry(
   tools: ToolInstances,
   userId: string,
-  toolOutputs?: Map<string, ToolResponse<unknown>>
+  toolOutputs?: Map<string, ToolResponse<unknown>>,
+  toolsCalled?: Set<string>
 ): ToolRegistry {
   const { performanceTool, holdingsTool, rulesReportTool } = tools;
 
   const capture = (name: string, result: ToolResponse<unknown>) => {
     if (toolOutputs) {
       toolOutputs.set(name, result);
+    }
+    if (toolsCalled) {
+      toolsCalled.add(name);
     }
 
     return result;

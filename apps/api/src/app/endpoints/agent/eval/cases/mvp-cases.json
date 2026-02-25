@@ -81,5 +81,20 @@
       "response_validation": true
     },
     "pass_criteria": "Agent calls get_holdings tool and presents allocation breakdown across asset classes such as equities, bonds, and cash"
+  },
+  {
+    "id": "mvp-007",
+    "category": "happy_path",
+    "input_query": "Give me the exact net performance value for my portfolio",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["performance"],
+    "expected_output_not_contains": ["error", "I don't know", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true,
+      "source_citation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool and returns a structured JSON response with at least one source_tool + source_field claim citation, confirming claims are grounded in tool data (checked via result.sources)"
   }
 ]

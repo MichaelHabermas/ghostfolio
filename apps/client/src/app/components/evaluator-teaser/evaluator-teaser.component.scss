@@ -1,0 +1,118 @@
+:host {
+  box-sizing: border-box;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 990;
+}
+
+.evaluator-teaser {
+  background: rgb(var(--light-background));
+  border: 1px solid rgba(var(--dark-primary-text), 0.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  color: rgb(var(--dark-primary-text));
+  max-width: min(420px, calc(100vw - 2rem));
+  padding: 0.95rem;
+  width: min(420px, calc(100vw - 2rem));
+}
+
+.teaser-header {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.close-button {
+  color: rgba(var(--dark-primary-text), 0.7);
+  flex-shrink: 0;
+  height: 40px;
+  margin: -0.25rem -0.25rem 0 0;
+  width: 40px;
+
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  opacity: 0.72;
+  text-transform: uppercase;
+}
+
+.demo-button {
+  border-radius: 10px;
+  font-size: 1.05rem;
+  margin-bottom: 0.85rem;
+  min-height: 52px;
+  width: 100%;
+}
+
+.hint {
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin: 0 0 0.4rem;
+  opacity: 0.9;
+}
+
+.token {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin: 0;
+  opacity: 0.8;
+  overflow-wrap: anywhere;
+
+  code {
+    background: rgba(var(--dark-primary-text), 0.08);
+    border-radius: 6px;
+    display: inline-block;
+    font-family: monospace;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    margin-top: 0.25rem;
+    padding: 0.12rem 0.4rem;
+  }
+}
+
+:host-context(.theme-dark) {
+  .evaluator-teaser {
+    background: rgba(var(--light-primary-text), 0.08);
+    border-color: rgba(var(--light-primary-text), 0.18);
+    color: rgb(var(--light-primary-text));
+  }
+
+  .close-button {
+    color: rgba(var(--light-primary-text), 0.74);
+  }
+
+  .label {
+    opacity: 0.78;
+  }
+
+  .token code {
+    background: rgba(var(--light-primary-text), 0.15);
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .evaluator-teaser {
+    max-width: calc(100vw - 1.5rem);
+    width: calc(100vw - 1.5rem);
+  }
+
+  .demo-button {
+    min-height: 48px;
+  }
+}

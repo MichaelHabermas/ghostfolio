@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 export enum AgentErrorType {
   DB_TIMEOUT = 'DB_TIMEOUT',
   LLM_RATE_LIMIT = 'LLM_RATE_LIMIT',
+  LLM_AUTH = 'LLM_AUTH',
+  LLM_UNAVAILABLE = 'LLM_UNAVAILABLE',
   VERIFICATION_MISMATCH = 'VERIFICATION_MISMATCH',
   CONTEXT_OVERFLOW = 'CONTEXT_OVERFLOW',
   MARKET_DATA_DOWN = 'MARKET_DATA_DOWN',
@@ -14,6 +16,10 @@ const ERROR_MESSAGES: Record<AgentErrorType, string> = {
     "I'm unable to access your portfolio data right now. Please try again in a moment.",
   [AgentErrorType.LLM_RATE_LIMIT]:
     'The analysis service is temporarily busy. Please try again shortly.',
+  [AgentErrorType.LLM_AUTH]:
+    'The AI provider credentials are missing or invalid. Add a valid OpenRouter API key in settings and try again.',
+  [AgentErrorType.LLM_UNAVAILABLE]:
+    'The AI analysis provider is temporarily unavailable. Please try again in a moment.',
   [AgentErrorType.VERIFICATION_MISMATCH]:
     'I detected an inconsistency in my analysis and stopped to avoid giving you incorrect information. Please try again.',
   [AgentErrorType.CONTEXT_OVERFLOW]:
@@ -52,6 +58,30 @@ export class ErrorMapperService {
       message.includes('too many requests')
     ) {
       return AgentErrorType.LLM_RATE_LIMIT;
+    }
+
+    if (
+      message.includes('openrouter api key not configured') ||
+      message.includes('api_key_openrouter') ||
+      message.includes('invalid api key') ||
+      message.includes('unauthorized') ||
+      message.includes('401')
+    ) {
+      return AgentErrorType.LLM_AUTH;
+    }
+
+    if (
+      message.includes('econnrefused') ||
+      message.includes('econnreset') ||
+      message.includes('etimedout') ||
+      message.includes('fetch failed') ||
+      message.includes('socket hang up') ||
+      message.includes('service unavailable') ||
+      message.includes('503') ||
+      message.includes('bad gateway') ||
+      message.includes('502')
+    ) {
+      return AgentErrorType.LLM_UNAVAILABLE;
     }
 
     if (
