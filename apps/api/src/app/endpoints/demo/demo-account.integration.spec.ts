@@ -15,6 +15,7 @@
  */
 
 import * as http from 'node:http';
+import * as https from 'node:https';
 
 const BASE_URL = process.env['DEMO_TEST_BASE_URL'] ?? 'http://localhost:3333';
 const DEMO_USER_ID = '00000000-0000-4000-a000-000000000001';
@@ -22,20 +23,37 @@ const TEST_SESSION_ID = '550e8400-e29b-41d4-a716-446655440099';
 
 const EXPECTED_SYMBOLS = ['AAPL', 'MSFT', 'BND', 'TSLA', 'GOOGL', 'AMZN', 'NVDA', 'META'];
 
-function get(url: string, token?: string): Promise<{ status: number; body: unknown }> {
+function request(
+  method: 'GET' | 'POST',
+  url: string,
+  token?: string,
+  payload?: unknown
+): Promise<{ status: number; body: unknown }> {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
-    const options: http.RequestOptions = {
+    const isHttps = parsedUrl.protocol === 'https:';
+    const transport = isHttps ? https : http;
+    const defaultPort = isHttps ? 443 : 80;
+    const bodyStr = payload ? JSON.stringify(payload) : undefined;
+
+    const options = {
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(bodyStr ? { 'Content-Length': Buffer.byteLength(bodyStr) } : {}),
         'Content-Type': 'application/json'
       },
       hostname: parsedUrl.hostname,
-      method: 'GET',
+      method,
       path: parsedUrl.pathname + parsedUrl.search,
-      port: parsedUrl.port || 80
+      port: parsedUrl.port ? parseInt(parsedUrl.port) : defaultPort
     };
-    const req = http.request(options, (res) => {
+
+    const req = transport.request(options, (res) => {
+      // Follow redirects (301/302)
+      if ((res.statusCode === 301 || res.statusCode === 302) && res.headers.location) {
+        resolve(request(method, res.headers.location, token, payload));
+        return;
+      }
       let data = '';
       res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
@@ -47,44 +65,17 @@ function get(url: string, token?: string): Promise<{ status: number; body: unkno
       });
     });
     req.on('error', reject);
+    if (bodyStr) req.write(bodyStr);
     req.end();
   });
 }
 
-function post(
-  url: string,
-  payload: unknown,
-  token: string
-): Promise<{ status: number; body: unknown }> {
-  return new Promise((resolve, reject) => {
-    const parsedUrl = new URL(url);
-    const body = JSON.stringify(payload);
-    const options: http.RequestOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Length': Buffer.byteLength(body),
-        'Content-Type': 'application/json'
-      },
-      hostname: parsedUrl.hostname,
-      method: 'POST',
-      path: parsedUrl.pathname + parsedUrl.search,
-      port: parsedUrl.port || 80
-    };
-    const req = http.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => {
-        try {
-          resolve({ body: JSON.parse(data), status: res.statusCode ?? 0 });
-        } catch {
-          resolve({ body: data, status: res.statusCode ?? 0 });
-        }
-      });
-    });
-    req.on('error', reject);
-    req.write(body);
-    req.end();
-  });
+function get(url: string, token?: string) {
+  return request('GET', url, token);
+}
+
+function post(url: string, payload: unknown, token: string) {
+  return request('POST', url, token, payload);
 }
 
 function decodeJwtPayload(token: string): Record<string, unknown> {
