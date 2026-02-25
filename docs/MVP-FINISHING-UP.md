@@ -6,11 +6,11 @@ Important information from #agentforge-ghostfolioiscooler for finishing the Ghos
 
 ## Master checklist (high-level)
 
-- [ ] **Deploy:** Ghostfolio + Agent publicly accessible (e.g. Railway)
-- [ ] **Test subject:** Shared demo account on deployed instance (stable login, password, token; pre-populated investments); credentials documented for testers
+- [x] **Deploy:** Ghostfolio + Agent publicly accessible — https://ghostfolio-production-e242.up.railway.app (verified 2026-02-25)
+- [x] **Test subject:** Shared demo account on deployed instance (stable login, password, token; pre-populated investments); credentials documented for testers — see [docs/deployment/DEMO-ACCOUNT.md](deployment/DEMO-ACCOUNT.md) and [docs/LOGIN-AND-USERS.md](LOGIN-AND-USERS.md)
 - [ ] **Data providers:** Yahoo Finance (and any other sources) working on deployed instance; rate limits / connectivity verified or documented
-- [ ] **Evals exposed to testers:** Eval cases and/or results visible in repo or docs; testers can run or review evals (see [Exposing evals to testers](#exposing-evals-to-testers) below)
-- [ ] **Evaluator welcome modal:** Compact corner teaser (bottom-right) with a single CTA (e.g. "Open demo portfolio"); click goes to `/demo`; dismissible via close button; minimal content: what this is, access token, where the agent is
+- [x] **Evals exposed to testers:** Eval cases and/or results visible in repo; README has "Run the evals" section with commands and 7/7 baseline — see [README.md](../README.md#eval-framework-golden-sets--stage-1)
+- [x] **Evaluator welcome modal:** Compact corner teaser implemented — `apps/client/src/app/components/evaluator-teaser/`; bottom-right, `mat-elevation-z8`, "Open demo portfolio" → `/demo`, dismissible via `sessionStorage`
 - [ ] **Week 2 admin:** Pre-search done, interview prep (Slack paragraph), PAT in portal, Week 1 AI interview if applicable
 - [ ] **Submission:** PRD checklist complete (demo video with eval results, architecture doc, cost analysis, eval dataset, open source link, deployed app, social post)
 
@@ -20,8 +20,8 @@ Important information from #agentforge-ghostfolioiscooler for finishing the Ghos
 
 Testers/reviewers need a way to see or run the eval suite. These evals implement **Stage 1 (Golden Sets)** of the Gauntlet framework — see [Eval framework — Gauntlet five-stage model](#eval-framework--gauntlet-five-stage-model) below for the full stage breakdown and MVP vs expansion tracking.
 
-- [ ] **In the repo:** Eval test cases live under `apps/api/src/app/endpoints/agent/eval/` (e.g. `eval/cases/mvp-cases.json`, Jest runner). Document in README or `docs/` how to run the evals (e.g. `npm test -- --testPathPattern=eval` or the project’s equivalent) so testers can run the same suite locally.
-- [ ] **Documented results:** Provide pass rate and brief failure analysis somewhere testers can see it (README, `docs/`, or a dedicated eval-results doc). Final submission expects “Eval Dataset (50+ test cases with results)”.
+- [x] **In the repo:** Eval test cases live under `apps/api/src/app/endpoints/agent/eval/` (`eval/cases/mvp-cases.json`, Jest runner). README documents how to run: `npx nx test api --testPathPattern=eval`.
+- [x] **Documented results:** README has pass rate table (7/7, 100%) and link to `docs/MVP-FINISHING-UP.md` for stage breakdown.
 - [ ] **Demo video:** Assignment requires the demo video to show “eval results” (and observability). Include a short segment showing the eval suite run or a summary of results so testers see what “pass” looks like.
 
 ---
@@ -67,15 +67,26 @@ flowchart LR
 
 **Current state:**
 
-- 6 cases in `apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json` (4 happy_path, 1 edge_case, 1 adversarial)
-- Baseline pass rate: **6/6 (100%)** — 2026-02-24
-- Tool selection and content/negative validation covered; source citation handled by verification pipeline
+- 7 cases in `apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json` (5 happy_path, 1 edge_case, 1 adversarial), including source citation case **mvp-007**
+- Baseline pass rate: **7/7 (100%)** — 2026-02-25
+- All four check types represented: tool selection, content validation, negative validation, source citation (result.sources)
 
 **MVP checklist:**
 
-- [ ] All four check types represented in `mvp-cases.json` where applicable (add at least one case that explicitly asserts source citation behavior)
+- [x] All four check types represented in `mvp-cases.json` where applicable (mvp-007 asserts source citation via result.sources)
 - [ ] Golden set runs in CI on every agent-related commit (see Epic 15 for CI wiring)
 - [ ] Pass rate and failure analysis documented and linked from README
+
+**Stretch goals — Golden Set hardening (Byron-aligned)**
+
+These items align with the five-stage framework and "run on every commit" / "real Golden Set" guidance from [Evals-w-Byron.md](Evals-w-Byron.md). They are optional post-MVP or when capacity allows.
+
+- [ ] **Run Golden Set against real LLM:** Add a mode or separate job (e.g. CI or nightly) that runs the same `mvp-cases.json` through the agent with the real OpenRouter/Claude call (no mock). Grade outputs with the same deterministic checks (tool selection, content, negative, source citation). Document that current suite is "mocked plumbing" and this stretch is "real agent Golden Set."
+- [ ] **Pre-commit hook:** Run the eval suite (e.g. `nx test api --testPathPattern=eval`) on every commit so "no holes in the boat" reach the repo; document in README or dev guide.
+- [ ] **Trace on eval failure:** On eval failure, send trace to observability (e.g. Langfuse or Brain Trust) for debugging, per Byron's "log to trace" recommendation.
+- [ ] **Expected params validation:** Extend eval schema and runner to support `expected_params` (or equivalent) per tool so tests assert not only "correct tool" but "correct arguments" (e.g. date range, account filter). Update `eval-case.schema.ts` and `eval-execution.spec.ts` when implementing.
+- [ ] **Stronger content checks:** Where applicable, require 2–3 required phrases per case in `expected_output_contains` so "mentioned the topic" isn't enough; bar is "clearly answered from tool data."
+- [ ] **Case count 10–20:** Expand Golden Set from 7 to at least 10 thoughtful cases (Byron: "10–20 thoughtful cases"); add ambiguous or multi-step cases as needed.
 
 ---
 
@@ -191,9 +202,9 @@ Adversarial cases span Stage 1 (golden set) and Stage 2 (labeled scenarios). The
 
 On the **deployed** instance, create a stable test account that all project testers can use:
 
-- [ ] **Stable credentials:** Fixed login (username + password) and, if needed, security/access token for API or demo access.
-- [ ] **Pre-populated dataset:** Account already has a set of investments (holdings, accounts, maybe rules) so testers see real agent behavior without importing data.
-- [ ] **Document and share:** Put login details (or where to get them) in a single place (e.g. README, deployment doc, or secure shared note) so reviewers can log in and try the agent against the same data.
+- [x] **Stable credentials:** Fixed login and access token documented — see DEMO-ACCOUNT.md and LOGIN-AND-USERS.md.
+- [x] **Pre-populated dataset:** Demo account seeded with AAPL, MSFT, BND, TSLA, GOOGL, AMZN, NVDA, META via prisma/seed.mts.
+- [x] **Document and share:** Credentials in DEMO-ACCOUNT.md and LOGIN-AND-USERS.md; README links to both.
 
 ---
 
@@ -203,20 +214,20 @@ A compact teaser shown on first page load so evaluators immediately know how to 
 
 **Layout:**
 
-- [ ] Positioned in the **bottom-right corner** — not a full-screen or center-blocking modal.
-- [ ] A single primary button is the entire point: e.g. **"Open demo portfolio"** or **"Use shared demo"**. Clicking it navigates to `/demo` (auto-login, no password).
-- [ ] Dismissible via a visible close button (e.g. top-right of the teaser). Use `sessionStorage` so it doesn't reappear in the same session.
+- [x] Positioned in the **bottom-right corner** — not a full-screen or center-blocking modal.
+- [x] A single primary button is the entire point: e.g. **"Open demo portfolio"** or **"Use shared demo"**. Clicking it navigates to `/demo` (auto-login, no password).
+- [x] Dismissible via a visible close button (e.g. top-right of the teaser). Use `sessionStorage` so it doesn't reappear in the same session.
 
 **Style:**
 
-- [ ] Fits the existing Ghostfolio Angular Material style with elevated shadow (`mat-elevation-z8` or higher) so it reads as a deliberate callout, not part of the page content.
+- [x] Fits the existing Ghostfolio Angular Material style with elevated shadow (`mat-elevation-z8` or higher) so it reads as a deliberate callout, not part of the page content.
 
 **Content — minimum necessary:**
 
-- [ ] One line identifying the deployment: e.g. "AgentForge Week 2 demo."
-- [ ] Primary action: button labeled "Open demo portfolio" → navigates to `/demo`.
-- [ ] One line showing where the agent is: "Find the AI agent under **Portfolio → Agent**."
-- [ ] Optional secondary line: "Or log in with access token: `ghostfolio-demo-access-token`" (for those who are already on the site).
+- [x] One line identifying the deployment: e.g. "AgentForge Week 2 demo."
+- [x] Primary action: button labeled "Open demo portfolio" → navigates to `/demo`.
+- [x] One line showing where the agent is: "Find the AI agent under **Portfolio → Agent**."
+- [x] Optional secondary line: "Or log in with access token: `ghostfolio-demo-access-token`" (for those who are already on the site).
 
 Do not include lengthy instructions, links to docs, or multiple login methods. If someone wants more detail, [DEMO-ACCOUNT.md](deployment/DEMO-ACCOUNT.md) is one click away from the repo.
 

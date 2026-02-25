@@ -965,8 +965,6 @@ LANGSMITH_PROJECT
 - [x] Identify patterns in failures for future improvement (no failures in baseline)
 - [x] Run all tests and verify they pass (44 suites, 269 tests pass)
 
----
-
 ### Epic 7: MVP Deployment
 
 **Goal:** Deploy the Ghostfolio instance with the agent endpoint to Railway so it is publicly accessible for review.
@@ -1115,6 +1113,53 @@ LANGSMITH_PROJECT
 ##
 
 ## =============================================================
+
+---
+
+### Post-MVP Stretch: Golden Set hardening — Byron-aligned
+
+**Goal:** Harden the Golden Set so it matches the full Stage 1 vision: run against the real LLM (not only mocks), run on every commit, trace on failure, validate tool arguments, and raise the content bar. Reference: Gauntlet five-stage model and [docs/Evals-w-Byron.md](docs/Evals-w-Byron.md) (deterministic grading, no LLM-as-judge, pre-commit, 10–20 cases). Full checklist also in [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md#stretch-goals--golden-set-hardening-byron-aligned).
+
+**User story:**
+
+- **US-6.S:** As a developer, I want the Golden Set to run against the real agent (real LLM) and to gate commits so we catch regressions in actual tool choice and response quality, not only in plumbing.
+
+**Features:**
+
+- F-6.S.1: Real-LLM eval mode or job (same cases, real API; deterministic grading only).
+- F-6.S.2: Pre-commit hook running the eval suite; documented in README or dev setup.
+- F-6.S.3: On eval failure, emit trace to observability (Langfuse or other) for debugging.
+- F-6.S.4: Schema and runner support for `expected_params` per tool; at least one case asserting tool arguments.
+- F-6.S.5: Stronger content bar: 2–3 required phrases per case where applicable.
+- F-6.S.6: Expand to 10–20 Golden Set cases (e.g. ambiguous, multi-step).
+
+**Commits and subtasks:**
+
+**Commit 1: `feat(eval): add real-LLM Golden Set run and document scope`**
+
+- [ ] Add optional mode or script (e.g. env flag or Jest project) to run eval execution (or a dedicated real-LLM runner) without mocking `generateText`; use same `mvp-cases.json` and same deterministic assertions (expected_tools, expected_output_contains, expected_output_not_contains, result.sources where applicable).
+- [ ] Document in README or eval docs: current default = mocked (plumbing); real-LLM run = stretch / CI or nightly.
+- [ ] Ensure real-LLM run uses seeded/deterministic portfolio state (e.g. demo account or fixture DB) so results are reproducible.
+
+**Commit 2: `chore(eval): add pre-commit hook for Golden Set`**
+
+- [ ] Add pre-commit hook (e.g. husky + lint-staged or script) that runs `nx test api --testPathPattern=eval` (or equivalent).
+- [ ] Document in README or [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md) how to run evals locally and that they run on commit.
+
+**Commit 3: `feat(observability): emit trace on eval failure`**
+
+- [ ] In eval runner, on failure capture request/response (and tool calls if available) and send to Langfuse (or configured backend) as a trace/score so failures are debuggable without "human as eval."
+
+**Commit 4: `feat(eval): add expected_params to schema and runner`**
+
+- [ ] Extend `apps/api/src/app/endpoints/agent/eval/eval-case.schema.ts` with optional `expected_params` (e.g. per-tool map or list of { tool, params }).
+- [ ] In `eval-execution.spec.ts` (or shared helper), assert that the arguments passed to each tool execute match expected_params when present.
+- [ ] Add at least one eval case that specifies expected_params (e.g. portfolio_performance with date range or account filter).
+
+**Commit 5: `test(eval): strengthen content checks and expand to 10+ cases`**
+
+- [ ] For existing and new cases, where applicable add 2–3 phrases to `expected_output_contains` so the bar is "clearly answered from tool data."
+- [ ] Add cases so total Golden Set size is at least 10 (target 10–20); include ambiguous or multi-step cases as needed.
 
 ---
 

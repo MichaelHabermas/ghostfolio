@@ -99,9 +99,9 @@ The agent ships with a deterministic eval suite following the Gauntlet five-stag
 
 | Metric | Value |
 |---|---|
-| Cases | 6 (MVP golden set) |
-| Baseline pass rate | **6/6 (100%)** — 2026-02-24 |
-| Categories | 4 happy path, 1 edge case, 1 adversarial |
+| Cases | 7 (MVP golden set) |
+| Baseline pass rate | **7/7 (100%)** — 2026-02-25 |
+| Categories | 5 happy path, 1 edge case, 1 adversarial |
 
 **Run the evals:**
 
