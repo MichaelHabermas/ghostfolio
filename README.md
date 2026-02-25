@@ -73,7 +73,51 @@ The backend is based on [NestJS](https://nestjs.com) using [PostgreSQL](https://
 
 The frontend is built with [Angular](https://angular.dev) and uses [Angular Material](https://material.angular.io) with utility classes from [Bootstrap](https://getbootstrap.com).
 
-## Project Documentation
+## AI Portfolio Agent (AgentForge Week 2)
+
+This fork adds a **Smart Portfolio Auditor** — a domain-specific AI agent integrated into Ghostfolio that analyzes holdings, identifies risk violations, and answers natural language questions about your portfolio.
+
+### Live Demo
+
+**Deployed:** [https://ghostfolio-production-e242.up.railway.app](https://ghostfolio-production-e242.up.railway.app) _(verified 2026-02-25)_
+
+Open the demo portfolio in one click: [https://ghostfolio-production-e242.up.railway.app/demo](https://ghostfolio-production-e242.up.railway.app/demo)
+
+Find the AI agent under **Portfolio → Agent** after logging in.
+
+### Agent Features
+
+- Natural language queries about portfolio performance, holdings, and risk violations
+- 3 tools: `portfolio_performance`, `get_holdings`, `get_rules_report`
+- Conversation history across turns (20-turn session memory)
+- Hallucination detection via RulesService verification
+- Graceful error handling with user-friendly messages
+
+### Eval Framework (Golden Sets — Stage 1)
+
+The agent ships with a deterministic eval suite following the Gauntlet five-stage model:
+
+| Metric | Value |
+|---|---|
+| Cases | 6 (MVP golden set) |
+| Baseline pass rate | **6/6 (100%)** — 2026-02-24 |
+| Categories | 4 happy path, 1 edge case, 1 adversarial |
+
+**Run the evals:**
+
+```bash
+# Run only the eval suite
+npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=eval
+
+# Run all agent tests
+npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=agent
+```
+
+Eval cases: [`apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json`](apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json)
+
+Eval framework stages: [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md#eval-framework--gauntlet-five-stage-model)
+
+### Project Documentation
 
 | Doc | What it covers |
 |---|---|
@@ -81,6 +125,7 @@ The frontend is built with [Angular](https://angular.dev) and uses [Angular Mate
 | [Demo Account](docs/deployment/DEMO-ACCOUNT.md) | Demo portfolio contents, access token, re-seed, validation |
 | [Railway Deployment](docs/deployment/RAILWAY.md) | Deploy to Railway: env vars, Postgres, Redis, OpenRouter |
 | [Smoke Tests](docs/deployment/SMOKE-TESTS.md) | Curl-based checks for the deployed agent and demo account |
+| [PRD](docs/PRD.md) | Full product requirements, architecture, and epic breakdown |
 
 ---
 
