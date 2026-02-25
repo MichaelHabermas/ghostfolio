@@ -110,6 +110,8 @@ npm run database:seed
 npm run database:setup
 ```
 
+To ensure the OpenRouter key is written to the local/demo database, set `OPENROUTER_API_KEY` in `.env` before running `npm run database:seed`.
+
 For the deployed instance, the seed runs automatically on every deployment via `docker/entrypoint.sh`. To force a fresh seed without redeploying:
 
 ```bash
@@ -127,6 +129,7 @@ npm run demo:validate
 ```
 
 Checks:
+
 - Demo user exists with role `DEMO`
 - Demo account exists with correct currency and balance
 - All 8 BUY orders are present with correct symbols and quantities

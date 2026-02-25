@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createHmac } from 'node:crypto';
 
 import {
