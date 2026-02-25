@@ -1,5 +1,5 @@
 # Smoke Test Runner for Deployed Ghostfolio Agent
-# Usage: .\run-smoke-tests.ps1 -BaseUrl "https://your-app.up.railway.app" -OpenRouterKey "sk-or-v1-..."
+# Usage: .\scripts\run-smoke-tests.ps1 -BaseUrl "https://your-app.up.railway.app" -OpenRouterKey "sk-or-v1-..."
 # The script creates a test user, authenticates, optionally sets the OpenRouter key, then runs all smoke tests.
 
 param(
@@ -74,7 +74,7 @@ $TOKEN = $authResponse.Body.authToken
 if (-not $TOKEN) {
   Write-Host "Could not get auth token automatically. Please provide a valid JWT token." -ForegroundColor Red
   Write-Host "Run: curl -X POST $BaseUrl/api/v1/auth/anonymous -H 'Content-Type: application/json' -d '{\"accessToken\":\"test123\"}'" -ForegroundColor Gray
-  Write-Host "Then re-run with: .\run-smoke-tests.ps1 -BaseUrl '$BaseUrl' -OpenRouterKey '...' (set `$TOKEN manually)" -ForegroundColor Gray
+  Write-Host "Then re-run with: .\scripts\run-smoke-tests.ps1 -BaseUrl '$BaseUrl' -OpenRouterKey '...' (set `$TOKEN manually)" -ForegroundColor Gray
   exit 1
 }
 
