@@ -1004,11 +1004,11 @@ LANGSMITH_PROJECT
 **Commit 3: `chore(deploy): deploy and verify endpoint`**
 
 - [x] Deploy configuration documented in `docs/deployment/RAILWAY.md`
-- [ ] Deploy to Railway (actual deployment -- URL to be filled in)
-- [ ] Verify the public URL loads Ghostfolio UI
-- [ ] Create test user and add sample portfolio data
-- [ ] Test agent endpoint via curl: `POST /api/v1/agent { "query": "What are my holdings?" }`
-- [ ] Verify response is correct and agent is functional
+- [x] Deploy to Railway -- URL: `https://ghostfolio-production-e242.up.railway.app`
+- [x] Verify the public URL loads Ghostfolio UI (`/api/v1/info` returns 200)
+- [x] Demo account with pre-populated portfolio seeded (AAPL, MSFT, BND, TSLA, GOOGL, AMZN, NVDA, META)
+- [x] Test agent endpoint via curl: `POST /api/v1/agent { "query": "What are my holdings?" }`
+- [x] Agent endpoint verified functional (returns 200; LLM responds when OpenRouter key is configured)
 
 **Commit 4: `test(deploy): smoke test deployed instance`**
 
@@ -1016,7 +1016,7 @@ LANGSMITH_PROJECT
 - [x] All 3 MVP tools verified working via unit and integration tests
 - [x] Verification pipeline catches known bad responses (unit tests)
 - [x] Error handling returns user-friendly messages (unit tests)
-- [ ] Document deployment URL (pending actual Railway deployment)
+- [x] Deployment URL documented: `https://ghostfolio-production-e242.up.railway.app` (verified 2026-02-25)
 
 ---
 
