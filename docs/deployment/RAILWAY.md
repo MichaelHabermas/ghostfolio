@@ -64,7 +64,7 @@ Navigate to your main service's **Variables** tab and add the following:
 
 | Variable | Value | Notes |
 | --- | --- | --- |
-| `OPENROUTER_API_KEY` | `sk-or-v1-...` | From [OpenRouter](https://openrouter.ai) |
+| `OPENROUTER_API_KEY` | `sk-or-v1-...` | From [OpenRouter](https://openrouter.ai) — automatically written to the `API_KEY_OPENROUTER` property in the database at startup via the seed script |
 | `AGENT_ENABLED` | `true` | Enables the agent endpoint |
 
 ### Observability Variables (Optional but Recommended)
@@ -126,9 +126,15 @@ DATABASE_URL="postgresql://..." npx prisma migrate deploy
 
 ---
 
-## Step 7: Configure OpenRouter API Key in Admin Settings
+## Step 7: Configure OpenRouter API Key
 
 The OpenRouter API key is stored in Ghostfolio's database (not as an environment variable), following the existing pattern used by Ghostfolio's AI feature.
+
+### Recommended: Set via Environment Variable (automatic)
+
+Set `OPENROUTER_API_KEY` in Railway's **Variables** tab (Step 4 above). The seed script reads this variable at startup and writes it to the `API_KEY_OPENROUTER` property in the database automatically. This means every redeploy updates the key without manual admin UI steps.
+
+### Alternative: Set via Admin UI (manual)
 
 1. Open `https://<your-railway-url>/en` in a browser
 2. Log in as the admin user (the first account you created)
@@ -137,11 +143,11 @@ The OpenRouter API key is stored in Ghostfolio's database (not as an environment
 5. Paste your OpenRouter API key (`sk-or-v1-...`)
 6. Click **Save**
 
-If you don't set this, the agent will return:
+If the key is not configured, the agent will return:
 ```json
 {
-  "statusCode": 500,
-  "message": "OpenRouter API key not configured. Set API_KEY_OPENROUTER in admin settings."
+  "response": "Something went wrong generating the analysis. Please try again.",
+  "flags": ["error"]
 }
 ```
 
@@ -223,8 +229,9 @@ To test the agent with real data:
 | `401 Unauthorized` on agent endpoint | Missing or invalid JWT token | Ensure `Authorization: Bearer <token>` header is included |
 | Database connection errors | `DATABASE_URL` misconfigured | Verify `DATABASE_URL` references the Railway PostgreSQL internal hostname |
 | Container crash: `Cannot find module '@prisma/config'` | `node_modules` in image missing prisma (install used generated package.json only) | Ensure Dockerfile runs `npm ci` after copying the root `package.json` into `dist/apps/api` so prisma and @prisma/config are installed before the final image is built. |
-| Agent returns "OpenRouter API key not configured" | Key not set in admin settings | Follow Step 7: set `API_KEY_OPENROUTER` in Ghostfolio admin settings |
-| Agent returns LLM error | `API_KEY_OPENROUTER` invalid | Check key is valid at [openrouter.ai/keys](https://openrouter.ai/keys) |
+| Agent returns "Something went wrong generating the analysis" | `OPENROUTER_API_KEY` not set in Railway env vars | Add `OPENROUTER_API_KEY=sk-or-v1-...` to Railway Variables tab; redeploy to trigger seed |
+| Agent returns "OpenRouter API key not configured" | Key not written to DB yet | Set `OPENROUTER_API_KEY` env var and redeploy, or follow Step 7 to set via Admin UI |
+| Agent returns LLM error | `OPENROUTER_API_KEY` invalid | Check key is valid at [openrouter.ai/keys](https://openrouter.ai/keys) |
 | Build fails | Docker build error | Check Railway build logs; common issue is Node.js version mismatch |
 
 ---
@@ -239,4 +246,6 @@ https://<project-name>.up.railway.app
 
 Update this document with the actual URL after deployment:
 
-**Deployed URL:** _(to be filled in after deployment)_
+**Deployed URL:** `https://ghostfolio-production-e242.up.railway.app`
+
+**Verified:** 2026-02-25 — API health check returns 200, demo account accessible at `/demo`, agent endpoint operational.

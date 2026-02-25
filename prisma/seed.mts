@@ -250,6 +250,23 @@ async function main() {
     where: { key: 'DEMO_ACCOUNT_ID' }
   });
 
+  // 8. OpenRouter API key (from OPENROUTER_API_KEY env var) ──────────────────
+  // This allows Railway to inject the key at startup without storing it in code.
+  const openRouterApiKey = process.env['OPENROUTER_API_KEY'];
+
+  if (openRouterApiKey) {
+    await prisma.property.upsert({
+      create: { key: 'API_KEY_OPENROUTER', value: openRouterApiKey },
+      update: { value: openRouterApiKey },
+      where: { key: 'API_KEY_OPENROUTER' }
+    });
+    console.log('OpenRouter API key set from OPENROUTER_API_KEY env var.');
+  } else {
+    console.log(
+      'OPENROUTER_API_KEY env var not set — skipping. Set it in Railway variables to enable the agent.'
+    );
+  }
+
   console.log('Seed completed successfully.');
   console.log(`Demo user ID:      ${DEMO_USER_ID}`);
   console.log(`Demo account ID:   ${DEMO_ACCOUNT_ID}`);
