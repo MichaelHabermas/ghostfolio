@@ -1,15 +1,17 @@
 @if (isVisible) {
   <div class="evaluator-teaser mat-elevation-z8">
-    <button
-      class="close-button"
-      mat-icon-button
-      type="button"
-      (click)="onDismiss()"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
-
-    <p class="label">AgentForge Week 2 demo</p>
+    <div class="teaser-header">
+      <p class="label">AgentForge Week 2 demo</p>
+      <button
+        class="close-button"
+        mat-icon-button
+        type="button"
+        aria-label="Dismiss demo helper"
+        (click)="onDismiss()"
+      >
+        <mat-icon>x</mat-icon>
+      </button>
+    </div>
 
     <button
       class="demo-button"

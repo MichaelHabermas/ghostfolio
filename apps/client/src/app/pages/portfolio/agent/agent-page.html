@@ -1,7 +1,13 @@
-<div class="container py-3">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h3 mb-0" i18n>AI Portfolio Assistant</h1>
+<div class="agent-shell container py-3">
+  <header class="agent-header mb-3">
+    <div>
+      <h1 class="h3 mb-1" i18n>AI Portfolio Assistant</h1>
+      <p class="agent-subtitle mb-0" i18n>
+        Ask about holdings, performance, risk, diversification, and rebalancing.
+      </p>
+    </div>
     <button
+      class="agent-reset"
       mat-stroked-button
       [disabled]="isLoading"
       i18n-matTooltip
@@ -11,56 +17,84 @@
       <mat-icon class="mr-1">refresh</mat-icon>
       <span i18n>New Chat</span>
     </button>
-  </div>
+  </header>
 
   <mat-card class="chat-card mb-3">
     <mat-card-content class="p-0">
       <div #messageList class="message-list">
         @for (message of messages; track $index) {
-          <div
+          <article
             class="message-row"
             [class.message-row--user]="message.role === 'user'"
             [class.message-row--assistant]="message.role === 'assistant'"
           >
-            <div class="bubble">
+            <div class="bubble" [class.bubble--error]="isErrorMessage(message)">
+              <div class="message-meta">
+                <span class="speaker-label">
+                  {{ message.role === 'assistant' ? 'Assistant' : 'You' }}
+                </span>
+                <span class="dot-separator" aria-hidden="true">•</span>
+                <span class="time-label">{{ formatTimestamp(message.createdAt) }}</span>
+              </div>
+
               <p class="mb-0 message-text">{{ message.text }}</p>
 
-              @if (message.sources?.length) {
-                <div class="sources mt-2">
-                  @for (source of message.sources; track source.tool + source.field) {
-                    <span class="source-chip">{{ source.tool }}</span>
-                  }
+              @if (message.role === 'assistant' && getToolTags(message).length) {
+                <div class="tag-section mt-2">
+                  <span class="tag-title" i18n>Tools used</span>
+                  <div class="tag-list">
+                    @for (toolName of getToolTags(message); track toolName) {
+                      <span class="tool-chip">{{ toolName }}</span>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (getDisplaySources(message).length) {
+                <div class="tag-section mt-2">
+                  <span class="tag-title" i18n>Sources</span>
+                  <div class="tag-list">
+                    @for (source of getDisplaySources(message); track source.tool + source.field) {
+                      <span class="source-chip">{{ source.tool }}.{{ source.field }}</span>
+                    }
+                  </div>
                 </div>
               }
 
               @if (message.flags?.length) {
-                <div class="flags mt-1">
-                  @for (flag of message.flags; track flag) {
-                    <span class="flag-chip">{{ flag }}</span>
-                  }
+                <div class="tag-section mt-2">
+                  <span class="tag-title" i18n>Flags</span>
+                  <div class="tag-list">
+                    @for (flag of message.flags; track flag) {
+                      <span class="flag-chip">{{ flag }}</span>
+                    }
+                  </div>
                 </div>
               }
             </div>
-          </div>
+          </article>
         }
 
         @if (isLoading) {
-          <div class="message-row message-row--assistant">
+          <article class="message-row message-row--assistant">
             <div class="bubble bubble--loading">
-              <mat-progress-spinner
-                color="accent"
-                mode="indeterminate"
-                [diameter]="20"
-              />
+              <div class="typing-state">
+                <mat-progress-spinner
+                  color="accent"
+                  mode="indeterminate"
+                  [diameter]="18"
+                />
+                <span i18n>Analyzing portfolio data...</span>
+              </div>
             </div>
-          </div>
+          </article>
         }
       </div>
     </mat-card-content>
   </mat-card>
 
   <div class="input-row">
-    <mat-form-field appearance="outline" class="flex-grow-1">
+    <mat-form-field appearance="outline" class="query-field flex-grow-1">
       <textarea
         matInput
         cdkTextareaAutosize

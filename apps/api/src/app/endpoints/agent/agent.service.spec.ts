@@ -110,6 +110,21 @@ describe('AgentService', () => {
       expect(result.sources).toBeDefined();
       expect(result.flags).toBeDefined();
       expect(result.sessionId).toBeDefined();
+      expect(result.toolsCalled).toEqual([]);
+    });
+
+    it('should include toolsCalled when a tool execute function is invoked', async () => {
+      mockGenerateText.mockImplementation(async (args: any) => {
+        await args.tools.get_holdings.execute({});
+        return makeDefaultGenerateTextResult('Holdings summary');
+      });
+
+      const result = await agentService.processQuery({
+        query: 'Show me my holdings',
+        userId: 'user-123'
+      });
+
+      expect(result.toolsCalled).toContain('get_holdings');
     });
 
     it('should use provided sessionId when given', async () => {
@@ -349,12 +364,31 @@ describe('AgentService', () => {
 
     it('should throw when API key is not configured', async () => {
       propertyService.getByKey.mockResolvedValue(undefined);
+      delete process.env['OPENROUTER_API_KEY'];
 
       await expect(
         agentService.callLlm({
           messages: [{ role: 'user', content: 'test' }]
         })
       ).rejects.toThrow('OpenRouter API key not configured');
+    });
+
+    it('should fall back to OPENROUTER_API_KEY environment variable when property is missing', async () => {
+      process.env['OPENROUTER_API_KEY'] = 'env-api-key';
+      process.env['OPENROUTER_MODEL'] = 'anthropic/claude-3.5-sonnet';
+      propertyService.getByKey.mockResolvedValue(undefined);
+      mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult('result'));
+
+      await agentService.callLlm({
+        messages: [{ role: 'user', content: 'test' }]
+      });
+
+      expect(mockCreateOpenRouter).toHaveBeenCalledWith({
+        apiKey: 'env-api-key'
+      });
+
+      delete process.env['OPENROUTER_API_KEY'];
+      delete process.env['OPENROUTER_MODEL'];
     });
   });
 });

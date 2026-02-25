@@ -48,7 +48,8 @@ describe('AgentController', () => {
         response: 'mocked response',
         sources: [],
         flags: [],
-        sessionId: 'session-abc'
+        sessionId: 'session-abc',
+        toolsCalled: []
       });
 
     const validSessionId = '550e8400-e29b-41d4-a716-446655440000';
@@ -74,7 +75,8 @@ describe('AgentController', () => {
         response: 'test',
         sources: [],
         flags: [],
-        sessionId: 's1'
+        sessionId: 's1',
+        toolsCalled: []
       });
 
     await agentController.query({ query: 'test' });
@@ -122,7 +124,8 @@ describe('AgentController', () => {
         response: 'ok',
         sources: [],
         flags: [],
-        sessionId: 's1'
+        sessionId: 's1',
+        toolsCalled: []
       });
 
       await expect(
@@ -154,7 +157,13 @@ describe('AgentController', () => {
     it('should sanitize control characters before passing to AgentService', async () => {
       const processQuerySpy = jest
         .spyOn(agentService, 'processQuery')
-        .mockResolvedValue({ response: 'ok', sources: [], flags: [], sessionId: 's' });
+        .mockResolvedValue({
+          response: 'ok',
+          sources: [],
+          flags: [],
+          sessionId: 's',
+          toolsCalled: []
+        });
 
       await agentController.query({ query: 'test\x00query' });
 
@@ -168,7 +177,8 @@ describe('AgentController', () => {
         response: 'ok',
         sources: [],
         flags: [],
-        sessionId: '550e8400-e29b-41d4-a716-446655440000'
+        sessionId: '550e8400-e29b-41d4-a716-446655440000',
+        toolsCalled: []
       });
 
       await expect(

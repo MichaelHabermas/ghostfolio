@@ -57,6 +57,7 @@ export class AgentService {
       const userMessage: CoreMessage = { role: 'user', content: query };
       const messages: CoreMessage[] = [...history, userMessage];
 
+      const toolsCalled = new Set<string>();
       const toolOutputs = new Map<string, ToolResponse<unknown>>();
 
       const tools = createToolRegistry(
@@ -66,7 +67,8 @@ export class AgentService {
           rulesReportTool: this.rulesReportTool
         },
         userId,
-        toolOutputs
+        toolOutputs,
+        toolsCalled
       );
 
       const result = await this.callLlm({
@@ -89,10 +91,11 @@ export class AgentService {
         );
 
         return {
-          response: VERIFICATION_FAILURE_MESSAGE,
-          sources: [],
           flags: ['verification_failed'],
-          sessionId: resolvedSessionId
+          response: VERIFICATION_FAILURE_MESSAGE,
+          sessionId: resolvedSessionId,
+          sources: [],
+          toolsCalled: [...toolsCalled.values()]
         };
       }
 
@@ -107,19 +110,21 @@ export class AgentService {
       ]);
 
       return {
-        response: formatted.narrative,
-        sources: formatted.sources,
         flags: formatted.flags,
-        sessionId: resolvedSessionId
+        response: formatted.narrative,
+        sessionId: resolvedSessionId,
+        sources: formatted.sources,
+        toolsCalled: [...toolsCalled.values()]
       };
     } catch (error) {
       this.logger.error(`Agent processing failed: ${error}`);
 
       return {
-        response: this.errorMapperService.toUserMessageFromError(error),
-        sources: [],
         flags: ['error'],
-        sessionId: resolvedSessionId
+        response: this.errorMapperService.toUserMessageFromError(error),
+        sessionId: resolvedSessionId,
+        sources: [],
+        toolsCalled: []
       };
     }
   }
@@ -163,9 +168,10 @@ export class AgentService {
   }
 
   private async createLlmProvider(): Promise<LanguageModel> {
-    const openRouterApiKey = await this.propertyService.getByKey<string>(
+    const configuredApiKey = await this.propertyService.getByKey<string>(
       PROPERTY_API_KEY_OPENROUTER
     );
+    const openRouterApiKey = configuredApiKey ?? process.env['OPENROUTER_API_KEY'];
 
     if (!openRouterApiKey) {
       throw new Error(
@@ -173,10 +179,11 @@ export class AgentService {
       );
     }
 
+    const configuredModel = await this.propertyService.getByKey<string>(
+      PROPERTY_OPENROUTER_MODEL
+    );
     const openRouterModel =
-      (await this.propertyService.getByKey<string>(
-        PROPERTY_OPENROUTER_MODEL
-      )) ?? DEFAULT_MODEL;
+      configuredModel ?? process.env['OPENROUTER_MODEL'] ?? DEFAULT_MODEL;
 
     const provider = createOpenRouter({ apiKey: openRouterApiKey });
 

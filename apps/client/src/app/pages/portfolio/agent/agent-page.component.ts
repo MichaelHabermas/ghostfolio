@@ -24,10 +24,12 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 export interface ChatMessage {
+  createdAt: Date;
   flags: string[];
   role: 'user' | 'assistant';
   sources: AgentSource[];
   text: string;
+  toolsCalled: string[];
 }
 
 @Component({
@@ -69,10 +71,12 @@ export class GfAgentPageComponent
   public ngOnInit() {
     this.messages = [
       {
+        createdAt: new Date(),
         flags: [],
         role: 'assistant',
         sources: [],
-        text: $localize`Hello! I'm your portfolio AI assistant. Ask me anything about your holdings, performance, risk, or rebalancing strategies.`
+        text: $localize`Hello! I'm your portfolio AI assistant. Ask me anything about your holdings, performance, risk, or rebalancing strategies.`,
+        toolsCalled: []
       }
     ];
   }
@@ -91,7 +95,14 @@ export class GfAgentPageComponent
       return;
     }
 
-    this.messages.push({ flags: [], role: 'user', sources: [], text: query });
+    this.messages.push({
+      createdAt: new Date(),
+      flags: [],
+      role: 'user',
+      sources: [],
+      text: query,
+      toolsCalled: []
+    });
     this.queryInput = '';
     this.isLoading = true;
     this.shouldScrollToBottom = true;
@@ -103,10 +114,12 @@ export class GfAgentPageComponent
       .subscribe({
         error: () => {
           this.messages.push({
-            flags: [],
+            createdAt: new Date(),
+            flags: ['error'],
             role: 'assistant',
             sources: [],
-            text: $localize`Something went wrong. Please try again.`
+            text: $localize`Something went wrong while generating your analysis. Please try again.`,
+            toolsCalled: []
           });
           this.isLoading = false;
           this.shouldScrollToBottom = true;
@@ -115,10 +128,12 @@ export class GfAgentPageComponent
         next: (agentResponse: AgentResponse) => {
           this.sessionId = agentResponse.sessionId;
           this.messages.push({
+            createdAt: new Date(),
             flags: agentResponse.flags,
             role: 'assistant',
             sources: agentResponse.sources,
-            text: agentResponse.response
+            text: agentResponse.response,
+            toolsCalled: agentResponse.toolsCalled ?? []
           });
           this.isLoading = false;
           this.shouldScrollToBottom = true;
@@ -138,13 +153,61 @@ export class GfAgentPageComponent
     this.sessionId = undefined;
     this.messages = [
       {
+        createdAt: new Date(),
         flags: [],
         role: 'assistant',
         sources: [],
-        text: $localize`Conversation reset. How can I help you?`
+        text: $localize`Conversation reset. How can I help you?`,
+        toolsCalled: []
       }
     ];
     this.changeDetectorRef.markForCheck();
+  }
+
+  public getDisplaySources(message: ChatMessage): AgentSource[] {
+    const unique = new Map<string, AgentSource>();
+
+    for (const source of message.sources ?? []) {
+      const key = `${source.tool}:${source.field}`;
+
+      if (!unique.has(key)) {
+        unique.set(key, source);
+      }
+    }
+
+    return [...unique.values()];
+  }
+
+  public getToolTags(message: ChatMessage): string[] {
+    const tools = new Set<string>();
+
+    for (const toolName of message.toolsCalled ?? []) {
+      if (toolName) {
+        tools.add(toolName);
+      }
+    }
+
+    for (const source of message.sources ?? []) {
+      if (source.tool) {
+        tools.add(source.tool);
+      }
+    }
+
+    return [...tools.values()];
+  }
+
+  public isErrorMessage(message: ChatMessage): boolean {
+    return (
+      message.flags?.includes('error') ||
+      message.flags?.includes('verification_failed')
+    );
+  }
+
+  public formatTimestamp(timestamp: Date): string {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: 'numeric',
+      minute: '2-digit'
+    }).format(timestamp);
   }
 
   public ngOnDestroy() {

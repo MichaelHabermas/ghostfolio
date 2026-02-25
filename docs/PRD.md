@@ -961,7 +961,7 @@ LANGSMITH_PROJECT
 
 **Commit 4: `docs(eval): document MVP eval results`**
 
-- [x] Record pass rate and failure details (6/6 = 100% pass rate -- 2026-02-24)
+- [x] Record pass rate and failure details (7/7 = 100% pass rate -- 2026-02-25)
 - [x] Identify patterns in failures for future improvement (no failures in baseline)
 - [x] Run all tests and verify they pass (44 suites, 269 tests pass)
 
@@ -1054,12 +1054,12 @@ LANGSMITH_PROJECT
 **Commit 2: `chore(mvp): verify all 9 MVP gate requirements`**
 
 - [x] Verify: Agent responds to natural language queries in finance domain — `POST /api/v1/agent` endpoint functional, confirmed via curl on Railway
-- [x] Verify: At least 3 functional tools the agent can invoke — `portfolio_performance`, `get_holdings`, `get_rules_report` all registered and tested
+- [x] Verify: At least 3 functional tools the agent can invoke — `portfolio_performance`, `get_holdings`, `get_rules_report` all registered and tested; tool names surfaced in UI via per-reply tool tags
 - [x] Verify: Tool calls execute successfully and return structured results — ToolResponse<T> envelope, Zod schemas validated in unit tests
 - [x] Verify: Agent synthesizes tool results into coherent responses — ResponseFormatter parses JSON → narrative; claims → sources
 - [x] Verify: Conversation history maintained across turns — ConversationMemory (20-turn sliding window) in production and integration tests
 - [x] Verify: Basic error handling (graceful failure, not crashes) — ErrorMapperService, try/catch in processQuery, graceful error responses
-- [x] Verify: At least one domain-specific verification check (RulesService) — VerificationService with MathConsistencyChecker, RulesAlignmentChecker
+- [x] Verify: At least one domain-specific verification check (RulesService) — RulesAlignmentChecker cross-references agent claims against RulesService output (additional checkers may run, but MVP gate requires at least one)
 - [x] Verify: 5+ test cases with expected outcomes — 7 golden set eval cases, pass rate 7/7 (100%)
 - [x] Verify: Deployed and publicly accessible — https://ghostfolio-production-e242.up.railway.app (verified 2026-02-25)
 

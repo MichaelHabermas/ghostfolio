@@ -75,7 +75,7 @@ flowchart LR
 
 - [x] All four check types represented in `mvp-cases.json` where applicable (mvp-007 asserts source citation via result.sources)
 - [ ] Golden set runs in CI on every agent-related commit (see Epic 15 for CI wiring)
-- [ ] Pass rate and failure analysis documented and linked from README
+- [x] Pass rate and failure analysis documented and linked from README (7/7 baseline table + eval command in `README.md`)
 
 **Stretch goals — Golden Set hardening (Byron-aligned)**
 

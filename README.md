@@ -89,6 +89,7 @@ Find the AI agent under **Portfolio → Agent** after logging in.
 
 - Natural language queries about portfolio performance, holdings, and risk violations
 - 3 tools: `portfolio_performance`, `get_holdings`, `get_rules_report`
+- Tool names visible in chat replies via **Tools used** tags (from real tool execution trace)
 - Conversation history across turns (20-turn session memory)
 - Hallucination detection via RulesService verification
 - Graceful error handling with user-friendly messages
@@ -108,6 +109,9 @@ The agent ships with a deterministic eval suite following the Gauntlet five-stag
 ```bash
 # Run only the eval suite
 npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=eval
+
+# Optional: run evals in real-LLM mode (requires OPENROUTER_API_KEY)
+EVAL_USE_REAL_LLM=true npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=eval
 
 # Run all agent tests
 npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=agent

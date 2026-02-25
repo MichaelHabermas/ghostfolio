@@ -20,6 +20,18 @@ describe('ErrorMapperService', () => {
       expect(message.length).toBeGreaterThan(10);
     });
 
+    it('should return user-friendly message for LLM_AUTH', () => {
+      const message = service.toUserMessage(AgentErrorType.LLM_AUTH);
+      expect(message).toContain('OpenRouter API key');
+      expect(message.length).toBeGreaterThan(10);
+    });
+
+    it('should return user-friendly message for LLM_UNAVAILABLE', () => {
+      const message = service.toUserMessage(AgentErrorType.LLM_UNAVAILABLE);
+      expect(message.toLowerCase()).toContain('temporarily unavailable');
+      expect(message.length).toBeGreaterThan(10);
+    });
+
     it('should return user-friendly message for VERIFICATION_MISMATCH', () => {
       const message = service.toUserMessage(AgentErrorType.VERIFICATION_MISMATCH);
       expect(message).toContain('inconsistency');
@@ -67,6 +79,28 @@ describe('ErrorMapperService', () => {
       expect(service.classify(error)).toBe(AgentErrorType.LLM_RATE_LIMIT);
     });
 
+    it('should classify missing OpenRouter key errors as LLM_AUTH', () => {
+      const error = new Error(
+        'OpenRouter API key not configured. Set API_KEY_OPENROUTER in admin settings.'
+      );
+      expect(service.classify(error)).toBe(AgentErrorType.LLM_AUTH);
+    });
+
+    it('should classify unauthorized provider errors as LLM_AUTH', () => {
+      const error = new Error('401 Unauthorized: invalid api key');
+      expect(service.classify(error)).toBe(AgentErrorType.LLM_AUTH);
+    });
+
+    it('should classify provider network errors as LLM_UNAVAILABLE', () => {
+      const error = new Error('connect ECONNREFUSED api.openrouter.ai:443');
+      expect(service.classify(error)).toBe(AgentErrorType.LLM_UNAVAILABLE);
+    });
+
+    it('should classify provider 503 errors as LLM_UNAVAILABLE', () => {
+      const error = new Error('503 Service Unavailable');
+      expect(service.classify(error)).toBe(AgentErrorType.LLM_UNAVAILABLE);
+    });
+
     it('should classify context length errors as CONTEXT_OVERFLOW', () => {
       const error = new Error('context_length_exceeded: maximum context length');
       expect(service.classify(error)).toBe(AgentErrorType.CONTEXT_OVERFLOW);
@@ -99,6 +133,18 @@ describe('ErrorMapperService', () => {
       const error = new Error('rate limit 429');
       const message = service.toUserMessageFromError(error);
       expect(message).toContain('busy');
+    });
+
+    it('should classify and map an OpenRouter key config error end-to-end', () => {
+      const error = new Error('OpenRouter API key not configured');
+      const message = service.toUserMessageFromError(error);
+      expect(message).toContain('OpenRouter API key');
+    });
+
+    it('should classify and map a provider outage end-to-end', () => {
+      const error = new Error('fetch failed: socket hang up');
+      const message = service.toUserMessageFromError(error);
+      expect(message.toLowerCase()).toContain('temporarily unavailable');
     });
   });
 });

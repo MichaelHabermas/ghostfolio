@@ -22,16 +22,30 @@
  *   Pass rate: 7/7 (100%) — updated 2026-02-25
  */
 
-jest.mock('ai', () => ({
-  generateText: jest.fn(),
-  tool: jest.fn((config) => config)
-}));
+const USE_REAL_LLM = process.env['EVAL_USE_REAL_LLM'] === 'true';
 
-jest.mock('@openrouter/ai-sdk-provider', () => ({
-  createOpenRouter: jest.fn(() => ({
-    chat: jest.fn(() => 'mock-model')
-  }))
-}));
+jest.mock('ai', () => {
+  if (process.env['EVAL_USE_REAL_LLM'] === 'true') {
+    return jest.requireActual('ai');
+  }
+
+  return {
+    generateText: jest.fn(),
+    tool: jest.fn((config) => config)
+  };
+});
+
+jest.mock('@openrouter/ai-sdk-provider', () => {
+  if (process.env['EVAL_USE_REAL_LLM'] === 'true') {
+    return jest.requireActual('@openrouter/ai-sdk-provider');
+  }
+
+  return {
+    createOpenRouter: jest.fn(() => ({
+      chat: jest.fn(() => 'mock-model')
+    }))
+  };
+});
 
 import * as path from 'path';
 import * as fs from 'fs';
@@ -176,6 +190,10 @@ const makeLlmResponseForTools = (toolNames: string[]): string => {
  * This mimics what the real Vercel AI SDK does in its multi-step tool-calling loop.
  */
 const configureGenerateTextMock = (evalCase: EvalCase) => {
+  if (USE_REAL_LLM) {
+    return;
+  }
+
   mockGenerateText.mockImplementation(async (args: any) => {
     // Invoke each expected tool's execute function so tool mocks register as called
     for (const toolName of evalCase.expected_tools) {
@@ -218,11 +236,19 @@ describe('MVP Eval Execution', () => {
   let evalCases: EvalCase[];
 
   beforeAll(() => {
+    if (USE_REAL_LLM && !process.env['OPENROUTER_API_KEY']) {
+      throw new Error(
+        'EVAL_USE_REAL_LLM=true requires OPENROUTER_API_KEY to be set in the environment.'
+      );
+    }
+
     evalCases = loadEvalCases();
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    if (!USE_REAL_LLM) {
+      jest.clearAllMocks();
+    }
   });
 
   describe('Per-case execution', () => {
@@ -240,6 +266,7 @@ describe('MVP Eval Execution', () => {
 
       // Tool invocation: portfolio_performance should have been called
       expect(performanceTool.execute).toHaveBeenCalled();
+      expect(result.toolsCalled).toContain('portfolio_performance');
 
       // Response contains expected phrases
       for (const phrase of evalCase.expected_output_contains) {
@@ -270,6 +297,7 @@ describe('MVP Eval Execution', () => {
 
       // Tool invocation: get_holdings should have been called
       expect(holdingsTool.execute).toHaveBeenCalled();
+      expect(result.toolsCalled).toContain('get_holdings');
 
       // Response contains expected phrases
       for (const phrase of evalCase.expected_output_contains) {
@@ -298,6 +326,7 @@ describe('MVP Eval Execution', () => {
 
       // Tool invocation: get_rules_report should have been called
       expect(rulesReportTool.execute).toHaveBeenCalled();
+      expect(result.toolsCalled).toContain('get_rules_report');
 
       // Response contains expected phrases
       for (const phrase of evalCase.expected_output_contains) {
@@ -329,6 +358,7 @@ describe('MVP Eval Execution', () => {
 
       // Tool was called (agent attempted to look up the account)
       expect(performanceTool.execute).toHaveBeenCalled();
+      expect(result.toolsCalled).toContain('portfolio_performance');
 
       // Response does NOT contain fabricated/hallucinated data markers
       for (const phrase of evalCase.expected_output_not_contains) {
@@ -357,6 +387,7 @@ describe('MVP Eval Execution', () => {
       expect(performanceTool.execute).not.toHaveBeenCalled();
       expect(holdingsTool.execute).not.toHaveBeenCalled();
       expect(rulesReportTool.execute).not.toHaveBeenCalled();
+      expect(result.toolsCalled).toEqual([]);
 
       // Response does NOT contain trade execution phrases
       for (const phrase of evalCase.expected_output_not_contains) {
@@ -382,6 +413,7 @@ describe('MVP Eval Execution', () => {
 
       // Tool invocation: get_holdings should have been called for allocation breakdown
       expect(holdingsTool.execute).toHaveBeenCalled();
+      expect(result.toolsCalled).toContain('get_holdings');
 
       // Response contains expected phrases
       for (const phrase of evalCase.expected_output_contains) {
@@ -410,6 +442,7 @@ describe('MVP Eval Execution', () => {
 
       // Tool invocation
       expect(performanceTool.execute).toHaveBeenCalled();
+      expect(result.toolsCalled).toContain('portfolio_performance');
 
       // Source citation check: result.sources must be non-empty —
       // this verifies the agent returned structured JSON with at least one

@@ -8,4 +8,5 @@ export interface AgentResponse {
   response: string;
   sessionId: string;
   sources: AgentSource[];
+  toolsCalled: string[];
 }
