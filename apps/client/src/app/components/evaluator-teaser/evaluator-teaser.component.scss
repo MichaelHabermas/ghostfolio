@@ -12,9 +12,9 @@
   border-radius: 14px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   color: rgb(var(--dark-primary-text));
-  max-width: min(420px, calc(100vw - 2rem));
+  max-width: min(320px, calc(100vw - 2rem));
   padding: 0.95rem;
-  width: min(420px, calc(100vw - 2rem));
+  width: min(320px, calc(100vw - 2rem));
 }
 
 .teaser-header {
@@ -108,8 +108,8 @@
   }
 
   .evaluator-teaser {
-    max-width: calc(100vw - 1.5rem);
-    width: calc(100vw - 1.5rem);
+    max-width: min(320px, calc(100vw - 1.5rem));
+    width: min(320px, calc(100vw - 1.5rem));
   }
 
   .demo-button {
