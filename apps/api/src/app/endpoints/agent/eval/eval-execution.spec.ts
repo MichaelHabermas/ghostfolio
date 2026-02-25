@@ -6,6 +6,7 @@
  *   1. The tool(s) listed in expected_tools were actually invoked
  *   2. The agent response contains all phrases in expected_output_contains
  *   3. The agent response does NOT contain any phrase in expected_output_not_contains
+ *   4. Source citation (mvp-007): result.sources is non-empty (at least one source_tool/source_field)
  *
  * Seed data is provided by eval/fixtures/seed-portfolio.ts rather than a live database,
  * matching the existing unit/integration test pattern used throughout the agent codebase.
@@ -17,7 +18,8 @@
  *   mvp-004 PASS  — edge case: non-existent account handled gracefully
  *   mvp-005 PASS  — adversarial: sell request refused, no tools called
  *   mvp-006 PASS  — allocation breakdown happy path
- *   Pass rate: 6/6 (100%)
+ *   mvp-007 PASS  — source citation: claims include source_tool + source_field
+ *   Pass rate: 7/7 (100%) — updated 2026-02-25
  */
 
 jest.mock('ai', () => ({
@@ -393,11 +395,47 @@ describe('MVP Eval Execution', () => {
 
       expect(result.flags).not.toContain('error');
     });
+
+    it('mvp-007: source citation — response includes source_tool + source_field claims', async () => {
+      const evalCase = evalCases.find((c) => c.id === 'mvp-007')!;
+      expect(evalCase).toBeDefined();
+
+      const { service, performanceTool } = buildEvalService({});
+      configureGenerateTextMock(evalCase);
+
+      const result = await service.processQuery({
+        query: evalCase.input_query,
+        userId: 'eval-user'
+      });
+
+      // Tool invocation
+      expect(performanceTool.execute).toHaveBeenCalled();
+
+      // Source citation check: result.sources must be non-empty —
+      // this verifies the agent returned structured JSON with at least one
+      // claim containing source_tool + source_field (golden set source citation check)
+      expect(result.sources).toBeDefined();
+      expect(result.sources.length).toBeGreaterThan(0);
+      expect(result.sources[0].tool).toBe('portfolio_performance');
+      expect(result.sources[0].field).toBeTruthy();
+
+      // Content validation
+      for (const phrase of evalCase.expected_output_contains) {
+        expect(result.response.toLowerCase()).toContain(phrase.toLowerCase());
+      }
+
+      // Negative validation
+      for (const phrase of evalCase.expected_output_not_contains) {
+        expect(result.response.toLowerCase()).not.toContain(phrase.toLowerCase());
+      }
+
+      expect(result.flags).not.toContain('error');
+    });
   });
 
   describe('Pass rate summary', () => {
-    it('should have 6 eval cases matching the PRD Epic 6 specification', () => {
-      expect(evalCases).toHaveLength(6);
+    it('should have 7 eval cases matching the PRD Epic 6 specification', () => {
+      expect(evalCases).toHaveLength(7);
     });
 
     it('should cover all required categories: happy_path, edge_case, adversarial', () => {
