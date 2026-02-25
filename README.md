@@ -73,6 +73,17 @@ The backend is based on [NestJS](https://nestjs.com) using [PostgreSQL](https://
 
 The frontend is built with [Angular](https://angular.dev) and uses [Angular Material](https://material.angular.io) with utility classes from [Bootstrap](https://getbootstrap.com).
 
+## Project Documentation
+
+| Doc | What it covers |
+|---|---|
+| **[Login & Users](docs/LOGIN-AND-USERS.md)** | All accounts (demo, admin, test user) — login details for local and deployed |
+| [Demo Account](docs/deployment/DEMO-ACCOUNT.md) | Demo portfolio contents, access token, re-seed, validation |
+| [Railway Deployment](docs/deployment/RAILWAY.md) | Deploy to Railway: env vars, Postgres, Redis, OpenRouter |
+| [Smoke Tests](docs/deployment/SMOKE-TESTS.md) | Curl-based checks for the deployed agent and demo account |
+
+---
+
 ## Self-hosting
 
 We provide official container images hosted on [Docker Hub](https://hub.docker.com/r/ghostfolio/ghostfolio) for `linux/amd64`, `linux/arm/v7` and `linux/arm64`.

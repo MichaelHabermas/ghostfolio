@@ -242,6 +242,8 @@ Test pyramid for this project:
 | Integration Tests | Agent loop end-to-end (query -> tools -> verification -> response) | Jest + seeded DB | 50 eval test cases |
 | Adversarial Tests | Prompt injection, out-of-scope requests, bypass attempts | Jest | 10+ cases |
 
+> Eval framework stage tracking (Golden Sets through Experiments) and the MVP vs post-MVP eval checklist are maintained in [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md#eval-framework--gauntlet-five-stage-model).
+
 ---
 
 ## Part 4: Architecture
@@ -909,7 +911,7 @@ LANGSMITH_PROJECT
 
 ### Epic 6: MVP Eval Framework
 
-**Goal:** Build the initial evaluation framework with 5+ test cases that validate the agent produces correct outputs for known portfolio states.
+**Goal:** Build the initial evaluation framework with 5+ test cases that validate the agent produces correct outputs for known portfolio states. This implements Stage 1 (Golden Sets) of the Gauntlet five-stage model; see [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md#eval-framework--gauntlet-five-stage-model) for the full stage breakdown and post-MVP expansion checklist.
 
 **User Stories:**
 

@@ -1,37 +1,28 @@
 # Demo Account — Credentials & Portfolio
 
-This document describes the shared demo account available on both the local dev server and the deployed Railway instance.
-All testers use the same credentials so they evaluate the agent against identical data.
+> All users and logins (demo, admin, test): [LOGIN-AND-USERS.md](../LOGIN-AND-USERS.md)
 
 ---
 
-## Deployed Instance
+## Quick start for testers
 
-| Field | Value |
+Open this link in your browser — it logs you in automatically, no password needed:
+
+| Environment | Open this link |
 |---|---|
-| **Base URL** | `https://ghostfolio-production-e242.up.railway.app` |
-| **Demo login URL** | `https://ghostfolio-production-e242.up.railway.app/demo` |
-| **Access token (for access-token dialog)** | `ghostfolio-demo-access-token` |
-| **JWT (for API calls)** | Fetch dynamically — see [Fetching the Demo JWT](#fetching-the-demo-jwt) |
+| **Deployed** | <https://ghostfolio-production-e242.up.railway.app/demo> |
+| **Local** | <http://localhost:4200/demo> |
 
-## Local Dev Instance
-
-| Field | Value |
-|---|---|
-| **Base URL** | `http://localhost:3333` |
-| **Demo login URL** | `http://localhost:4200/demo` |
-| **Access token (for access-token dialog)** | `ghostfolio-demo-access-token` |
+Or log in manually with the access token: `ghostfolio-demo-access-token`
+(User icon → "Login with access token" → paste the token above.)
 
 ---
 
 ## Login Methods
 
-### Method 1 — One-click demo URL (recommended for testers)
+### Method 1 — One-click demo link (recommended)
 
-Visit the demo URL for your environment. The page automatically logs you in with the demo JWT — no password required.
-
-- Local: `http://localhost:4200/demo`
-- Deployed: `https://ghostfolio-production-e242.up.railway.app/demo`
+Navigate to the link above for your environment. The app logs you in as the demo user instantly.
 
 ### Method 2 — Access token dialog
 
@@ -40,16 +31,20 @@ Visit the demo URL for your environment. The page automatically logs you in with
 3. Enter: `ghostfolio-demo-access-token`
 4. Check "Stay signed in" if desired.
 
-### Method 3 — Direct API access
+### Method 3 — API / scripts (not for browser use)
 
-Use the demo JWT from `/api/v1/info` to authenticate API requests:
+> **You do not need this to use the website.** The URLs below are the backend API server — skip this section if you're only using the UI.
+
+Get a demo JWT from `/api/v1/info` and use it as a Bearer token in API calls:
 
 ```bash
-# 1. Fetch the demo JWT
+# Deployed — API base URL: https://ghostfolio-production-e242.up.railway.app
 DEMO_TOKEN=$(curl -s https://ghostfolio-production-e242.up.railway.app/api/v1/info \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['demoAuthToken'])")
 
-# 2. Use it to query the agent
+# Local — API server runs on port 3333 (not 4200, which is the UI)
+# DEMO_TOKEN=$(curl -s http://localhost:3333/api/v1/info | jq -r .demoAuthToken)
+
 curl -X POST https://ghostfolio-production-e242.up.railway.app/api/v1/agent \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $DEMO_TOKEN" \
@@ -61,20 +56,20 @@ curl -X POST https://ghostfolio-production-e242.up.railway.app/api/v1/agent \
 ## Fetching the Demo JWT
 
 ```bash
-# Deployed
+# Deployed (API base URL: https://ghostfolio-production-e242.up.railway.app)
 curl https://ghostfolio-production-e242.up.railway.app/api/v1/info | jq .demoAuthToken
 
-# Local
+# Local (API server: http://localhost:3333 — not the UI port 4200)
 curl http://localhost:3333/api/v1/info | jq .demoAuthToken
 ```
 
-The `demoAuthToken` field contains a valid JWT signed with the server's `JWT_SECRET_KEY` and valid for 180 days.
+The `demoAuthToken` is a JWT signed with the server's `JWT_SECRET_KEY`, valid for 180 days.
 
 ---
 
 ## Demo Portfolio
 
-The demo account contains the following pre-populated holdings (all USD, purchased in 2024):
+Pre-populated holdings (all USD, purchased in 2024):
 
 | Symbol | Name | Shares | Avg Cost | Purchase Date |
 |---|---|---|---|---|
@@ -88,8 +83,7 @@ The demo account contains the following pre-populated holdings (all USD, purchas
 | META | Meta Platforms Inc. | 15 | $500.00 | 2024-03-01 |
 | USD | Cash | — | — | — |
 
-**Account cash balance:** $5,000 USD
-
+**Account cash balance:** $5,000 USD  
 **Total cost basis (equities):** $62,800
 
 ---
@@ -106,17 +100,17 @@ The demo account contains the following pre-populated holdings (all USD, purchas
 
 ## Refreshing / Re-seeding
 
-If the demo data gets corrupted or deleted, run the seed script to restore it:
+If the demo data gets corrupted or deleted:
 
 ```bash
 # Local
 npm run database:seed
 
-# Or full reset
+# Full reset
 npm run database:setup
 ```
 
-For the deployed instance, the seed runs automatically on every deployment via the entrypoint script (`docker/entrypoint.sh`). To force a fresh seed without redeploying, use the Railway CLI or console to run:
+For the deployed instance, the seed runs automatically on every deployment via `docker/entrypoint.sh`. To force a fresh seed without redeploying:
 
 ```bash
 npx prisma db seed
@@ -128,13 +122,11 @@ The seed is idempotent — running it multiple times will not create duplicate e
 
 ## Validate Database State
 
-Run the validation script to confirm the demo account is correctly set up:
-
 ```bash
 npm run demo:validate
 ```
 
-This checks:
+Checks:
 - Demo user exists with role `DEMO`
 - Demo account exists with correct currency and balance
 - All 8 BUY orders are present with correct symbols and quantities
