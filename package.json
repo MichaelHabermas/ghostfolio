@@ -23,6 +23,7 @@
     "database:migrate": "prisma migrate deploy",
     "database:push": "prisma db push",
     "database:seed": "prisma db seed",
+    "demo:validate": "npx tsx prisma/validate-demo.mts",
     "database:setup": "npm run database:push && npm run database:seed",
     "database:validate-schema": "prisma validate",
     "dep-graph": "nx dep-graph",
