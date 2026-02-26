@@ -23,6 +23,7 @@ import { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { LangfuseService } from './observability/langfuse.service';
 import { InputValidationService } from './validation/input-validation.service';
+import { RedactionService } from './redaction/redaction.service';
 import { EscalationChecker } from './verification/escalation.checker';
 import { MathConsistencyChecker } from './verification/math-consistency.checker';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
@@ -64,6 +65,7 @@ describe('AgentModule', () => {
           ErrorMapperService,
           InputValidationService,
           LangfuseService,
+          RedactionService,
           EscalationChecker,
           MathConsistencyChecker,
           RulesValidationChecker,

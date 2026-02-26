@@ -76,6 +76,7 @@ describe('AgentService', () => {
   let responseFormatter: ResponseFormatter;
   let verificationService: VerificationService;
   let errorMapperService: ErrorMapperService;
+  let redactionService: { redactToolResponse: jest.Mock };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -100,6 +101,9 @@ describe('AgentService', () => {
     responseFormatter = new ResponseFormatter();
     verificationService = makePassingVerificationService();
     errorMapperService = new ErrorMapperService();
+    redactionService = {
+      redactToolResponse: jest.fn((_: string, response: unknown) => response)
+    };
 
     agentService = new AgentService(
       propertyService as any,
@@ -113,7 +117,8 @@ describe('AgentService', () => {
       responseFormatter,
       verificationService,
       errorMapperService,
-      makeDisabledLangfuseService()
+      makeDisabledLangfuseService(),
+      redactionService as any
     );
   });
 
@@ -292,6 +297,42 @@ describe('AgentService', () => {
 
       expect(result.flags).not.toContain('verification_failed');
       expect(result.response).toBeTruthy();
+    });
+
+    it('should keep raw tool output for verification while redacting LLM tool result', async () => {
+      holdingsTool.execute.mockResolvedValueOnce({
+        success: true,
+        data: {
+          holdings: [{ accountName: 'Retirement', valueInBaseCurrency: 1234 }]
+        }
+      } as any);
+      redactionService.redactToolResponse.mockReturnValueOnce({
+        success: true,
+        data: {
+          holdings: [{ accountName: 'Account A', valueInBaseCurrency: 1200 }]
+        }
+      });
+      mockGenerateText.mockImplementation(async (args: any) => {
+        await args.tools.get_holdings.execute({});
+        return makeDefaultGenerateTextResult('Holdings summary');
+      });
+
+      await agentService.processQuery({
+        query: 'Show my holdings',
+        userId: 'user-123'
+      });
+
+      expect(redactionService.redactToolResponse).toHaveBeenCalledWith(
+        'get_holdings',
+        expect.objectContaining({ success: true })
+      );
+
+      const verifyCallArgs = (verificationService.verify as jest.Mock).mock
+        .calls[0];
+      const toolOutputs = verifyCallArgs[1] as Map<string, any>;
+      expect(toolOutputs.get('get_holdings').data.holdings[0].accountName).toBe(
+        'Retirement'
+      );
     });
   });
 

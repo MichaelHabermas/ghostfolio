@@ -166,5 +166,48 @@ describe('createToolRegistry', () => {
         (registry.portfolio_performance as any).execute({})
       ).resolves.toBeDefined();
     });
+
+    it('should capture raw output but return redacted output when redaction service is provided', async () => {
+      const toolOutputs = new Map();
+      const redactionService = {
+        redactToolResponse: jest.fn().mockReturnValue({
+          success: true,
+          data: {
+            holdings: [{ accountName: 'Account A', valueInBaseCurrency: 1200 }]
+          }
+        })
+      };
+
+      mockHoldingsTool.execute.mockResolvedValueOnce({
+        success: true,
+        data: {
+          holdings: [
+            { accountName: 'My Personal Brokerage', valueInBaseCurrency: 1234 }
+          ]
+        }
+      });
+
+      const registryWithRedaction = createToolRegistry(
+        allMockTools,
+        userId,
+        toolOutputs,
+        undefined,
+        redactionService as any
+      );
+
+      const toolResult = await (registryWithRedaction.get_holdings as any).execute({});
+
+      expect(redactionService.redactToolResponse).toHaveBeenCalledWith(
+        'get_holdings',
+        expect.objectContaining({
+          success: true
+        })
+      );
+
+      expect((toolOutputs.get('get_holdings') as any).data.holdings[0].accountName).toBe(
+        'My Personal Brokerage'
+      );
+      expect((toolResult.data as any).holdings[0].accountName).toBe('Account A');
+    });
   });
 });
