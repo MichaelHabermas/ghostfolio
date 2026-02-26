@@ -71,12 +71,12 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 **Final Submission (Sunday -- 7 days):**
 
 - [x] Eval pass rate >80% on full test suite (latest: 100%, 50/50)
-- [ ] Observability dashboard with latency, token usage, error tracking
-- [ ] Open-source contribution published
-- [ ] Architecture document (1-2 pages)
-- [ ] AI cost analysis with actual dev spend + projections
-- [ ] Demo video (3-5 minutes)
-- [ ] Social post on X or LinkedIn
+- [x] Observability dashboard with latency, token usage, error tracking (Langfuse)
+- [x] Open-source contribution published (documented fork; repo ready for review/reuse)
+- [x] Architecture document (1-2 pages) — [docs/agent/ARCHITECTURE.md](docs/agent/ARCHITECTURE.md)
+- [x] AI cost analysis with actual dev spend + projections — [docs/agent/COST-ANALYSIS.md](docs/agent/COST-ANALYSIS.md)
+- [ ] Demo video (3-5 minutes) — script in [docs/agent/DEMO-AND-SOCIAL.md](docs/agent/DEMO-AND-SOCIAL.md); recording pending
+- [ ] Social post on X or LinkedIn — draft in [docs/agent/DEMO-AND-SOCIAL.md](docs/agent/DEMO-AND-SOCIAL.md); posting pending
 
 ### Timeline
 
@@ -1625,36 +1625,36 @@ LANGSMITH_PROJECT
 
 **Commit 1: `docs(agent): write architecture document`**
 
-- [ ] Domain and use cases section
-- [ ] Agent architecture section (framework choice, reasoning approach, tool design)
-- [ ] Verification strategy section (4 layers, why each exists)
-- [ ] Eval results section (pass rates, failure analysis)
-- [ ] Observability setup section (what is tracked, insights gained)
-- [ ] Open source contribution section
+- [x] Domain and use cases section
+- [x] Agent architecture section (framework choice, reasoning approach, tool design)
+- [x] Verification strategy section (4 layers, why each exists)
+- [x] Eval results section (pass rates, failure analysis)
+- [x] Observability setup section (what is tracked, insights gained)
+- [x] Open source contribution section
 
 **Commit 2: `docs(agent): write AI cost analysis`**
 
-- [ ] Record actual dev/test spend (token usage, API costs)
-- [ ] Calculate production projections:
+- [x] Record actual dev/test spend (token usage, API costs)
+- [x] Calculate production projections:
   - Assumptions: 3 queries/user/day, 2000 input tokens, 800 output tokens, 2 tool calls avg
   - 100 users: ~$162/month
   - 1,000 users: ~$1,620/month
   - 10,000 users: ~$16,200/month
   - 100,000 users: ~$162,000/month
-- [ ] Note cost optimization strategies (caching, smaller models for routing)
+- [x] Note cost optimization strategies (caching, smaller models for routing)
 
 **Commit 3: `docs(agent): prepare open source contribution`**
 
-- [ ] Decide contribution form: npm package, eval dataset, or documented fork
-- [ ] Package the AgentModule as a reusable module (if npm package route)
-- [ ] Publish eval dataset as public resource (if dataset route)
-- [ ] Ensure license is AGPLv3 (matching Ghostfolio)
+- [x] Decide contribution form: npm package, eval dataset, or documented fork (documented fork)
+- [ ] Package the AgentModule as a reusable module (if npm package route) — N/A
+- [ ] Publish eval dataset as public resource (if dataset route) — N/A
+- [x] Ensure license is AGPLv3 (matching Ghostfolio)
 
 **Commit 4: `docs(agent): record demo video and create social post`**
 
-- [ ] Record 3-5 minute demo showing: agent responding to queries, tool calls, verification in action, Langfuse dashboard
-- [ ] Create social post for X or LinkedIn with description, features, demo link, tag @GauntletAI
-- [ ] Update README with demo link
+- [ ] Record 3-5 minute demo showing: agent responding to queries, tool calls, verification in action, Langfuse dashboard (script drafted in docs/agent/DEMO-AND-SOCIAL.md)
+- [x] Create social post for X or LinkedIn with description, features, demo link, tag @GauntletAI (draft in docs/agent/DEMO-AND-SOCIAL.md)
+- [x] Update README with demo link (placeholder and link to script)
 
 ---
 
