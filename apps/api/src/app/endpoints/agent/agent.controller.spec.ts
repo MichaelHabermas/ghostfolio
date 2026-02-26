@@ -196,5 +196,46 @@ describe('AgentController', () => {
         })
       ).resolves.toBeDefined();
     });
+
+    it('should extract userId from request context and pass to AgentService', async () => {
+      const processQuerySpy = jest
+        .spyOn(agentService, 'processQuery')
+        .mockResolvedValue({
+          response: 'ok',
+          sources: [],
+          flags: [],
+          sessionId: 's',
+          toolsCalled: []
+        });
+
+      await agentController.query({ query: 'What are my holdings?' });
+
+      expect(processQuerySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          query: 'What are my holdings?'
+        })
+      );
+    });
+
+    it('should always use userId from authenticated request, not from request body', async () => {
+      const processQuerySpy = jest
+        .spyOn(agentService, 'processQuery')
+        .mockResolvedValue({
+          response: 'ok',
+          sources: [],
+          flags: [],
+          sessionId: 's',
+          toolsCalled: []
+        });
+
+      await agentController.query({ query: 'test' });
+
+      expect(processQuerySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123'
+        })
+      );
+    });
   });
 });

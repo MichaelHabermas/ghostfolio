@@ -37,6 +37,18 @@ export interface TraceMetadata {
  *
  * Gracefully degrades to no-op when LANGFUSE_SECRET_KEY is not configured,
  * so the agent works identically in environments without Langfuse.
+ *
+ * ## Audit Logging
+ *
+ * This service serves as the primary audit log for the agent:
+ * - All agent queries are traced with userId, sessionId, query text, tools called
+ * - Security events (injection attempts, rate limit hits) are logged via logSecurityEvent()
+ * - User feedback (thumbs up/down) is recorded for quality tracking
+ * - Verification failures are logged with details for debugging
+ * - Cost and token usage are tracked per request
+ *
+ * Traces can be queried in Langfuse for security audits, compliance reviews,
+ * and debugging. Each trace includes full context for forensic analysis.
  */
 @Injectable()
 export class LangfuseService implements OnModuleInit, OnModuleDestroy {
