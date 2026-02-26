@@ -87,12 +87,13 @@ Find the AI agent under **Portfolio → Agent** after logging in.
 
 ### Agent Features
 
-- Natural language queries about portfolio performance, holdings, and risk violations
-- 3 tools: `portfolio_performance`, `get_holdings`, `get_rules_report`
+- Natural language queries about portfolio performance, holdings, risk violations, market data, transactions, and rebalancing
+- **6 tools:** `portfolio_performance`, `get_holdings`, `get_rules_report`, `market_data`, `transaction_history`, `rebalance_simulator`
 - Tool names visible in chat replies via **Tools used** tags (from real tool execution trace)
 - Conversation history across turns (20-turn session memory)
-- Hallucination detection via RulesService verification
-- Graceful error handling with user-friendly messages
+- **4-layer verification:** rules alignment, math consistency, source citation, human-in-the-loop escalation for high-impact recommendations
+- Data redaction before LLM (account names anonymized, balances rounded); rate limiting and prompt-injection defenses
+- Langfuse observability (traces, token/cost tracking, feedback); graceful error handling with user-friendly messages
 
 ### Eval Framework (Golden Sets — Stage 1)
 
@@ -131,10 +132,14 @@ npx nx test api --testPathPattern=agent
 | Doc | What it covers |
 |---|---|
 | **[Login & Users](docs/LOGIN-AND-USERS.md)** | All accounts (demo, admin, test user) — login details for local and deployed |
+| **[Agent Architecture](docs/agent/ARCHITECTURE.md)** | Domain, agent design, verification strategy, eval results, observability, open source |
+| **[AI Cost Analysis](docs/agent/COST-ANALYSIS.md)** | Dev spend, production projections (100–100K users), cost optimization |
 | [Demo Account](docs/deployment/DEMO-ACCOUNT.md) | Demo portfolio contents, access token, re-seed, validation |
 | [Railway Deployment](docs/deployment/RAILWAY.md) | Deploy to Railway + CI/CD deploy-hook setup for auto-deploys from `dev` |
 | [Smoke Tests](docs/deployment/SMOKE-TESTS.md) | Curl-based checks for the deployed agent and demo account |
 | [PRD](docs/PRD.md) | Full product requirements, architecture, and epic breakdown |
+
+This fork is **AGPLv3** (same as upstream Ghostfolio). The agent module, eval suite, and docs are provided as a documented fork for review and reuse.
 
 ---
 
