@@ -107,6 +107,38 @@ Railway automatically deploys on push to the connected branch.
 
 ---
 
+## Step 5b: Enable GitHub Actions Auto-Deploy on `dev` Merge
+
+Epic 15 adds `.github/workflows/deploy.yml`, which triggers Railway deployment on every push to `dev` (including merged PRs).
+
+### Required GitHub Actions Secret
+
+Add this repository secret in GitHub:
+
+| Secret | Value |
+| --- | --- |
+| `RAILWAY_DEPLOY_HOOK_URL` | Railway service deploy hook URL |
+
+To get the hook URL in Railway:
+
+1. Open your Railway service
+2. Go to **Settings** -> **Deploy**
+3. Copy the **Deploy Hook** URL
+4. Add it in GitHub at **Settings** -> **Secrets and variables** -> **Actions**
+
+### Workflow Triggers
+
+- `push` to `dev`: auto-deploy to Railway
+- `workflow_dispatch`: manual deploy trigger from GitHub Actions UI
+
+### Rollback / Disable Strategy
+
+- Fast disable: remove or rotate `RAILWAY_DEPLOY_HOOK_URL` to block automated deploys
+- Controlled rollback: redeploy the previous healthy commit in Railway
+- Emergency stop: disable `.github/workflows/deploy.yml` in GitHub Actions
+
+---
+
 ## Step 6: Database Setup
 
 After first deploy, run Prisma migrations:
@@ -144,6 +176,7 @@ Set `OPENROUTER_API_KEY` in Railway's **Variables** tab (Step 4 above). The seed
 6. Click **Save**
 
 If the key is not configured, the agent will return:
+
 ```json
 {
   "response": "Something went wrong generating the analysis. Please try again.",

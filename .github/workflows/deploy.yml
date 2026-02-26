@@ -1,0 +1,40 @@
+name: Deploy to Railway (dev)
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required deploy secret
+        env:
+          RAILWAY_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RAILWAY_DEPLOY_HOOK_URL" ]; then
+            echo "Missing required secret: RAILWAY_DEPLOY_HOOK_URL"
+            exit 1
+          fi
+
+      - name: Trigger Railway deploy hook
+        env:
+          RAILWAY_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_DEPLOY_HOOK_URL }}
+        run: |
+          HTTP_STATUS=$(curl -sS -o /tmp/railway-deploy-response.txt -w "%{http_code}" -X POST "$RAILWAY_DEPLOY_HOOK_URL")
+          echo "Railway deploy hook returned HTTP $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+            echo "Deploy hook call failed. Response:"
+            cat /tmp/railway-deploy-response.txt
+            exit 1
+          fi
+          echo "Railway deployment triggered successfully."
