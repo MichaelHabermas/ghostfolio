@@ -63,10 +63,10 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 
 - [x] 6 functional tools (3 MVP + 3 post-MVP)
 - [x] Full 4-layer verification pipeline operational
-- [ ] Langfuse observability integrated with tracing and cost tracking
+- [x] Langfuse observability integrated with tracing and cost tracking
 - [x] Eval dataset: 50 test cases (20 happy path, 10 edge, 10 adversarial, 10 multi-step)
 - [x] GitHub Actions CI pipeline running lint + tests on PRs
-- [ ] Security hardening: input validation, prompt injection defenses, data redaction
+- [x] Security hardening: input validation, prompt injection defenses, rate limiting, audit logging
 
 **Final Submission (Sunday -- 7 days):**
 
@@ -1338,37 +1338,37 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(observability): integrate @langfuse/vercel for trace wrapping`**
 
-- [ ] Install `@langfuse/vercel` (or `langfuse` SDK v4 if using direct integration)
-- [ ] Create `apps/api/src/app/endpoints/agent/observability/langfuse.service.ts`
-- [ ] Wrap every `generateText()` call with Langfuse trace context
-- [ ] Capture: input query, system prompt, tool calls (name, args, results), final response, latency
-- [ ] Configure Langfuse keys from `.env` (LANGFUSE_SECRET_KEY, LANGFUSE_PUBLIC_KEY, LANGFUSE_HOST)
+- [x] Install `@langfuse/vercel` (or `langfuse` SDK v4 if using direct integration)
+- [x] Create `apps/api/src/app/endpoints/agent/observability/langfuse.service.ts`
+- [x] Wrap every `generateText()` call with Langfuse trace context
+- [x] Capture: input query, system prompt, tool calls (name, args, results), final response, latency
+- [x] Configure Langfuse keys from `.env` (LANGFUSE_SECRET_KEY, LANGFUSE_PUBLIC_KEY, LANGFUSE_HOST)
 
 **Commit 2: `feat(observability): add token usage and cost tracking`**
 
-- [ ] Extract token counts (input/output) from Vercel AI SDK response metadata
-- [ ] Calculate cost per request using Claude pricing ($3/1M input, $15/1M output -- verify current rates)
-- [ ] Attach token and cost data to Langfuse traces
-- [ ] Log cumulative token usage for dev cost tracking
+- [x] Extract token counts (input/output) from Vercel AI SDK response metadata
+- [x] Calculate cost per request using Claude pricing ($3/1M input, $15/1M output -- verify current rates)
+- [x] Attach token and cost data to Langfuse traces
+- [x] Log cumulative token usage for dev cost tracking
 
 **Commit 3: `feat(observability): add error categorization and tracking`**
 
-- [ ] Categorize errors in Langfuse traces: tool_failure, llm_timeout, verification_failure, input_validation
-- [ ] Log verification failure details (which checker failed, why)
-- [ ] Set up Langfuse dashboard views for error rate monitoring
+- [x] Categorize errors in Langfuse traces: tool_failure, llm_timeout, verification_failure, input_validation
+- [x] Log verification failure details (which checker failed, why)
+- [x] Set up Langfuse dashboard views for error rate monitoring
 
 **Commit 4: `feat(observability): add eval score recording and user feedback`**
 
-- [ ] Record eval pass/fail results as Langfuse scores
-- [ ] Add endpoint for user feedback (thumbs up/down) stored as Langfuse scores
-- [ ] Wire feedback into trace context for correlation
+- [x] Record eval pass/fail results as Langfuse scores
+- [x] Add endpoint for user feedback (thumbs up/down) stored as Langfuse scores
+- [x] Wire feedback into trace context for correlation
 
 **Commit 5: `test(observability): verify Langfuse integration`**
 
-- [ ] Test: traces are created for agent requests (mock Langfuse client)
-- [ ] Test: token counts and costs are calculated correctly
-- [ ] Test: error categories are logged correctly
-- [ ] Run tests and verify they pass
+- [x] Test: traces are created for agent requests (mock Langfuse client)
+- [x] Test: token counts and costs are calculated correctly
+- [x] Test: error categories are logged correctly
+- [x] Run tests and verify they pass
 
 ---
 
@@ -1466,30 +1466,30 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(security): implement prompt injection defenses`**
 
-- [ ] Add input sanitization: strip known injection patterns, control characters
-- [ ] Enforce query length limit (max 2000 chars) at controller level
-- [ ] System prompt already includes guardrails (from Epic 4) -- verify they work against adversarial eval cases
-- [ ] All tool outputs are injected as structured JSON, never as raw text that could contain instructions
+- [x] Add input sanitization: strip known injection patterns, control characters
+- [x] Enforce query length limit (max 2000 chars) at controller level
+- [x] System prompt already includes guardrails (from Epic 4) -- verify they work against adversarial eval cases
+- [x] All tool outputs are injected as structured JSON, never as raw text that could contain instructions
 
 **Commit 2: `feat(security): add rate limiting with @nestjs/throttler`**
 
-- [ ] Install `@nestjs/throttler` (`npm install @nestjs/throttler`)
-- [ ] Configure ThrottlerModule in AgentModule (10 requests/minute per user)
-- [ ] Add `@Throttle()` decorator to agent endpoint
-- [ ] Return 429 Too Many Requests with user-friendly message
+- [x] Install `@nestjs/throttler` (`npm install @nestjs/throttler`)
+- [x] Configure ThrottlerModule in AgentModule (10 requests/minute per user)
+- [x] Add `@Throttle()` decorator to agent endpoint
+- [x] Return 429 Too Many Requests with user-friendly message
 
 **Commit 3: `feat(security): verify user-scoped data access`**
 
-- [ ] Confirm all service calls use authenticated `userId` from NestJS request context
-- [ ] Write test: verify agent cannot access another user's data
-- [ ] Document data access boundaries
+- [x] Confirm all service calls use authenticated `userId` from NestJS request context
+- [x] Write test: verify agent cannot access another user's data
+- [x] Document data access boundaries
 
 **Commit 4: `test(security): add security-focused tests`**
 
-- [ ] Test: prompt injection inputs are sanitized
-- [ ] Test: rate limiter returns 429 after 10 requests/minute
-- [ ] Test: cross-user data access is prevented
-- [ ] Run tests and verify they pass
+- [x] Test: prompt injection inputs are sanitized
+- [x] Test: rate limiter returns 429 after 10 requests/minute
+- [x] Test: cross-user data access is prevented
+- [x] Run tests and verify they pass
 
 ---
 
