@@ -23,7 +23,10 @@ import { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { LangfuseService } from './observability/langfuse.service';
 import { InputValidationService } from './validation/input-validation.service';
+import { EscalationChecker } from './verification/escalation.checker';
+import { MathConsistencyChecker } from './verification/math-consistency.checker';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
+import { SourceCitationChecker } from './verification/source-citation.checker';
 import { VerificationService } from './verification/verification.service';
 
 class TestJwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -61,12 +64,20 @@ describe('AgentModule', () => {
           ErrorMapperService,
           InputValidationService,
           LangfuseService,
+          EscalationChecker,
+          MathConsistencyChecker,
           RulesValidationChecker,
+          SourceCitationChecker,
           {
-            inject: [RulesValidationChecker],
+            inject: [RulesValidationChecker, MathConsistencyChecker, SourceCitationChecker, EscalationChecker],
             provide: VerificationService,
-            useFactory: (rulesChecker: RulesValidationChecker) =>
-              new VerificationService([rulesChecker])
+            useFactory: (
+              rulesChecker: RulesValidationChecker,
+              mathChecker: MathConsistencyChecker,
+              citationChecker: SourceCitationChecker,
+              escalationChecker: EscalationChecker
+            ) =>
+              new VerificationService([rulesChecker, mathChecker, citationChecker, escalationChecker])
           },
           {
             provide: 'REQUEST',

@@ -36,7 +36,10 @@ import { MarketDataTool } from './tools/market-data.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
 import { RebalanceSimulatorTool } from './tools/rebalance-simulator.tool';
 import { TransactionHistoryTool } from './tools/transaction-history.tool';
+import { EscalationChecker } from './verification/escalation.checker';
+import { MathConsistencyChecker } from './verification/math-consistency.checker';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
+import { SourceCitationChecker } from './verification/source-citation.checker';
 import { VerificationService } from './verification/verification.service';
 
 @Module({
@@ -78,12 +81,20 @@ import { VerificationService } from './verification/verification.service';
     PortfolioService,
     ResponseFormatter,
     RulesService,
+    EscalationChecker,
+    MathConsistencyChecker,
     RulesValidationChecker,
+    SourceCitationChecker,
     {
-      inject: [RulesValidationChecker],
+      inject: [RulesValidationChecker, MathConsistencyChecker, SourceCitationChecker, EscalationChecker],
       provide: VerificationService,
-      useFactory: (rulesChecker: RulesValidationChecker) =>
-        new VerificationService([rulesChecker])
+      useFactory: (
+        rulesChecker: RulesValidationChecker,
+        mathChecker: MathConsistencyChecker,
+        citationChecker: SourceCitationChecker,
+        escalationChecker: EscalationChecker
+      ) =>
+        new VerificationService([rulesChecker, mathChecker, citationChecker, escalationChecker])
     }
   ]
 })
