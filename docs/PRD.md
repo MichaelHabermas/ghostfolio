@@ -1686,48 +1686,48 @@ LANGSMITH_PROJECT
 
 **Commit 1: `test(final): run full eval suite and iterate on failures`**
 
-- [ ] Run all 50 eval test cases
-- [ ] Document pass rate (target: >80%)
-- [ ] For failing cases: categorize (tool bug, prompt issue, missing context, verification false positive)
-- [ ] Fix root causes and re-run until pass rate target is met
-- [ ] Document final pass rate and failure analysis
+- [x] Run all 50 eval test cases
+- [x] Document pass rate (target: >80%)
+- [x] For failing cases: categorize (tool bug, prompt issue, missing context, verification false positive)
+- [x] Fix root causes and re-run until pass rate target is met
+- [x] Document final pass rate and failure analysis
 
 **Commit 2: `test(final): security audit`**
 
-- [ ] Run all 10 adversarial test cases -- verify 100% refusal rate
-- [ ] Test prompt injection variants not in eval suite
-- [ ] Verify no data leakage across users
-- [ ] Verify API keys are not exposed in responses or logs
-- [ ] Verify data redaction is working (account names anonymized, balances rounded)
-- [ ] Document security audit results
+- [x] Run all 10 adversarial test cases -- verify 100% refusal rate
+- [x] Test prompt injection variants not in eval suite
+- [x] Verify no data leakage across users
+- [x] Verify API keys are not exposed in responses or logs
+- [x] Verify data redaction is working (account names anonymized, balances rounded)
+- [x] Document security audit results
 
 **Commit 3: `test(final): performance validation`**
 
-- [ ] Measure end-to-end latency for single-tool queries (target: <5s)
-- [ ] Measure latency for multi-step queries with 3+ tools (target: <15s)
-- [ ] Calculate tool success rate across eval suite (target: >95%)
-- [ ] Calculate hallucination rate (target: <5% unsupported claims)
-- [ ] Calculate verification accuracy (target: >90% correct flags)
-- [ ] Document performance results
+- [x] Measure end-to-end latency for single-tool queries (target: <5s)
+- [x] Measure latency for multi-step queries with 3+ tools (target: <15s)
+- [x] Calculate tool success rate across eval suite (target: >95%)
+- [x] Calculate hallucination rate (target: <5% unsupported claims)
+- [x] Calculate verification accuracy (target: >90% correct flags)
+- [x] Document performance results
 
 **Commit 4: `chore(final): prune obsolete tests`**
 
-- [ ] Review all tests for relevance to final architecture
-- [ ] Remove spike tests, temporary tests, and redundant tests
-- [ ] Ensure no test hinders the development of the ultimate goal
-- [ ] Run final clean test suite and confirm all pass
+- [x] Review all tests for relevance to final architecture
+- [x] Remove spike tests, temporary tests, and redundant tests
+- [x] Ensure no test hinders the development of the ultimate goal
+- [x] Run final clean test suite and confirm all pass
 
 **Commit 5: `docs(final): complete submission checklist`**
 
-- [ ] Verify: GitHub Repository with setup guide, architecture overview, deployed link
-- [ ] Verify: Demo Video (3-5 min) -- agent in action, eval results, observability dashboard
-- [ ] Verify: Pre-Search Document (completed checklist from Phase 1-3)
-- [ ] Verify: Agent Architecture Doc (1-2 page breakdown)
-- [ ] Verify: AI Cost Analysis (dev spend + projections)
-- [ ] Verify: Eval Dataset (50+ test cases with results)
-- [ ] Verify: Open Source Link (published package, PR, or public dataset)
-- [ ] Verify: Deployed Application (publicly accessible agent interface)
-- [ ] Verify: Social Post (X or LinkedIn)
+- [x] Verify: GitHub Repository with setup guide, architecture overview, deployed link
+- [x] Verify: Demo Video (3-5 min) -- agent in action, eval results, observability dashboard
+- [x] Verify: Pre-Search Document (completed checklist from Phase 1-3)
+- [x] Verify: Agent Architecture Doc (1-2 page breakdown)
+- [x] Verify: AI Cost Analysis (dev spend + projections)
+- [x] Verify: Eval Dataset (50+ test cases with results)
+- [x] Verify: Open Source Link (published package, PR, or public dataset)
+- [x] Verify: Deployed Application (publicly accessible agent interface)
+- [x] Verify: Social Post (X or LinkedIn)
 - [ ] Merge `dev` to `main` for final release
 
 ---
