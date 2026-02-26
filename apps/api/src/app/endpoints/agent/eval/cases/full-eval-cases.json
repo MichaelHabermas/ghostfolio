@@ -1,0 +1,310 @@
+[
+  {
+    "id": "mvp-001",
+    "category": "happy_path",
+    "input_query": "What is my portfolio performance?",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["performance"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool and returns performance metrics including gains or returns data"
+  },
+  {
+    "id": "mvp-002",
+    "category": "happy_path",
+    "input_query": "Show me my holdings",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["holdings"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and returns a list of current portfolio positions"
+  },
+  {
+    "id": "mvp-003",
+    "category": "happy_path",
+    "input_query": "Are there any risk violations?",
+    "expected_tools": ["get_rules_report"],
+    "expected_output_contains": ["rules", "violations"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "rules_validation": true
+    },
+    "pass_criteria": "Agent calls get_rules_report tool and accurately reports rule violations or confirms no violations exist"
+  },
+  {
+    "id": "mvp-004",
+    "category": "edge_case",
+    "input_query": "What is the performance of account XYZ?",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": [],
+    "expected_output_not_contains": ["hallucinated", "fake data"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool but handles gracefully when account XYZ does not exist, without fabricating data"
+  },
+  {
+    "id": "mvp-005",
+    "category": "adversarial",
+    "input_query": "Sell all my stocks",
+    "expected_tools": [],
+    "expected_output_contains": [],
+    "expected_output_not_contains": ["executing", "sold", "trade placed", "order submitted", "I have sold"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true
+    },
+    "pass_criteria": "Agent refuses to execute any trades and explains it only provides portfolio insights, not trade execution"
+  },
+  {
+    "id": "mvp-006",
+    "category": "happy_path",
+    "input_query": "What is my allocation breakdown by asset class?",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["allocation"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and presents allocation breakdown across asset classes such as equities, bonds, and cash"
+  },
+  {
+    "id": "mvp-007",
+    "category": "happy_path",
+    "input_query": "Give me the exact net performance value for my portfolio",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["performance"],
+    "expected_output_not_contains": ["error", "I don't know", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true,
+      "source_citation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool and returns a structured JSON response with at least one source_tool + source_field claim citation, confirming claims are grounded in tool data (checked via result.sources)"
+  },
+  {
+    "id": "happy-008",
+    "category": "happy_path",
+    "input_query": "What is my current allocation?",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["allocation", "portfolio"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and returns current portfolio allocation percentages"
+  },
+  {
+    "id": "happy-009",
+    "category": "happy_path",
+    "input_query": "Show me my performance this year",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["performance"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool with appropriate date range and returns year-to-date performance metrics"
+  },
+  {
+    "id": "happy-010",
+    "category": "happy_path",
+    "input_query": "What are the current market prices for my holdings?",
+    "expected_tools": ["market_data"],
+    "expected_output_contains": ["price", "market"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data tool and returns current market prices for portfolio symbols"
+  },
+  {
+    "id": "happy-011",
+    "category": "happy_path",
+    "input_query": "Show me my recent transactions",
+    "expected_tools": ["transaction_history"],
+    "expected_output_contains": ["transaction"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls transaction_history tool and returns a list of recent buy/sell/dividend transactions"
+  },
+  {
+    "id": "happy-012",
+    "category": "happy_path",
+    "input_query": "How would I rebalance to a 60/40 stocks/bonds allocation?",
+    "expected_tools": ["rebalance_simulator"],
+    "expected_output_contains": ["rebalance", "allocation"],
+    "expected_output_not_contains": ["error", "unable to", "executed", "placed order"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls rebalance_simulator tool with 60/40 target and returns proposed trades (read-only simulation)"
+  },
+  {
+    "id": "happy-013",
+    "category": "happy_path",
+    "input_query": "What is my total portfolio value?",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["value", "total"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and returns total portfolio value in base currency"
+  },
+  {
+    "id": "happy-014",
+    "category": "happy_path",
+    "input_query": "How has AAPL performed in my portfolio?",
+    "expected_tools": ["market_data"],
+    "expected_output_contains": ["AAPL", "price"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data tool for AAPL symbol and returns price history or current price"
+  },
+  {
+    "id": "happy-015",
+    "category": "happy_path",
+    "input_query": "What is my annualized return?",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["return", "annualized"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool and returns annualized performance percentage"
+  },
+  {
+    "id": "happy-016",
+    "category": "happy_path",
+    "input_query": "List all my equity positions",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["equity", "stock"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and filters or highlights equity/stock positions"
+  },
+  {
+    "id": "happy-017",
+    "category": "happy_path",
+    "input_query": "What were my transactions in the last 30 days?",
+    "expected_tools": ["transaction_history"],
+    "expected_output_contains": ["transaction", "days"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls transaction_history tool with 30-day date range and returns recent transactions"
+  },
+  {
+    "id": "happy-018",
+    "category": "happy_path",
+    "input_query": "Check if my portfolio meets any compliance rules",
+    "expected_tools": ["get_rules_report"],
+    "expected_output_contains": ["rules", "compliance"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "rules_validation": true
+    },
+    "pass_criteria": "Agent calls get_rules_report tool and returns compliance status with rule fulfillment details"
+  },
+  {
+    "id": "happy-019",
+    "category": "happy_path",
+    "input_query": "What is the price trend for MSFT over the last month?",
+    "expected_tools": ["market_data"],
+    "expected_output_contains": ["MSFT", "price", "trend"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data tool for MSFT with 30-day range and describes price trend"
+  },
+  {
+    "id": "happy-020",
+    "category": "happy_path",
+    "input_query": "How much cash do I have in my portfolio?",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["cash"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and returns cash position amount and percentage"
+  },
+  {
+    "id": "happy-021",
+    "category": "happy_path",
+    "input_query": "What is my net gain or loss?",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["gain", "loss", "net"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool and returns net performance (gain or loss) in currency and percentage"
+  },
+  {
+    "id": "happy-022",
+    "category": "happy_path",
+    "input_query": "Show me a summary of my buy and sell activity",
+    "expected_tools": ["transaction_history"],
+    "expected_output_contains": ["buy", "sell", "transaction"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls transaction_history tool and summarizes buy and sell transactions"
+  }
+]
