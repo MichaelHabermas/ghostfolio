@@ -65,7 +65,7 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 - [ ] Full 4-layer verification pipeline operational
 - [ ] Langfuse observability integrated with tracing and cost tracking
 - [ ] Eval dataset: 50 test cases (20 happy path, 10 edge, 10 adversarial, 10 multi-step)
-- [ ] GitHub Actions CI pipeline running lint + tests on PRs
+- [x] GitHub Actions CI pipeline running lint + tests on PRs
 - [ ] Security hardening: input validation, prompt injection defenses, data redaction
 
 **Final Submission (Sunday -- 7 days):**
@@ -1576,7 +1576,7 @@ LANGSMITH_PROJECT
 
 **Commit 3: `chore(ci): add eval suite trigger on agent changes`**
 
-- [ ] Configure eval suite to run when files in `apps/api/src/app/endpoints/agent/` change
+- [x] Configure eval suite to run when files in `apps/api/src/app/endpoints/agent/` change
 - [ ] Report eval pass rate in PR comments (if practical)
 - [ ] Document CI/CD setup
 

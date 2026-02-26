@@ -96,6 +96,8 @@ Find the AI agent under **Portfolio → Agent** after logging in.
 
 ### Eval Framework (Golden Sets — Stage 1)
 
+[![Eval Suite](https://github.com/ghostfolio/ghostfolio/actions/workflows/eval.yml/badge.svg)](https://github.com/ghostfolio/ghostfolio/actions/workflows/eval.yml)
+
 The agent ships with a deterministic eval suite following the Gauntlet five-stage model:
 
 | Metric | Value |

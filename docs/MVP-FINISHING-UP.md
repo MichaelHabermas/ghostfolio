@@ -8,10 +8,10 @@ Important information from #agentforge-ghostfolioiscooler for finishing the Ghos
 
 - [x] **Deploy:** Ghostfolio + Agent publicly accessible — https://ghostfolio-production-e242.up.railway.app (verified 2026-02-25)
 - [x] **Test subject:** Shared demo account on deployed instance (stable login, password, token; pre-populated investments); credentials documented for testers — see [docs/deployment/DEMO-ACCOUNT.md](deployment/DEMO-ACCOUNT.md) and [docs/LOGIN-AND-USERS.md](LOGIN-AND-USERS.md)
-- [ ] **Data providers:** Yahoo Finance (and any other sources) working on deployed instance; rate limits / connectivity verified or documented
+- [x] **Data providers:** Yahoo Finance (and any other sources) working on deployed instance; rate limits / connectivity verified or documented
 - [x] **Evals exposed to testers:** Eval cases and/or results visible in repo; README has "Run the evals" section with commands and 7/7 baseline — see [README.md](../README.md#eval-framework-golden-sets--stage-1)
 - [x] **Evaluator welcome modal:** Compact corner teaser implemented — `apps/client/src/app/components/evaluator-teaser/`; bottom-right, `mat-elevation-z8`, "Open demo portfolio" → `/demo`, dismissible via `sessionStorage`
-- [ ] **Week 2 admin:** Pre-search done, interview prep (Slack paragraph), PAT in portal, Week 1 AI interview if applicable
+- [x] **Week 2 admin:** Pre-search done, interview prep (Slack paragraph), PAT in portal, Week 1 AI interview if applicable
 - [ ] **Submission:** PRD checklist complete (demo video with eval results, architecture doc, cost analysis, eval dataset, open source link, deployed app, social post)
 
 ---
@@ -22,7 +22,7 @@ Testers/reviewers need a way to see or run the eval suite. These evals implement
 
 - [x] **In the repo:** Eval test cases live under `apps/api/src/app/endpoints/agent/eval/` (`eval/cases/mvp-cases.json`, Jest runner). README documents how to run: `npx nx test api --testPathPattern=eval`.
 - [x] **Documented results:** README has pass rate table (7/7, 100%) and link to `docs/MVP-FINISHING-UP.md` for stage breakdown.
-- [ ] **Demo video:** Assignment requires the demo video to show “eval results” (and observability). Include a short segment showing the eval suite run or a summary of results so testers see what “pass” looks like.
+- [x] **Demo video:** Assignment requires the demo video to show “eval results” (and observability). Include a short segment showing the eval suite run or a summary of results so testers see what “pass” looks like.
 
 ---
 
@@ -74,7 +74,7 @@ flowchart LR
 **MVP checklist:**
 
 - [x] All four check types represented in `mvp-cases.json` where applicable (mvp-007 asserts source citation via result.sources)
-- [ ] Golden set runs in CI on every agent-related commit (see Epic 15 for CI wiring)
+- [x] Golden set runs in CI on every agent-related commit (see Epic 15 for CI wiring)
 - [x] Pass rate and failure analysis documented and linked from README (7/7 baseline table + eval command in `README.md`)
 
 **Stretch goals — Golden Set hardening (Byron-aligned)**
@@ -237,8 +237,8 @@ Do not include lengthy instructions, links to docs, or multiple login methods. I
 
 Verify connectivity from the **deployed** app to:
 
-- [ ] **Yahoo Finance** (or configured market data provider): confirm quotes/symbol data load; if rate limited, see Answers above (caching, config, alternatives).
-- [ ] **Any other data sources** in use (e.g. exchange rates, symbol profiles): confirm they work in production, not only locally.
+- [x] **Yahoo Finance** (or configured market data provider): confirm quotes/symbol data load; if rate limited, see Answers above (caching, config, alternatives).
+- [x] **Any other data sources** in use (e.g. exchange rates, symbol profiles): confirm they work in production, not only locally.
 
 ---
 
@@ -254,11 +254,11 @@ Verify connectivity from the **deployed** app to:
 
 ## Week 2 deliverables
 
-- [ ] Week 2 Pre-search + project start
-- [ ] Interview prep: send Slack paragraph, wait for reach out
-- [ ] Upload PAT to portal (profile → Github PAT)
-- [ ] AI interview for Week 1 project due midnight CT if not done
-- [ ] Use PRD submission checklist so nothing gets lost
+- [x] Week 2 Pre-search + project start
+- [x] Interview prep: send Slack paragraph, wait for reach out
+- [x] Upload PAT to portal (profile → Github PAT)
+- [x] AI interview for Week 1 project due midnight CT if not done
+- [x] Use PRD submission checklist so nothing gets lost
 
 ---
 
@@ -266,7 +266,7 @@ Verify connectivity from the **deployed** app to:
 
 - **Recursive TypeScript types:** <https://github.com/microsoft/typescript-go> suggested if you hit recursive type issues.
 - **CI:** Can run ~10 mins; factor into PR/eval planning.
-- [ ] **Railway:** Confirm free vs paid for Ghostfolio + Agent + DB + Redis.
+- [x] **Railway:** Confirm free vs paid for Ghostfolio + Agent + DB + Redis (free tier for now).
 
 ---
 
@@ -278,11 +278,11 @@ MVP gate is agent-focused: NL queries, tools, verification, evals, deployment. U
 
 ## Action items
 
-- [ ] Confirm Week 2 deliverables (pre-search, interview prep, PAT, Week 1 AI interview).
-- [ ] If Railway: verify plan for Ghostfolio + Agent + DB + Redis.
+- [x] Confirm Week 2 deliverables (pre-search, interview prep, PAT, Week 1 AI interview).
+- [x] If Railway: verify plan for Ghostfolio + Agent + DB + Redis (free tier for now).
 - [ ] **Test subject:** Create shared demo account on deployed instance (stable login, password, token; pre-populated investments); document credentials for testers.
-- [ ] **Data providers (deployed):** Verify Yahoo Finance (and any other data sources) work on deployed instance; fix or document rate limits / connectivity.
-- [ ] **Evals for testers:** Document in README or docs how to run the eval suite; publish pass rate and results where testers can see them; include eval results in demo video.
+- [x] **Data providers (deployed):** Verify Yahoo Finance (and any other data sources) work on deployed instance; fix or document rate limits / connectivity.
+- [x] **Evals for testers:** Document in README or docs how to run the eval suite; publish pass rate and results where testers can see them; include eval results in demo video.
 - [ ] **Evaluator welcome modal:** Implement compact corner teaser (bottom-right, `mat-elevation-z8`); single CTA "Open demo portfolio" → `/demo`; one-line deployment note; one-line agent location ("Portfolio → Agent"); optional access token line; dismissible via close button (`sessionStorage`).
 - [ ] Optional: Check Ghostfolio OpenAPI/Swagger.
 - [ ] Before submission: PRD checklist (demo video, architecture doc, cost analysis, eval dataset, open source link, deployed app, social post).
