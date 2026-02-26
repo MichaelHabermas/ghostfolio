@@ -25,7 +25,8 @@ import { InputValidationService, ValidationError } from './validation/input-vali
 const VALIDATION_MESSAGES: Record<ValidationError, string> = {
   [ValidationError.QUERY_EMPTY]: 'Query must not be empty.',
   [ValidationError.QUERY_TOO_LONG]: 'Query exceeds the maximum length of 2000 characters.',
-  [ValidationError.INVALID_SESSION_ID]: 'Session ID must be a valid UUID.'
+  [ValidationError.INVALID_SESSION_ID]: 'Session ID must be a valid UUID.',
+  [ValidationError.POTENTIAL_INJECTION]: 'Query contains potentially unsafe patterns.'
 };
 
 @Controller('agent')
@@ -57,6 +58,15 @@ export class AgentController {
       throw new BadRequestException(
         VALIDATION_MESSAGES[validation.error!] ?? 'Invalid request.'
       );
+    }
+
+    if (validation.injectionDetected) {
+      await this.langfuseService.logSecurityEvent({
+        userId: this.request.user.id,
+        sessionId: body.sessionId ?? 'unknown',
+        eventType: 'injection_attempt',
+        query: validation.sanitizedQuery!
+      });
     }
 
     return this.agentService.processQuery({

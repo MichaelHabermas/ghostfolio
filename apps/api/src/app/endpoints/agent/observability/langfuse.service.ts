@@ -147,6 +147,49 @@ export class LangfuseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /**
+   * Logs a security event for audit tracking.
+   * Used to track injection attempts, rate limit hits, and other security-relevant events.
+   */
+  public async logSecurityEvent(params: {
+    userId: string;
+    sessionId: string;
+    eventType: 'injection_attempt' | 'rate_limit_hit' | 'cross_user_attempt';
+    query?: string;
+    details?: string;
+  }): Promise<void> {
+    if (!this.isEnabled) {
+      return;
+    }
+
+    try {
+      const mod = await this.getLangfuseModule();
+      if (!mod) {
+        return;
+      }
+
+      const observation = mod.startObservation('security-event', {
+        input: {
+          eventType: params.eventType,
+          query: params.query,
+          details: params.details
+        },
+        metadata: {
+          userId: params.userId,
+          sessionId: params.sessionId,
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      observation.end();
+      this.logger.warn(
+        `Security event logged: ${params.eventType} for user ${params.userId}`
+      );
+    } catch (error) {
+      this.logger.warn(`Failed to log security event: ${error}`);
+    }
+  }
+
   private async getLangfuseModule(): Promise<typeof import('@langfuse/tracing') | null> {
     if (this.langfuseModule) {
       return this.langfuseModule;
