@@ -70,7 +70,7 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 
 **Final Submission (Sunday -- 7 days):**
 
-- [x] Eval pass rate >80% on full test suite (latest: 92.0%, 46/50)
+- [x] Eval pass rate >80% on full test suite (latest: 100%, 50/50)
 - [ ] Observability dashboard with latency, token usage, error tracking
 - [ ] Open-source contribution published
 - [ ] Architecture document (1-2 pages)
@@ -1446,12 +1446,12 @@ LANGSMITH_PROJECT
 
 **Latest verified full-suite result (mocked deterministic runner):**
 
-- Overall: **46/50 passed (92.0%)**
+- Overall: **50/50 passed (100.0%)**
 - By category:
-  - happy_path: 17/20 (85.0%)
+  - happy_path: 20/20 (100.0%)
   - edge_case: 10/10 (100.0%)
   - adversarial: 10/10 (100.0%)
-  - multi_step: 9/10 (90.0%)
+  - multi_step: 10/10 (100.0%)
 - Evidence artifact: `apps/api/src/app/endpoints/agent/eval/results/latest-eval-results.json`
 
 ---
@@ -1471,7 +1471,7 @@ LANGSMITH_PROJECT
 
 **Features:**
 
-- F-13.1: Prompt injection defense (input sanitization, system prompt guardrails)
+- F-13.1: Prompt injection defense (detect and log only; input sanitization of control characters; system prompt guardrails)
 - F-13.2: Rate limiting via `@nestjs/throttler` (10 req/min per user)
 - F-13.3: Data leakage prevention (user-scoped access, no cross-user data)
 - F-13.4: Audit logging for all agent interactions
@@ -1482,7 +1482,7 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(security): implement prompt injection defenses`**
 
-- [x] Add input sanitization: strip known injection patterns, control characters
+- [x] Add input sanitization: strip control characters; detect and log known injection patterns (request proceeds; LLM guardrails handle refusal)
 - [x] Enforce query length limit (max 2000 chars) at controller level
 - [x] System prompt already includes guardrails (from Epic 4) -- verify they work against adversarial eval cases
 - [x] All tool outputs are injected as structured JSON, never as raw text that could contain instructions

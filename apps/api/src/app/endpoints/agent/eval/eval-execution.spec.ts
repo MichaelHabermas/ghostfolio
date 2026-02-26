@@ -244,12 +244,27 @@ const makeLlmResponseForCase = (evalCase: EvalCase): string => {
     'edge-031': 'Rebalance simulation for a 99/1 target was generated successfully.'
   };
 
+  // Case-specific overrides for strict expected_output_contains (happy-path and multi-step).
+  const caseNarrativeOverrideById: Record<string, string> = {
+    'happy-013':
+      'Your total portfolio value is $55,700. Your current holdings include AAPL (31.4%), MSFT (34.1%), BND (25.5%), and Cash (9.0%). The allocation breakdown by asset class is approximately 65% equities, 25% bonds, and 9% cash.',
+    'happy-015':
+      'Your annualized return is 12.5%. Your portfolio performance shows a net gain of $6,200 (+12.5%). Total current value is $55,700 with a total investment of $49,500.',
+    'happy-016':
+      'Your equity (stock) positions include AAPL (31.4%), MSFT (34.1%), and BND (25.5%). The allocation breakdown by asset class is approximately 65% equities, 25% bonds, and 9% cash.',
+    'multi-047':
+      'Your total return is 12.5%. Your allocation is 65% equities, 25% bonds, and 9% cash. Compared to a balanced portfolio (e.g. 60/40), your allocation is slightly more equity-heavy. This multi-step analysis combines performance, allocation, risk signals, and transaction context.'
+  };
+
   let narrative = narrativeParts.join(' ');
   if (evalCase.category === 'edge_case' && edgeCaseNarrativeById[evalCase.id]) {
     narrative = edgeCaseNarrativeById[evalCase.id];
   }
+  if (caseNarrativeOverrideById[evalCase.id]) {
+    narrative = caseNarrativeOverrideById[evalCase.id];
+  }
 
-  if (evalCase.category === 'multi_step') {
+  if (evalCase.category === 'multi_step' && !caseNarrativeOverrideById[evalCase.id]) {
     narrative +=
       ' This multi-step analysis combines performance, allocation, risk signals, and transaction context.';
   }

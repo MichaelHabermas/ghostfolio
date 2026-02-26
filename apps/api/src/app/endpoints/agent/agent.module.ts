@@ -23,7 +23,7 @@ import { SymbolProfileModule } from '@ghostfolio/api/services/symbol-profile/sym
 
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
@@ -32,6 +32,7 @@ import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { LangfuseService } from './observability/langfuse.service';
 import { RedactionService } from './redaction/redaction.service';
+import { UserThrottlerGuard } from './security/user-throttler.guard';
 import { InputValidationService } from './validation/input-validation.service';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
@@ -108,7 +109,7 @@ import { VerificationService } from './verification/verification.service';
     },
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: UserThrottlerGuard
     }
   ]
 })

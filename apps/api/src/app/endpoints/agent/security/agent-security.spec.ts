@@ -352,17 +352,17 @@ describe('Agent Security', () => {
       expect(hasThrottlerModule || moduleMetadata.length > 0).toBe(true);
     });
 
-    it('should register ThrottlerGuard as APP_GUARD', () => {
+    it('should register UserThrottlerGuard as APP_GUARD (per-user rate limiting)', () => {
       const providers = Reflect.getMetadata('providers', AgentModule) || [];
       
-      const hasAppGuard = providers.some((provider: any) => {
-        if (typeof provider === 'object' && provider.provide) {
-          return provider.provide.toString().includes('APP_GUARD');
-        }
-        return false;
-      });
+      const appGuardProvider = providers.find(
+        (provider: any) =>
+          typeof provider === 'object' &&
+          provider?.provide?.toString?.()?.includes('APP_GUARD')
+      );
 
-      expect(hasAppGuard).toBe(true);
+      expect(appGuardProvider).toBeDefined();
+      expect(appGuardProvider.useClass?.name).toBe('UserThrottlerGuard');
     });
 
     it('should apply @Throttle decorator to query endpoint', () => {
