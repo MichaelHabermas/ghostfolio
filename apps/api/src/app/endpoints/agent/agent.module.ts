@@ -22,7 +22,8 @@ import { PortfolioSnapshotQueueModule } from '@ghostfolio/api/services/queues/po
 import { SymbolProfileModule } from '@ghostfolio/api/services/symbol-profile/symbol-profile.module';
 
 import { Module } from '@nestjs/common';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
@@ -102,6 +103,10 @@ import { VerificationService } from './verification/verification.service';
         escalationChecker: EscalationChecker
       ) =>
         new VerificationService([rulesChecker, mathChecker, citationChecker, escalationChecker])
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
     }
   ]
 })
