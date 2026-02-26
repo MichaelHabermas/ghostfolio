@@ -413,9 +413,9 @@ flowchart TD
     FLAG --> PASS
 ```
 
-### Data Flow with Redaction (Planned -- Epic 14)
+### Data Flow with Redaction (Epic 14 — Implemented)
 
-**Note:** This section describes planned functionality for Epic 14. The RedactionService is not yet implemented.
+**Note:** RedactionService is implemented and wired in the tool pipeline. Tool outputs are redacted (account names, balances, PII) before being sent to the LLM; verification runs on raw data.
 
 ```mermaid
 flowchart LR
