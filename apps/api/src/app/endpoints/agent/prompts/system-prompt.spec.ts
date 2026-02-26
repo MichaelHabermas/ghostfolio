@@ -29,6 +29,18 @@ describe('SYSTEM_PROMPT', () => {
     expect(SYSTEM_PROMPT).toContain('get_rules_report');
   });
 
+  it('should include guidance for the market_data tool', () => {
+    expect(SYSTEM_PROMPT).toContain('market_data');
+  });
+
+  it('should include guidance for the transaction_history tool', () => {
+    expect(SYSTEM_PROMPT).toContain('transaction_history');
+  });
+
+  it('should include guidance for the rebalance_simulator tool', () => {
+    expect(SYSTEM_PROMPT).toContain('rebalance_simulator');
+  });
+
   it('should define structured JSON response format with claims and narrative', () => {
     expect(SYSTEM_PROMPT).toContain('claims');
     expect(SYSTEM_PROMPT).toContain('narrative');

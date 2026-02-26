@@ -4,11 +4,17 @@ import type { ToolResponse } from '../types';
 import {
   GetHoldingsInputSchema,
   GetRulesReportInputSchema,
-  PortfolioPerformanceInputSchema
+  MarketDataInputSchema,
+  PortfolioPerformanceInputSchema,
+  RebalanceSimulatorInputSchema,
+  TransactionHistoryInputSchema
 } from '../schemas';
 import type { GetHoldingsTool } from './get-holdings.tool';
 import type { GetRulesReportTool } from './get-rules-report.tool';
+import type { MarketDataTool } from './market-data.tool';
 import type { PortfolioPerformanceTool } from './portfolio-performance.tool';
+import type { RebalanceSimulatorTool } from './rebalance-simulator.tool';
+import type { TransactionHistoryTool } from './transaction-history.tool';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ToolRegistry = Record<string, any>;
@@ -17,6 +23,9 @@ export interface ToolInstances {
   performanceTool: Pick<PortfolioPerformanceTool, 'execute'>;
   holdingsTool: Pick<GetHoldingsTool, 'execute'>;
   rulesReportTool: Pick<GetRulesReportTool, 'execute'>;
+  marketDataTool: Pick<MarketDataTool, 'execute'>;
+  transactionHistoryTool: Pick<TransactionHistoryTool, 'execute'>;
+  rebalanceSimulatorTool: Pick<RebalanceSimulatorTool, 'execute'>;
 }
 
 /**
@@ -34,7 +43,14 @@ export function createToolRegistry(
   toolOutputs?: Map<string, ToolResponse<unknown>>,
   toolsCalled?: Set<string>
 ): ToolRegistry {
-  const { performanceTool, holdingsTool, rulesReportTool } = tools;
+  const {
+    performanceTool,
+    holdingsTool,
+    rulesReportTool,
+    marketDataTool,
+    transactionHistoryTool,
+    rebalanceSimulatorTool
+  } = tools;
 
   const capture = (name: string, result: ToolResponse<unknown>) => {
     if (toolOutputs) {
@@ -81,6 +97,39 @@ export function createToolRegistry(
       parameters: GetRulesReportInputSchema,
       execute: async (args) =>
         capture('get_rules_report', await rulesReportTool.execute(args, userId))
+    }),
+
+    market_data: tool({
+      description:
+        'Retrieves current and historical market price data for specified stock/fund symbols. ' +
+        'Returns time-series price data points with dates and market prices. ' +
+        'Use this tool when the user asks about price history, current market prices, price trends, ' +
+        'or how a specific stock or fund has performed in the market.',
+      parameters: MarketDataInputSchema,
+      execute: async (args) =>
+        capture('market_data', await marketDataTool.execute(args, userId))
+    }),
+
+    transaction_history: tool({
+      description:
+        'Retrieves the user\'s transaction history including buys, sells, dividends, and fees. ' +
+        'Returns a list of transactions with dates, types, symbols, quantities, and prices. ' +
+        'Use this tool when the user asks about their recent trades, buy/sell history, ' +
+        'dividend income, transaction patterns, or trading activity.',
+      parameters: TransactionHistoryInputSchema,
+      execute: async (args) =>
+        capture('transaction_history', await transactionHistoryTool.execute(args, userId))
+    }),
+
+    rebalance_simulator: tool({
+      description:
+        'Simulates portfolio rebalancing by comparing current asset class allocations to target ' +
+        'allocations and calculating proposed trades. This is a READ-ONLY simulation — no orders ' +
+        'are created. Use this tool when the user asks about rebalancing, target allocation, what ' +
+        'trades to make to reach a desired allocation, or how to adjust their portfolio mix.',
+      parameters: RebalanceSimulatorInputSchema,
+      execute: async (args) =>
+        capture('rebalance_simulator', await rebalanceSimulatorTool.execute(args, userId))
     })
   };
 }

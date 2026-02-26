@@ -14,7 +14,10 @@ import { ConversationMemory } from './memory/conversation-memory';
 import { SYSTEM_PROMPT } from './prompts/system-prompt';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
+import { MarketDataTool } from './tools/market-data.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
+import { RebalanceSimulatorTool } from './tools/rebalance-simulator.tool';
+import { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { createToolRegistry } from './tools/tool-registry';
 import type { AgentResponse, ToolResponse } from './types';
 import { VerificationService } from './verification/verification.service';
@@ -35,6 +38,9 @@ export class AgentService {
     private readonly performanceTool: PortfolioPerformanceTool,
     private readonly holdingsTool: GetHoldingsTool,
     private readonly rulesReportTool: GetRulesReportTool,
+    private readonly marketDataTool: MarketDataTool,
+    private readonly transactionHistoryTool: TransactionHistoryTool,
+    private readonly rebalanceSimulatorTool: RebalanceSimulatorTool,
     private readonly conversationMemory: ConversationMemory,
     private readonly responseFormatter: ResponseFormatter,
     private readonly verificationService: VerificationService,
@@ -64,7 +70,10 @@ export class AgentService {
         {
           performanceTool: this.performanceTool,
           holdingsTool: this.holdingsTool,
-          rulesReportTool: this.rulesReportTool
+          rulesReportTool: this.rulesReportTool,
+          marketDataTool: this.marketDataTool,
+          transactionHistoryTool: this.transactionHistoryTool,
+          rebalanceSimulatorTool: this.rebalanceSimulatorTool
         },
         userId,
         toolOutputs,

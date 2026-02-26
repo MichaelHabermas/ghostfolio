@@ -16,7 +16,10 @@ import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
+import { MarketDataTool } from './tools/market-data.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
+import { RebalanceSimulatorTool } from './tools/rebalance-simulator.tool';
+import { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { InputValidationService } from './validation/input-validation.service';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
@@ -50,7 +53,10 @@ describe('AgentModule', () => {
           { provide: PropertyService, useValue: {} },
           { provide: GetHoldingsTool, useValue: { execute: jest.fn() } },
           { provide: GetRulesReportTool, useValue: { execute: jest.fn() } },
+          { provide: MarketDataTool, useValue: { execute: jest.fn() } },
           { provide: PortfolioPerformanceTool, useValue: { execute: jest.fn() } },
+          { provide: RebalanceSimulatorTool, useValue: { execute: jest.fn() } },
+          { provide: TransactionHistoryTool, useValue: { execute: jest.fn() } },
           ErrorMapperService,
           InputValidationService,
           RulesValidationChecker,

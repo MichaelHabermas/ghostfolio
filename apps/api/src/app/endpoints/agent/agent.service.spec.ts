@@ -17,7 +17,10 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { AgentService } from './agent.service';
 import type { GetHoldingsTool } from './tools/get-holdings.tool';
 import type { GetRulesReportTool } from './tools/get-rules-report.tool';
+import type { MarketDataTool } from './tools/market-data.tool';
 import type { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
+import type { RebalanceSimulatorTool } from './tools/rebalance-simulator.tool';
+import type { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { ConversationMemory } from './memory/conversation-memory';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ErrorMapperService } from './errors/error-mapper.service';
@@ -59,6 +62,9 @@ describe('AgentService', () => {
   let performanceTool: jest.Mocked<Pick<PortfolioPerformanceTool, 'execute'>>;
   let holdingsTool: jest.Mocked<Pick<GetHoldingsTool, 'execute'>>;
   let rulesReportTool: jest.Mocked<Pick<GetRulesReportTool, 'execute'>>;
+  let marketDataTool: jest.Mocked<Pick<MarketDataTool, 'execute'>>;
+  let transactionHistoryTool: jest.Mocked<Pick<TransactionHistoryTool, 'execute'>>;
+  let rebalanceSimulatorTool: jest.Mocked<Pick<RebalanceSimulatorTool, 'execute'>>;
   let conversationMemory: ConversationMemory;
   let responseFormatter: ResponseFormatter;
   let verificationService: VerificationService;
@@ -80,6 +86,9 @@ describe('AgentService', () => {
     performanceTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
     holdingsTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
     rulesReportTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
+    marketDataTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
+    transactionHistoryTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
+    rebalanceSimulatorTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
     conversationMemory = new ConversationMemory();
     responseFormatter = new ResponseFormatter();
     verificationService = makePassingVerificationService();
@@ -90,6 +99,9 @@ describe('AgentService', () => {
       performanceTool as any,
       holdingsTool as any,
       rulesReportTool as any,
+      marketDataTool as any,
+      transactionHistoryTool as any,
+      rebalanceSimulatorTool as any,
       conversationMemory,
       responseFormatter,
       verificationService,
@@ -191,6 +203,9 @@ describe('AgentService', () => {
       expect(callArgs.tools).toHaveProperty('portfolio_performance');
       expect(callArgs.tools).toHaveProperty('get_holdings');
       expect(callArgs.tools).toHaveProperty('get_rules_report');
+      expect(callArgs.tools).toHaveProperty('market_data');
+      expect(callArgs.tools).toHaveProperty('transaction_history');
+      expect(callArgs.tools).toHaveProperty('rebalance_simulator');
     });
 
     it('should pass maxSteps to generateText', async () => {
@@ -238,6 +253,9 @@ describe('AgentService', () => {
         performanceTool as any,
         holdingsTool as any,
         rulesReportTool as any,
+        marketDataTool as any,
+        transactionHistoryTool as any,
+        rebalanceSimulatorTool as any,
         conversationMemory,
         responseFormatter,
         verificationService,

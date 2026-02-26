@@ -58,6 +58,9 @@ const buildService = () => {
   const performanceTool = makeToolMock();
   const holdingsTool = makeToolMock();
   const rulesReportTool = makeToolMock();
+  const marketDataTool = makeToolMock();
+  const transactionHistoryTool = makeToolMock();
+  const rebalanceSimulatorTool = makeToolMock();
   const memory = new ConversationMemory();
   const formatter = new ResponseFormatter();
   const verificationService = makePassingVerificationService();
@@ -67,6 +70,9 @@ const buildService = () => {
     performanceTool as any,
     holdingsTool as any,
     rulesReportTool as any,
+    marketDataTool as any,
+    transactionHistoryTool as any,
+    rebalanceSimulatorTool as any,
     memory,
     formatter,
     verificationService,
@@ -81,6 +87,9 @@ const buildServiceWithOptions = (options: { verificationService?: VerificationSe
   const performanceTool = makeToolMock();
   const holdingsTool = makeToolMock();
   const rulesReportTool = makeToolMock();
+  const marketDataTool = makeToolMock();
+  const transactionHistoryTool = makeToolMock();
+  const rebalanceSimulatorTool = makeToolMock();
   const memory = new ConversationMemory();
   const formatter = new ResponseFormatter();
   const verificationService = options.verificationService ?? makePassingVerificationService();
@@ -90,6 +99,9 @@ const buildServiceWithOptions = (options: { verificationService?: VerificationSe
     performanceTool as any,
     holdingsTool as any,
     rulesReportTool as any,
+    marketDataTool as any,
+    transactionHistoryTool as any,
+    rebalanceSimulatorTool as any,
     memory,
     formatter,
     verificationService,

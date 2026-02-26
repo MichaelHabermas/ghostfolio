@@ -31,7 +31,10 @@ import { ConversationMemory } from './memory/conversation-memory';
 import { InputValidationService } from './validation/input-validation.service';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
+import { MarketDataTool } from './tools/market-data.tool';
 import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
+import { RebalanceSimulatorTool } from './tools/rebalance-simulator.tool';
+import { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
 import { VerificationService } from './verification/verification.service';
 
@@ -65,8 +68,11 @@ import { VerificationService } from './verification/verification.service';
     GetHoldingsTool,
     GetRulesReportTool,
     MarketDataService,
+    MarketDataTool,
     PortfolioCalculatorFactory,
     PortfolioPerformanceTool,
+    RebalanceSimulatorTool,
+    TransactionHistoryTool,
     PortfolioService,
     ResponseFormatter,
     RulesService,

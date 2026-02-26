@@ -104,12 +104,18 @@ const buildEvalService = (toolFixtures: {
   const rulesReportTool = {
     execute: jest.fn().mockResolvedValue(toolFixtures.rulesReportResult ?? MOCK_RULES_REPORT_DATA)
   };
+  const marketDataTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
+  const transactionHistoryTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
+  const rebalanceSimulatorTool = { execute: jest.fn().mockResolvedValue({ success: true, data: {} }) };
 
   const service = new AgentService(
     makePropertyService() as any,
     performanceTool as any,
     holdingsTool as any,
     rulesReportTool as any,
+    marketDataTool as any,
+    transactionHistoryTool as any,
+    rebalanceSimulatorTool as any,
     new ConversationMemory(),
     new ResponseFormatter(),
     makePassingVerificationService(),

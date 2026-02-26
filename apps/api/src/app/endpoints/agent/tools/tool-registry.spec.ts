@@ -12,6 +12,27 @@ const mockRulesReportTool = {
   execute: jest.fn().mockResolvedValue({ success: true, data: { categories: [], statistics: { rulesActiveCount: 0, rulesFulfilledCount: 0 } } })
 };
 
+const mockMarketDataTool = {
+  execute: jest.fn().mockResolvedValue({ success: true, data: { data: [] } })
+};
+
+const mockTransactionHistoryTool = {
+  execute: jest.fn().mockResolvedValue({ success: true, data: { transactions: [], totalCount: 0 } })
+};
+
+const mockRebalanceSimulatorTool = {
+  execute: jest.fn().mockResolvedValue({ success: true, data: { proposedTrades: [], allocationComparison: [], totalPortfolioValue: 0 } })
+};
+
+const allMockTools = {
+  performanceTool: mockPerformanceTool as any,
+  holdingsTool: mockHoldingsTool as any,
+  rulesReportTool: mockRulesReportTool as any,
+  marketDataTool: mockMarketDataTool as any,
+  transactionHistoryTool: mockTransactionHistoryTool as any,
+  rebalanceSimulatorTool: mockRebalanceSimulatorTool as any
+};
+
 describe('createToolRegistry', () => {
   const userId = 'user-test-123';
 
@@ -19,19 +40,12 @@ describe('createToolRegistry', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    registry = createToolRegistry(
-      {
-        performanceTool: mockPerformanceTool as any,
-        holdingsTool: mockHoldingsTool as any,
-        rulesReportTool: mockRulesReportTool as any
-      },
-      userId
-    );
+    registry = createToolRegistry(allMockTools, userId);
   });
 
-  it('should return an object with exactly 3 tool definitions', () => {
+  it('should return an object with exactly 6 tool definitions', () => {
     const keys = Object.keys(registry);
-    expect(keys).toHaveLength(3);
+    expect(keys).toHaveLength(6);
   });
 
   it('should include portfolio_performance tool', () => {
@@ -44,6 +58,18 @@ describe('createToolRegistry', () => {
 
   it('should include get_rules_report tool', () => {
     expect(registry).toHaveProperty('get_rules_report');
+  });
+
+  it('should include market_data tool', () => {
+    expect(registry).toHaveProperty('market_data');
+  });
+
+  it('should include transaction_history tool', () => {
+    expect(registry).toHaveProperty('transaction_history');
+  });
+
+  it('should include rebalance_simulator tool', () => {
+    expect(registry).toHaveProperty('rebalance_simulator');
   });
 
   it('each tool definition should have a description string', () => {
@@ -77,25 +103,45 @@ describe('createToolRegistry', () => {
     expect(mockRulesReportTool.execute).toHaveBeenCalledWith(args, userId);
   });
 
+  it('market_data execute should delegate to marketDataTool with userId', async () => {
+    const args = { symbols: ['AAPL'] };
+    await (registry.market_data as any).execute(args);
+    expect(mockMarketDataTool.execute).toHaveBeenCalledWith(args, userId);
+  });
+
+  it('transaction_history execute should delegate to transactionHistoryTool with userId', async () => {
+    const args = {};
+    await (registry.transaction_history as any).execute(args);
+    expect(mockTransactionHistoryTool.execute).toHaveBeenCalledWith(args, userId);
+  });
+
+  it('rebalance_simulator execute should delegate to rebalanceSimulatorTool with userId', async () => {
+    const args = { targetAllocations: [{ assetClass: 'EQUITY', targetPercentage: 60 }] };
+    await (registry.rebalance_simulator as any).execute(args);
+    expect(mockRebalanceSimulatorTool.execute).toHaveBeenCalledWith(args, userId);
+  });
+
   it('tool descriptions should be detailed enough to guide LLM choice', () => {
     const perfDesc = (registry.portfolio_performance as any).description as string;
     const holdingsDesc = (registry.get_holdings as any).description as string;
     const rulesDesc = (registry.get_rules_report as any).description as string;
+    const marketDesc = (registry.market_data as any).description as string;
+    const txDesc = (registry.transaction_history as any).description as string;
+    const rebalDesc = (registry.rebalance_simulator as any).description as string;
 
     expect(perfDesc.toLowerCase()).toContain('performance');
     expect(holdingsDesc.toLowerCase()).toContain('holdings');
     expect(rulesDesc.toLowerCase()).toContain('risk');
+    expect(marketDesc.toLowerCase()).toContain('market');
+    expect(txDesc.toLowerCase()).toContain('transaction');
+    expect(rebalDesc.toLowerCase()).toContain('rebalanc');
   });
 
   describe('toolOutputs capture', () => {
     it('should record tool results into toolOutputs map when provided', async () => {
       const toolOutputs = new Map();
       const registryWithCapture = createToolRegistry(
-        {
-          performanceTool: mockPerformanceTool as any,
-          holdingsTool: mockHoldingsTool as any,
-          rulesReportTool: mockRulesReportTool as any
-        },
+        allMockTools,
         userId,
         toolOutputs
       );
@@ -103,10 +149,16 @@ describe('createToolRegistry', () => {
       await (registryWithCapture.portfolio_performance as any).execute({});
       await (registryWithCapture.get_holdings as any).execute({});
       await (registryWithCapture.get_rules_report as any).execute({});
+      await (registryWithCapture.market_data as any).execute({ symbols: ['AAPL'] });
+      await (registryWithCapture.transaction_history as any).execute({});
+      await (registryWithCapture.rebalance_simulator as any).execute({ targetAllocations: [] });
 
       expect(toolOutputs.has('portfolio_performance')).toBe(true);
       expect(toolOutputs.has('get_holdings')).toBe(true);
       expect(toolOutputs.has('get_rules_report')).toBe(true);
+      expect(toolOutputs.has('market_data')).toBe(true);
+      expect(toolOutputs.has('transaction_history')).toBe(true);
+      expect(toolOutputs.has('rebalance_simulator')).toBe(true);
     });
 
     it('should not fail when toolOutputs is not provided', async () => {
