@@ -595,4 +595,134 @@ describe('MVP Eval Execution', () => {
       expect(MOCK_PERFORMANCE_ERROR.error).toContain('not found');
     });
   });
+
+  describe('Full 50-case eval suite execution', () => {
+    it('should execute all 50 cases and report pass rate', async () => {
+      const results: Array<{
+        id: string;
+        category: string;
+        passed: boolean;
+        reason?: string;
+      }> = [];
+
+      // Execute each case
+      for (const evalCase of evalCases) {
+        const result = { id: evalCase.id, category: evalCase.category, passed: false, reason: '' };
+
+        try {
+          // Build service with appropriate fixtures based on case
+          const toolFixtures: any = {};
+          if (evalCase.id === 'mvp-004') {
+            toolFixtures.performanceResult = MOCK_PERFORMANCE_ERROR;
+          }
+
+          const { service } = buildEvalService(toolFixtures);
+          configureGenerateTextMock(evalCase);
+
+          const queryResult = await service.processQuery({
+            query: evalCase.input_query,
+            userId: 'eval-user'
+          });
+
+          // Check 1: Expected tools were called
+          const expectedToolsSet = new Set(evalCase.expected_tools);
+          const actualToolsSet = new Set(queryResult.toolsCalled);
+          const toolsMatch =
+            expectedToolsSet.size === actualToolsSet.size &&
+            [...expectedToolsSet].every((t) => actualToolsSet.has(t));
+
+          if (!toolsMatch) {
+            result.reason = `Tool mismatch: expected ${JSON.stringify(evalCase.expected_tools)}, got ${JSON.stringify(queryResult.toolsCalled)}`;
+            results.push(result);
+            continue;
+          }
+
+          // Check 2: Response contains all required phrases
+          const responseLower = queryResult.response.toLowerCase();
+          let phraseCheckPassed = true;
+          for (const phrase of evalCase.expected_output_contains) {
+            if (!responseLower.includes(phrase.toLowerCase())) {
+              result.reason = `Missing required phrase: "${phrase}"`;
+              phraseCheckPassed = false;
+              break;
+            }
+          }
+          if (!phraseCheckPassed) {
+            results.push(result);
+            continue;
+          }
+
+          // Check 3: Response does NOT contain forbidden phrases
+          let forbiddenCheckPassed = true;
+          for (const phrase of evalCase.expected_output_not_contains) {
+            if (responseLower.includes(phrase.toLowerCase())) {
+              result.reason = `Contains forbidden phrase: "${phrase}"`;
+              forbiddenCheckPassed = false;
+              break;
+            }
+          }
+          if (!forbiddenCheckPassed) {
+            results.push(result);
+            continue;
+          }
+
+          // Check 4: No error flags (unless expected for edge/adversarial cases)
+          if (evalCase.category === 'happy_path' || evalCase.category === 'multi_step') {
+            if (queryResult.flags.includes('error') || queryResult.flags.includes('verification_failed')) {
+              result.reason = `Unexpected error flags: ${queryResult.flags.join(', ')}`;
+              results.push(result);
+              continue;
+            }
+          }
+
+          // All checks passed
+          result.passed = true;
+          results.push(result);
+        } catch (error) {
+          result.reason = `Exception: ${error.message}`;
+          results.push(result);
+        }
+      }
+
+      // Calculate and log pass rates
+      const total = results.length;
+      const passed = results.filter((r) => r.passed).length;
+      const failed = total - passed;
+      const passRate = ((passed / total) * 100).toFixed(1);
+
+      const byCategory = results.reduce((acc, r) => {
+        if (!acc[r.category]) {
+          acc[r.category] = { total: 0, passed: 0 };
+        }
+        acc[r.category].total++;
+        if (r.passed) acc[r.category].passed++;
+        return acc;
+      }, {} as Record<string, { total: number; passed: number }>);
+
+      console.log('\n=== FULL EVAL SUITE RESULTS ===');
+      console.log(`Total: ${passed}/${total} passed (${passRate}%)`);
+      console.log('\nBy category:');
+      for (const [category, stats] of Object.entries(byCategory)) {
+        const catPassRate = ((stats.passed / stats.total) * 100).toFixed(1);
+        console.log(`  ${category}: ${stats.passed}/${stats.total} (${catPassRate}%)`);
+      }
+
+      if (failed > 0) {
+        console.log('\nFailures:');
+        results
+          .filter((r) => !r.passed)
+          .forEach((r) => {
+            console.log(`  ${r.id} (${r.category}): ${r.reason}`);
+          });
+      }
+
+      console.log('\n===============================\n');
+
+      // Assert we have 50 cases
+      expect(total).toBe(50);
+
+      // Assert overall pass rate meets target
+      expect(parseFloat(passRate)).toBeGreaterThanOrEqual(80);
+    }, 300000); // 5 minute timeout for 50 cases
+  });
 });
