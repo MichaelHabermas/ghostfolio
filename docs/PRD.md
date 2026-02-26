@@ -70,7 +70,7 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 
 **Final Submission (Sunday -- 7 days):**
 
-- [ ] Eval pass rate >80% on full test suite
+- [x] Eval pass rate >80% on full test suite (latest: 92.0%, 46/50)
 - [ ] Observability dashboard with latency, token usage, error tracking
 - [ ] Open-source contribution published
 - [ ] Architecture document (1-2 pages)
@@ -1443,6 +1443,16 @@ LANGSMITH_PROJECT
 - [x] Identify and categorize all failures
 - [x] Prioritize failures for prompt engineering improvements
 - [x] Run tests and verify pass rate
+
+**Latest verified full-suite result (mocked deterministic runner):**
+
+- Overall: **46/50 passed (92.0%)**
+- By category:
+  - happy_path: 17/20 (85.0%)
+  - edge_case: 10/10 (100.0%)
+  - adversarial: 10/10 (100.0%)
+  - multi_step: 9/10 (90.0%)
+- Evidence artifact: `apps/api/src/app/endpoints/agent/eval/results/latest-eval-results.json`
 
 ---
 

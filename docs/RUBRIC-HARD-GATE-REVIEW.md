@@ -41,7 +41,7 @@ This document tracks the strict PASS/FAIL checks from the official rubric:
 | 5 | Graceful error handling for failures | Pass | Error mapper now classifies auth, rate-limit, and provider outage/network failures with clear user messages (`apps/api/src/app/endpoints/agent/errors/error-mapper.service.ts`) |
 | 6 | Domain-specific verification applied | Pass | Verification path unchanged (rules alignment remains in gate) |
 | 7 | 5+ eval cases with expected outcomes | Pass | 7 Golden Set cases remain in `mvp-cases.json` |
-| 8 | Eval suite runnable and reports pass/fail | Pass | `eval-execution.spec.ts` still deterministic by default and now supports optional real-LLM mode (`EVAL_USE_REAL_LLM=true`) |
+| 8 | Eval suite runnable and reports pass/fail | Pass (Exceeded) | Full 50-case execution now runs with machine-readable results and category breakdown (`apps/api/src/app/endpoints/agent/eval/eval-execution.spec.ts`, `apps/api/src/app/endpoints/agent/eval/results/latest-eval-results.json`) |
 | 9 | Publicly accessible app usable by grader | Pass (code/docs) | README + PRD + MVP docs aligned on deployed URL and evaluator path |
 | 10 | AI interview completed | Manual | Out of code scope |
 | 11 | Not noticeably broken UX | Pass | Teaser layout/theme responsiveness fixed; agent chat contrast and readability improved in light and dark mode |
@@ -51,3 +51,6 @@ This document tracks the strict PASS/FAIL checks from the official rubric:
 - Targeted review run completed via lints and API test execution command:
   - `npx nx test api --runInBand --testPathPattern=\"agent.service.spec.ts|error-mapper.service.spec.ts|agent.controller.spec.ts|eval-execution.spec.ts\"`
   - Result: test execution passed for changed agent/eval paths (workspace runner still executes broader api suites in this Nx setup).
+- Full eval suite verification (deterministic/mock mode):
+  - `npx nx test api --testFile=eval-execution.spec.ts --no-cache`
+  - Result: 46/50 passed (92.0% overall), with per-category breakdown persisted to `apps/api/src/app/endpoints/agent/eval/results/latest-eval-results.json`.

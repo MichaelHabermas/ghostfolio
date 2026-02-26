@@ -25,9 +25,12 @@ export class TransactionHistoryTool {
   ): Promise<ToolResponse<TransactionHistoryOutput>> {
     try {
       const user = await this.userService.user({ id: userId });
+      const settingsPayload =
+        (user as { settings?: { settings?: { baseCurrency?: string } } | undefined })?.settings ??
+        (user as { Settings?: { settings?: { baseCurrency?: string } } | undefined })?.Settings;
       const userCurrency =
-        (user?.settings?.settings as { baseCurrency?: string })
-          ?.baseCurrency ?? DEFAULT_CURRENCY;
+        (settingsPayload?.settings as { baseCurrency?: string } | undefined)?.baseCurrency ??
+        DEFAULT_CURRENCY;
 
       const filters = input.accountIds?.map((id) => ({
         id,
@@ -42,9 +45,15 @@ export class TransactionHistoryTool {
         userId
       });
 
-      const transactions = result.activities.map((activity) => ({
-        accountName: activity.account?.name ?? undefined,
-        currency: activity.SymbolProfile?.currency ?? userCurrency,
+      const transactions = result.activities.map((activity) => {
+        const accountName =
+          (activity as { account?: { name?: string } }).account?.name ??
+          (activity as { Account?: { name?: string } }).Account?.name ??
+          undefined;
+
+        return {
+          accountName,
+          currency: activity.SymbolProfile?.currency ?? userCurrency,
         date: activity.date.toISOString(),
         fee: Number(activity.fee),
         id: activity.id,
@@ -52,7 +61,8 @@ export class TransactionHistoryTool {
         symbol: activity.SymbolProfile?.symbol ?? null,
         type: activity.type as TransactionHistoryOutput['transactions'][number]['type'],
         unitPrice: Number(activity.unitPrice)
-      }));
+        };
+      });
 
       return {
         data: { totalCount: result.count, transactions },
