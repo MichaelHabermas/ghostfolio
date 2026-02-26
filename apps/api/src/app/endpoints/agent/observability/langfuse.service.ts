@@ -105,7 +105,7 @@ export class LangfuseService implements OnModuleInit, OnModuleDestroy {
         }
       });
 
-      return new LangfuseTraceHandle(observation, mod, this.logger);
+      return new LangfuseTraceHandle(observation, this.logger);
     } catch (error) {
       this.logger.warn(`Failed to create Langfuse trace: ${error}`);
       return new NoopTraceHandle();
@@ -174,7 +174,6 @@ export interface TraceHandle {
 class LangfuseTraceHandle implements TraceHandle {
   constructor(
     private readonly observation: any,
-    private readonly mod: any,
     private readonly logger: Logger
   ) {}
 

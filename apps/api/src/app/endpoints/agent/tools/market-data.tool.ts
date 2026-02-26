@@ -19,7 +19,7 @@ export class MarketDataTool {
 
   public async execute(
     input: MarketDataInput,
-    userId = ''
+    _userId = ''
   ): Promise<ToolResponse<MarketDataOutput>> {
     try {
       const profiles = await this.prismaService.symbolProfile.findMany({

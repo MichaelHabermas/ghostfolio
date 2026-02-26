@@ -26,7 +26,7 @@ export class TransactionHistoryTool {
     try {
       const user = await this.userService.user({ id: userId });
       const userCurrency =
-        (user?.Settings?.settings as { baseCurrency?: string })
+        (user?.settings?.settings as { baseCurrency?: string })
           ?.baseCurrency ?? DEFAULT_CURRENCY;
 
       const filters = input.accountIds?.map((id) => ({
@@ -43,7 +43,7 @@ export class TransactionHistoryTool {
       });
 
       const transactions = result.activities.map((activity) => ({
-        accountName: activity.Account?.name ?? undefined,
+        accountName: activity.account?.name ?? undefined,
         currency: activity.SymbolProfile?.currency ?? userCurrency,
         date: activity.date.toISOString(),
         fee: Number(activity.fee),
