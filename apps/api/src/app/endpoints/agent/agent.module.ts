@@ -22,6 +22,7 @@ import { PortfolioSnapshotQueueModule } from '@ghostfolio/api/services/queues/po
 import { SymbolProfileModule } from '@ghostfolio/api/services/symbol-profile/symbol-profile.module';
 
 import { Module } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
@@ -59,6 +60,12 @@ import { VerificationService } from './verification/verification.service';
     PropertyModule,
     RedisCacheModule,
     SymbolProfileModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10
+      }
+    ]),
     UserModule
   ],
   providers: [

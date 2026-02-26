@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 import { AgentService } from './agent.service';
 import { LangfuseService } from './observability/langfuse.service';
@@ -42,6 +43,7 @@ export class AgentController {
   @HttpCode(HttpStatus.OK)
   @HasPermission(permissions.readAiPrompt)
   @UseGuards(AuthGuard('jwt'), HasPermissionGuard)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   public async query(@Body() body: AgentRequest): Promise<AgentResponse> {
     if (process.env['AGENT_ENABLED'] !== 'true') {
       throw new ServiceUnavailableException(
@@ -80,6 +82,7 @@ export class AgentController {
   @HttpCode(HttpStatus.OK)
   @HasPermission(permissions.readAiPrompt)
   @UseGuards(AuthGuard('jwt'), HasPermissionGuard)
+  @SkipThrottle()
   public async feedback(
     @Body() body: AgentFeedbackRequest
   ): Promise<{ success: boolean }> {

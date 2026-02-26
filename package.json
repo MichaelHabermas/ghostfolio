@@ -86,6 +86,7 @@
     "@nestjs/platform-express": "11.1.8",
     "@nestjs/schedule": "6.0.1",
     "@nestjs/serve-static": "5.0.4",
+    "@nestjs/throttler": "^6.5.0",
     "@openrouter/ai-sdk-provider": "0.7.2",
     "@opentelemetry/sdk-node": "^0.212.0",
     "@simplewebauthn/browser": "13.2.2",

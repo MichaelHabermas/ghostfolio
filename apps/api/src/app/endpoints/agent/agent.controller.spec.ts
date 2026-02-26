@@ -2,7 +2,6 @@ import { BadRequestException, ServiceUnavailableException } from '@nestjs/common
 
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
-import { LangfuseService } from './observability/langfuse.service';
 import { InputValidationService } from './validation/input-validation.service';
 
 describe('AgentController', () => {
@@ -35,7 +34,10 @@ describe('AgentController', () => {
       null as any
     );
     inputValidationService = new InputValidationService();
-    const mockLangfuseService = { recordFeedback: jest.fn() } as any;
+    const mockLangfuseService = {
+      recordFeedback: jest.fn(),
+      logSecurityEvent: jest.fn()
+    } as any;
     agentController = new AgentController(agentService, mockRequest, inputValidationService, mockLangfuseService);
   });
 
