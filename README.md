@@ -85,6 +85,8 @@ Open the demo portfolio in one click: [https://ghostfolio-production-e242.up.rai
 
 Find the AI agent under **Portfolio → Agent** after logging in.
 
+**Demo video:** A 3–5 minute walkthrough (agent in action, tool calls, verification, Langfuse) and social post copy are in [docs/agent/DEMO-AND-SOCIAL.md](docs/agent/DEMO-AND-SOCIAL.md). Add your published video URL there and in this README when ready.
+
 ### Agent Features
 
 - Natural language queries about portfolio performance, holdings, risk violations, market data, transactions, and rebalancing
