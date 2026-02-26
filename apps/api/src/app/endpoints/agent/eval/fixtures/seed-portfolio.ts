@@ -124,3 +124,71 @@ export const MOCK_PERFORMANCE_ERROR: ToolResponse<PortfolioPerformanceOutput> = 
   success: false,
   error: 'Account not found: XYZ'
 };
+
+// Edge case fixtures for Epic 12 Commit 2
+
+export const MOCK_EMPTY_HOLDINGS: ToolResponse<GetHoldingsOutput> = {
+  success: true,
+  data: {
+    totalValueInBaseCurrency: 0,
+    holdings: []
+  }
+};
+
+export const MOCK_SINGLE_HOLDING: ToolResponse<GetHoldingsOutput> = {
+  success: true,
+  data: {
+    totalValueInBaseCurrency: 17500,
+    holdings: [
+      {
+        symbol: 'AAPL',
+        name: 'Apple Inc.',
+        allocationInPercentage: 100.0,
+        valueInBaseCurrency: 17500,
+        currency: 'USD',
+        assetClass: 'EQUITY',
+        assetSubClass: 'STOCK',
+        marketPrice: 175,
+        quantity: 100
+      }
+    ]
+  }
+};
+
+export const MOCK_ZERO_BALANCE_PERFORMANCE: ToolResponse<PortfolioPerformanceOutput> = {
+  success: true,
+  data: {
+    currentValueInBaseCurrency: 0,
+    totalInvestment: 0,
+    netPerformance: 0,
+    netPerformancePercentage: 0,
+    netPerformancePercentageWithCurrencyEffect: 0,
+    netPerformanceWithCurrencyEffect: 0,
+    totalInvestmentValueWithCurrencyEffect: 0,
+    annualizedPerformancePercent: 0
+  }
+};
+
+export const MOCK_MARKET_DATA_ERROR: ToolResponse<any> = {
+  success: false,
+  error: 'Symbol not found: UNKNOWN'
+};
+
+export const MOCK_CASH_ONLY_HOLDINGS: ToolResponse<GetHoldingsOutput> = {
+  success: true,
+  data: {
+    totalValueInBaseCurrency: 10000,
+    holdings: [
+      {
+        symbol: 'USD',
+        name: 'Cash',
+        allocationInPercentage: 100.0,
+        valueInBaseCurrency: 10000,
+        currency: 'USD',
+        assetClass: 'CASH',
+        assetSubClass: null,
+        quantity: 10000
+      }
+    ]
+  }
+};

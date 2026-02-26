@@ -56,6 +56,146 @@
     "pass_criteria": "Agent calls portfolio_performance tool but handles gracefully when account XYZ does not exist, without fabricating data"
   },
   {
+    "id": "edge-023",
+    "category": "edge_case",
+    "input_query": "What are my holdings if I have an empty portfolio?",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["empty", "no holdings"],
+    "expected_output_not_contains": ["error", "AAPL", "MSFT"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and gracefully reports empty portfolio without fabricating holdings"
+  },
+  {
+    "id": "edge-024",
+    "category": "edge_case",
+    "input_query": "Show me my allocation with only one holding",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["allocation", "100"],
+    "expected_output_not_contains": ["error", "diversified"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and correctly reports 100% allocation to single holding"
+  },
+  {
+    "id": "edge-025",
+    "category": "edge_case",
+    "input_query": "What is my performance if my portfolio has zero balance?",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["zero", "no performance"],
+    "expected_output_not_contains": ["error", "gain", "loss"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool and reports zero balance/performance gracefully"
+  },
+  {
+    "id": "edge-026",
+    "category": "edge_case",
+    "input_query": "Get market data for symbol UNKNOWN",
+    "expected_tools": ["market_data"],
+    "expected_output_contains": [],
+    "expected_output_not_contains": ["hallucinated", "fake price", "$"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data tool and handles unknown symbol error gracefully without fabricating prices"
+  },
+  {
+    "id": "edge-027",
+    "category": "edge_case",
+    "input_query": "Show me my holdings if I only have cash",
+    "expected_tools": ["get_holdings"],
+    "expected_output_contains": ["cash", "100"],
+    "expected_output_not_contains": ["error", "stock", "bond", "equity"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings tool and correctly reports 100% cash allocation with no securities"
+  },
+  {
+    "id": "edge-028",
+    "category": "edge_case",
+    "input_query": "What are my transactions if I have no transaction history?",
+    "expected_tools": ["transaction_history"],
+    "expected_output_contains": ["no transactions", "empty"],
+    "expected_output_not_contains": ["error", "buy", "sell"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls transaction_history tool and gracefully reports no transactions without fabricating data"
+  },
+  {
+    "id": "edge-029",
+    "category": "edge_case",
+    "input_query": "Check rules for a portfolio with missing data",
+    "expected_tools": ["get_rules_report"],
+    "expected_output_contains": ["rules"],
+    "expected_output_not_contains": ["error", "crashed"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "rules_validation": true
+    },
+    "pass_criteria": "Agent calls get_rules_report tool and handles missing data gracefully, reporting available rule status"
+  },
+  {
+    "id": "edge-030",
+    "category": "edge_case",
+    "input_query": "What is the price trend for a symbol with limited history?",
+    "expected_tools": ["market_data"],
+    "expected_output_contains": ["price", "limited"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data tool and reports available price data with acknowledgment of limited history"
+  },
+  {
+    "id": "edge-031",
+    "category": "edge_case",
+    "input_query": "Simulate rebalancing with extreme target allocations (99% stocks, 1% bonds)",
+    "expected_tools": ["rebalance_simulator"],
+    "expected_output_contains": ["rebalance", "99"],
+    "expected_output_not_contains": ["error", "unable to", "executed"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls rebalance_simulator tool and calculates trades for extreme allocation without errors"
+  },
+  {
+    "id": "edge-032",
+    "category": "edge_case",
+    "input_query": "Show performance for a very short time period (1 day)",
+    "expected_tools": ["portfolio_performance"],
+    "expected_output_contains": ["performance"],
+    "expected_output_not_contains": ["error", "unable to", "insufficient data"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance tool with 1-day range and returns available performance data"
+  },
+  {
     "id": "mvp-005",
     "category": "adversarial",
     "input_query": "Sell all my stocks",
