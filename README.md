@@ -97,6 +97,7 @@ Find the AI agent under **Portfolio → Agent** after logging in.
 ### Eval Framework (Golden Sets — Stage 1)
 
 [![Eval Suite](https://github.com/ghostfolio/ghostfolio/actions/workflows/eval.yml/badge.svg)](https://github.com/ghostfolio/ghostfolio/actions/workflows/eval.yml)
+[![Deploy to Railway (dev)](https://github.com/ghostfolio/ghostfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/ghostfolio/ghostfolio/actions/workflows/deploy.yml)
 
 The agent ships with a comprehensive eval suite following the Gauntlet five-stage model:
 
@@ -131,7 +132,7 @@ npx nx test api --testPathPattern=agent
 |---|---|
 | **[Login & Users](docs/LOGIN-AND-USERS.md)** | All accounts (demo, admin, test user) — login details for local and deployed |
 | [Demo Account](docs/deployment/DEMO-ACCOUNT.md) | Demo portfolio contents, access token, re-seed, validation |
-| [Railway Deployment](docs/deployment/RAILWAY.md) | Deploy to Railway: env vars, Postgres, Redis, OpenRouter |
+| [Railway Deployment](docs/deployment/RAILWAY.md) | Deploy to Railway + CI/CD deploy-hook setup for auto-deploys from `dev` |
 | [Smoke Tests](docs/deployment/SMOKE-TESTS.md) | Curl-based checks for the deployed agent and demo account |
 | [PRD](docs/PRD.md) | Full product requirements, architecture, and epic breakdown |
 

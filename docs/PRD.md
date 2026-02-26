@@ -1585,16 +1585,16 @@ LANGSMITH_PROJECT
 
 **Commit 2: `chore(ci): create GitHub Actions workflow for deployment`**
 
-- [ ] Create `.github/workflows/deploy.yml` — *not present; deployment is via Railway dashboard or external CD*
-- [ ] Steps: deploy to Railway on merge to `dev`
-- [ ] Configure Railway deploy hook or API token
-- [ ] Add deployment status badge to README
+- [x] Create `.github/workflows/deploy.yml`
+- [x] Steps: deploy to Railway on merge to `dev`
+- [x] Configure Railway deploy hook or API token
+- [x] Add deployment status badge to README
 
 **Commit 3: `chore(ci): add eval suite trigger on agent changes`**
 
 - [x] Configure eval suite to run when files in `apps/api/src/app/endpoints/agent/` change
-- [ ] Report eval pass rate in PR comments (if practical)
-- [ ] Document CI/CD setup
+- [x] Report eval pass rate in PR comments (if practical)
+- [x] Document CI/CD setup
 
 ---
 
