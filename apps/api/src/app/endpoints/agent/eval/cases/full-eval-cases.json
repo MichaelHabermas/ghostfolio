@@ -576,5 +576,145 @@
       "response_validation": true
     },
     "pass_criteria": "Agent calls transaction_history tool and summarizes buy and sell transactions"
+  },
+  {
+    "id": "multi-043",
+    "category": "multi_step",
+    "input_query": "Compare my allocation to a 60/40 target and suggest rebalancing trades",
+    "expected_tools": ["get_holdings", "rebalance_simulator"],
+    "expected_output_contains": ["allocation", "rebalance", "60", "40"],
+    "expected_output_not_contains": ["error", "unable to", "executed"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls get_holdings to get current allocation, then rebalance_simulator with 60/40 target, and synthesizes proposed trades"
+  },
+  {
+    "id": "multi-044",
+    "category": "multi_step",
+    "input_query": "What are the risks in my portfolio and how have they changed based on recent transactions?",
+    "expected_tools": ["get_rules_report", "transaction_history"],
+    "expected_output_contains": ["rules", "risk", "transaction"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "rules_validation": true
+    },
+    "pass_criteria": "Agent calls get_rules_report for current risks and transaction_history for recent activity, then synthesizes how transactions affected risk profile"
+  },
+  {
+    "id": "multi-045",
+    "category": "multi_step",
+    "input_query": "Analyze my portfolio performance and identify any holdings that are underperforming relative to their allocation",
+    "expected_tools": ["portfolio_performance", "get_holdings"],
+    "expected_output_contains": ["performance", "holdings", "underperforming"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance for overall metrics and get_holdings for individual positions, then identifies underperformers"
+  },
+  {
+    "id": "multi-046",
+    "category": "multi_step",
+    "input_query": "Show me current market prices for my holdings and compare them to my purchase prices",
+    "expected_tools": ["market_data", "transaction_history"],
+    "expected_output_contains": ["market price", "purchase", "current"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data for current prices and transaction_history for purchase prices, then compares gains/losses per holding"
+  },
+  {
+    "id": "multi-047",
+    "category": "multi_step",
+    "input_query": "What is my total return and how does my allocation compare to a balanced portfolio?",
+    "expected_tools": ["portfolio_performance", "get_holdings"],
+    "expected_output_contains": ["return", "allocation", "balanced"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls portfolio_performance for total return and get_holdings for allocation, then compares to balanced portfolio benchmarks"
+  },
+  {
+    "id": "multi-048",
+    "category": "multi_step",
+    "input_query": "Check if my portfolio has any rule violations and show me the holdings that contribute to those violations",
+    "expected_tools": ["get_rules_report", "get_holdings"],
+    "expected_output_contains": ["rules", "violations", "holdings"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "rules_validation": true
+    },
+    "pass_criteria": "Agent calls get_rules_report for violations and get_holdings to identify which positions contribute to violations"
+  },
+  {
+    "id": "multi-049",
+    "category": "multi_step",
+    "input_query": "Analyze my recent trading activity and its impact on my portfolio performance",
+    "expected_tools": ["transaction_history", "portfolio_performance"],
+    "expected_output_contains": ["transaction", "trading", "performance", "impact"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls transaction_history for recent trades and portfolio_performance for metrics, then analyzes correlation between trading and performance"
+  },
+  {
+    "id": "multi-050",
+    "category": "multi_step",
+    "input_query": "Show me market trends for my holdings and suggest if I should rebalance based on current prices",
+    "expected_tools": ["market_data", "get_holdings", "rebalance_simulator"],
+    "expected_output_contains": ["market", "trend", "holdings", "rebalance"],
+    "expected_output_not_contains": ["error", "unable to", "executed"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls market_data for price trends, get_holdings for current allocation, and rebalance_simulator to evaluate rebalancing options"
+  },
+  {
+    "id": "multi-051",
+    "category": "multi_step",
+    "input_query": "What is my portfolio's risk profile and how does my performance compare to my risk level?",
+    "expected_tools": ["get_rules_report", "portfolio_performance"],
+    "expected_output_contains": ["risk", "performance", "profile"],
+    "expected_output_not_contains": ["error", "unable to"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "rules_validation": true
+    },
+    "pass_criteria": "Agent calls get_rules_report for risk assessment and portfolio_performance for returns, then evaluates risk-adjusted performance"
+  },
+  {
+    "id": "multi-052",
+    "category": "multi_step",
+    "input_query": "Review my transaction history, current holdings, and suggest optimal rebalancing to improve diversification",
+    "expected_tools": ["transaction_history", "get_holdings", "rebalance_simulator"],
+    "expected_output_contains": ["transaction", "holdings", "rebalance", "diversification"],
+    "expected_output_not_contains": ["error", "unable to", "executed"],
+    "verification_checks": {
+      "input_validation": true,
+      "tool_call_validation": true,
+      "response_validation": true
+    },
+    "pass_criteria": "Agent calls transaction_history for trading patterns, get_holdings for current state, and rebalance_simulator for diversification improvements"
   }
 ]
