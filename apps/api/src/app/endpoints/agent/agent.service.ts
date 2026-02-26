@@ -15,6 +15,7 @@ import { LangfuseService } from './observability/langfuse.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { SYSTEM_PROMPT } from './prompts/system-prompt';
+import { RedactionService } from './redaction/redaction.service';
 import { GetHoldingsTool } from './tools/get-holdings.tool';
 import { GetRulesReportTool } from './tools/get-rules-report.tool';
 import { MarketDataTool } from './tools/market-data.tool';
@@ -48,7 +49,8 @@ export class AgentService {
     private readonly responseFormatter: ResponseFormatter,
     private readonly verificationService: VerificationService,
     private readonly errorMapperService: ErrorMapperService,
-    private readonly langfuseService: LangfuseService
+    private readonly langfuseService: LangfuseService,
+    private readonly redactionService?: RedactionService
   ) {}
 
   public async processQuery({
@@ -88,7 +90,8 @@ export class AgentService {
         },
         userId,
         toolOutputs,
-        toolsCalled
+        toolsCalled,
+        this.redactionService
       );
 
       const result = await this.callLlm({

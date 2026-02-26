@@ -1,6 +1,7 @@
 import { tool } from 'ai';
 
 import type { ToolResponse } from '../types';
+import type { RedactionService } from '../redaction/redaction.service';
 import {
   GetHoldingsInputSchema,
   GetRulesReportInputSchema,
@@ -41,7 +42,8 @@ export function createToolRegistry(
   tools: ToolInstances,
   userId: string,
   toolOutputs?: Map<string, ToolResponse<unknown>>,
-  toolsCalled?: Set<string>
+  toolsCalled?: Set<string>,
+  redactionService?: Pick<RedactionService, 'redactToolResponse'>
 ): ToolRegistry {
   const {
     performanceTool,
@@ -60,7 +62,11 @@ export function createToolRegistry(
       toolsCalled.add(name);
     }
 
-    return result;
+    if (!redactionService) {
+      return result;
+    }
+
+    return redactionService.redactToolResponse(name, result);
   };
 
   return {
