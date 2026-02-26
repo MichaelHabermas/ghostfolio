@@ -15,9 +15,9 @@
 - [Part 3: Design Principles](#part-3-design-principles)
 - [Part 4: Architecture](#part-4-architecture)
 - [Part 5: Git Workflow](#part-5-git-workflow)
-- [Part 6: EPICs -- MVP Phase](#part-6-epics--mvp-phase)
+- [Part 6: EPICs -- MVP Phase](#part-6-epics-mvp-phase)
 - [Part 7: MVP Hardening Epic](#part-7-mvp-hardening-epic)
-- [Part 8: EPICs -- Post-MVP Phase](#part-8-epics--post-mvp-phase)
+- [Part 8: EPICs -- Post-MVP Phase](#part-8-epics-post-mvp-phase)
 - [Part 9: Final Hardening and Security Epic](#part-9-final-hardening-and-security-epic)
 - [Part 10: Performance Targets](#part-10-performance-targets)
 - [Part 11: AI Cost Analysis](#part-11-ai-cost-analysis)
@@ -57,7 +57,7 @@ Tied directly to the [AgentForge Week 2 requirements](G4-Week-2-AgentForge.md):
 - [x] Basic error handling (graceful failure, not crashes)
 - [x] At least one domain-specific verification check
 - [x] Simple evaluation: 7 test cases (golden set) with expected outcomes — pass rate 7/7 (100%)
-- [x] Deployed and publicly accessible — https://ghostfolio-production-e242.up.railway.app
+- [x] Deployed and publicly accessible — <https://ghostfolio-production-e242.up.railway.app>
 
 **Early Submission (Friday -- 4 days):**
 
@@ -527,7 +527,7 @@ chore(deploy): configure Railway environment variables
 
 ---
 
-## Part 6: EPICs -- MVP Phase
+## Part 6: EPICs -- MVP Phase {#part-6-epics-mvp-phase}
 
 > **Convention:** Each Epic contains User Stories, Features extracted from those stories, a Feature Branch name, ordered Commits, and Subtasks per commit. All tasks have checkboxes for tracking.
 
@@ -1067,7 +1067,7 @@ LANGSMITH_PROJECT
 - [x] Verify: Basic error handling (graceful failure, not crashes) — ErrorMapperService, try/catch in processQuery, graceful error responses
 - [x] Verify: At least one domain-specific verification check (RulesService) — RulesAlignmentChecker cross-references agent claims against RulesService output (additional checkers may run, but MVP gate requires at least one)
 - [x] Verify: 5+ test cases with expected outcomes — 7 golden set eval cases, pass rate 7/7 (100%)
-- [x] Verify: Deployed and publicly accessible — https://ghostfolio-production-e242.up.railway.app (verified 2026-02-25)
+- [x] Verify: Deployed and publicly accessible — <https://ghostfolio-production-e242.up.railway.app> (verified 2026-02-25)
 
 **Commit 3: `chore(mvp): prune obsolete tests and document MVP status`**
 
@@ -1169,7 +1169,7 @@ LANGSMITH_PROJECT
 
 ---
 
-## Part 8: EPICs -- Post-MVP Phase
+## Part 8: EPICs -- Post-MVP Phase {#part-8-epics-post-mvp-phase}
 
 > **Parallelization Note:** Epics 9 and 11 can be developed in parallel. Epics 13 and 14 can be developed in parallel. All other epics have sequential dependencies as noted.
 
@@ -1578,14 +1578,14 @@ LANGSMITH_PROJECT
 
 **Commit 1: `chore(ci): create GitHub Actions workflow for PRs`**
 
-- [ ] Create `.github/workflows/pr-checks.yml`
-- [ ] Steps: checkout, install dependencies, lint, run Jest tests
-- [ ] Trigger on: pull_request to `dev` branch
-- [ ] Cache node_modules for faster runs
+- [x] Create `.github/workflows/build-code.yml` (PR lint + test + build workflow)
+- [x] Steps: checkout, install dependencies, lint, format check, run Jest tests, build
+- [x] Trigger on: `pull_request` and `workflow_dispatch` (all branches)
+- [x] Cache npm for faster runs (`cache: 'npm'` in setup-node)
 
 **Commit 2: `chore(ci): create GitHub Actions workflow for deployment`**
 
-- [ ] Create `.github/workflows/deploy.yml`
+- [ ] Create `.github/workflows/deploy.yml` — *not present; deployment is via Railway dashboard or external CD*
 - [ ] Steps: deploy to Railway on merge to `dev`
 - [ ] Configure Railway deploy hook or API token
 - [ ] Add deployment status badge to README
