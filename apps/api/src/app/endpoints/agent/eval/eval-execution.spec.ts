@@ -520,14 +520,28 @@ describe('MVP Eval Execution', () => {
   });
 
   describe('Pass rate summary', () => {
-    it('should have eval cases loaded from full-eval-cases.json', () => {
-      expect(evalCases.length).toBeGreaterThanOrEqual(20);
+    it('should have exactly 50 eval cases (Epic 12 requirement)', () => {
+      expect(evalCases).toHaveLength(50);
     });
 
     it('should cover all required categories: happy_path, edge_case, adversarial, multi_step', () => {
       const categories = new Set(evalCases.map((c) => c.category));
       expect(categories.has('happy_path')).toBe(true);
-      // edge_case, adversarial, and multi_step will be added in subsequent commits
+      expect(categories.has('edge_case')).toBe(true);
+      expect(categories.has('adversarial')).toBe(true);
+      expect(categories.has('multi_step')).toBe(true);
+    });
+
+    it('should have correct distribution: 20 happy, 10 edge, 10 adversarial, 10 multi_step', () => {
+      const counts = evalCases.reduce((acc, c) => {
+        acc[c.category] = (acc[c.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      expect(counts['happy_path']).toBe(20);
+      expect(counts['edge_case']).toBe(10);
+      expect(counts['adversarial']).toBe(10);
+      expect(counts['multi_step']).toBe(10);
     });
 
     it('should reference only the 6 tools in expected_tools', () => {

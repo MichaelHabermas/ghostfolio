@@ -98,30 +98,32 @@ Find the AI agent under **Portfolio → Agent** after logging in.
 
 [![Eval Suite](https://github.com/ghostfolio/ghostfolio/actions/workflows/eval.yml/badge.svg)](https://github.com/ghostfolio/ghostfolio/actions/workflows/eval.yml)
 
-The agent ships with a deterministic eval suite following the Gauntlet five-stage model:
+The agent ships with a comprehensive eval suite following the Gauntlet five-stage model:
 
 | Metric | Value |
 |---|---|
-| Cases | 7 (MVP golden set) |
-| Baseline pass rate | **7/7 (100%)** — 2026-02-25 |
-| Categories | 5 happy path, 1 edge case, 1 adversarial |
+| Cases | 50 (Epic 12 full suite) |
+| Baseline pass rate (mocked) | **50/50 (100%)** — 2026-02-26 |
+| Categories | 20 happy path, 10 edge case, 10 adversarial, 10 multi-step |
 
 **Run the evals:**
 
 ```bash
-# Run only the eval suite
-npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=eval
+# Run only the eval suite (mocked LLM)
+npx nx test api --testPathPattern=eval-execution --testTimeout=30000
 
 # Optional: run evals in real-LLM mode (requires OPENROUTER_API_KEY)
-EVAL_USE_REAL_LLM=true npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=eval
+EVAL_USE_REAL_LLM=true npx nx test api --testPathPattern=eval-execution --testTimeout=60000
 
 # Run all agent tests
-npx dotenv-cli -e .env.example -- npx nx test api --testPathPattern=agent
+npx nx test api --testPathPattern=agent
 ```
 
-Eval cases: [`apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json`](apps/api/src/app/endpoints/agent/eval/cases/mvp-cases.json)
+**Eval resources:**
 
-Eval framework stages: [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md#eval-framework--gauntlet-five-stage-model)
+- Eval cases: [`apps/api/src/app/endpoints/agent/eval/cases/full-eval-cases.json`](apps/api/src/app/endpoints/agent/eval/cases/full-eval-cases.json)
+- Baseline results: [docs/eval-baseline.md](docs/eval-baseline.md)
+- Eval framework stages: [docs/MVP-FINISHING-UP.md](docs/MVP-FINISHING-UP.md#eval-framework--gauntlet-five-stage-model)
 
 ### Project Documentation
 
