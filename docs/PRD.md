@@ -160,7 +160,7 @@ Each SOLID principle is mapped to a concrete implementation decision in the agen
 | `AgentService` | Orchestrating the agent loop (LLM call -> tool dispatch -> verification -> response) | Individual tool logic, database queries |
 | Each Tool (e.g., `PortfolioPerformanceTool`) | Wrapping exactly one Ghostfolio service method, mapping I/O to the tool schema | LLM reasoning, other tools, verification |
 | `VerificationService` | Running all verification checks against agent output | Tool execution, LLM calls |
-| `RedactionService` | Sanitizing data before it enters the LLM context | Tool logic, verification |
+| `RedactionService` (Planned -- Epic 14) | Sanitizing data before it enters the LLM context | Tool logic, verification |
 | `ErrorMapperService` | Translating internal errors to user-facing messages | Business logic, tool execution |
 
 #### O -- Open/Closed Principle
@@ -202,17 +202,21 @@ graph TD
     ToolsSubmodule["Tools<br/>(tool wrappers)"]
     VerificationSubmodule["Verification<br/>(4-layer pipeline)"]
     ObservabilitySubmodule["Observability<br/>(Langfuse tracing)"]
-    RedactionSubmodule["Redaction<br/>(data sanitization)"]
+    RedactionSubmodule["Redaction<br/>(data sanitization)<br/>(Planned -- Epic 14)"]
 
     AgentModule --> ToolsSubmodule
     AgentModule --> VerificationSubmodule
     AgentModule --> ObservabilitySubmodule
-    AgentModule --> RedactionSubmodule
+    AgentModule -.-> RedactionSubmodule
 
     ToolsSubmodule --> GhostfolioServices["Existing Ghostfolio Services<br/>(PortfolioService, RulesService,<br/>MarketDataService, OrderService)"]
 
     VerificationSubmodule --> GhostfolioServices
+
+    style RedactionSubmodule stroke-dasharray: 5 5
 ```
+
+**Note:** RedactionSubmodule is planned for Epic 14 and not yet implemented.
 
 ### Separation of Concerns
 
@@ -222,7 +226,7 @@ graph TD
 | LLM orchestration (tool loop, message history) | `AgentService` | Individual tool logic |
 | Tool execution (service calls, data formatting) | Individual Tool classes | LLM reasoning, verification |
 | Response verification (hallucination, math, citations) | `VerificationService` | Tool execution |
-| Data privacy (redaction before LLM) | `RedactionService` | Business logic |
+| Data privacy (redaction before LLM) | `RedactionService` (Planned -- Epic 14) | Business logic |
 | Observability (tracing, metrics) | Langfuse integration layer | Business logic |
 | Error UX (internal -> user-facing messages) | `ErrorMapperService` | Error detection |
 
@@ -263,8 +267,9 @@ graph LR
     GhostfolioSvc --> DB["PostgreSQL"]
     AgentService --> Verification["Verification Pipeline<br/>(4 layers)"]
     AgentService --> Langfuse["Langfuse<br/>(Observability)"]
-    AgentService --> Redaction["Redaction Layer"]
 ```
+
+**Note:** Redaction Layer is planned for Epic 14 and not yet implemented.
 
 ### Agent Internal Architecture
 
@@ -273,7 +278,6 @@ sequenceDiagram
     participant User
     participant Controller as AgentController
     participant Service as AgentService
-    participant Redaction as RedactionService
     participant AI as Vercel AI SDK
     participant LLM as Claude 3.5 Sonnet
     participant Tools as Tool Registry
@@ -293,8 +297,6 @@ sequenceDiagram
         AI->>Tools: execute(toolName, args)
         Tools->>GF: service method call (e.g., getPerformance())
         GF->>Tools: raw service data
-        Tools->>Redaction: redact(rawData)
-        Redaction-->>Tools: redacted data
         Tools-->>AI: ToolResponse { success, data }
         AI->>LLM: tool_result
     end
@@ -328,7 +330,7 @@ graph TD
         AgentService["AgentService"]
         AgentToolsService["AgentToolsService"]
         VerificationService["VerificationService"]
-        RedactionService["RedactionService"]
+        RedactionService["RedactionService<br/>(Planned -- Epic 14)"]
         ErrorMapperService["ErrorMapperService"]
     end
 
@@ -411,20 +413,24 @@ flowchart TD
     FLAG --> PASS
 ```
 
-### Data Flow with Redaction
+### Data Flow with Redaction (Planned -- Epic 14)
+
+**Note:** This section describes planned functionality for Epic 14. The RedactionService is not yet implemented.
 
 ```mermaid
 flowchart LR
-    GF["Ghostfolio Service<br/>(raw data)"] --> Redact["Redaction Layer"]
+    GF["Ghostfolio Service<br/>(raw data)"] --> Redact["Redaction Layer<br/>(Planned)"]
     Redact --> LLM["Claude 3.5 Sonnet<br/>(via OpenRouter)"]
 
-    subgraph redactionRules ["Redaction Rules"]
+    subgraph redactionRules ["Redaction Rules (Planned)"]
         R1["Account names -> 'Account A', 'Account B'"]
         R2["Exact balances -> rounded to nearest $100"]
         R3["User PII -> stripped"]
     end
 
     Redact --> redactionRules
+
+    style Redact stroke-dasharray: 5 5
 ```
 
 ---
@@ -1486,9 +1492,9 @@ LANGSMITH_PROJECT
 
 **Commit 4: `test(security): add security-focused tests`**
 
-- [x] Test: prompt injection inputs are sanitized
-- [x] Test: rate limiter returns 429 after 10 requests/minute
-- [x] Test: cross-user data access is prevented
+- [x] Test: prompt injection inputs are detected and flagged
+- [x] Test: rate limiter guard is registered and wired to agent endpoint
+- [x] Test: userId from request context is always forwarded to tools (no cross-user access)
 - [x] Run tests and verify they pass
 
 ---
@@ -1876,6 +1882,7 @@ All architectural decisions made during Pre-Search, reconciled with the ANALYSIS
 - **Date:** 2026-02-23
 - **Decision:** Remove LLM self-assessed confidence. Replace with: (1) extended math validation covering all numerical claims, (2) source citation requirement via structured JSON output.
 - **Rationale:** ANALYSIS: LLM self-assessed confidence is unreliable. Deterministic checks are more trustworthy.
+- **Note:** This substitution satisfies the AgentForge "3+ verification types" requirement: rules alignment (fact checking), math consistency (output validation), source citation (hallucination detection), and escalation (human-in-the-loop) cover four of the six listed types. Confidence scoring was omitted because LLM self-assessed confidence is unreliable in high-stakes finance.
 
 ### Decision 12: Data Redaction Layer
 
