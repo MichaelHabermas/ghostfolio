@@ -160,7 +160,7 @@ Each SOLID principle is mapped to a concrete implementation decision in the agen
 | `AgentService` | Orchestrating the agent loop (LLM call -> tool dispatch -> verification -> response) | Individual tool logic, database queries |
 | Each Tool (e.g., `PortfolioPerformanceTool`) | Wrapping exactly one Ghostfolio service method, mapping I/O to the tool schema | LLM reasoning, other tools, verification |
 | `VerificationService` | Running all verification checks against agent output | Tool execution, LLM calls |
-| `RedactionService` (Planned -- Epic 14) | Sanitizing data before it enters the LLM context | Tool logic, verification |
+| `RedactionService` | Sanitizing data before it enters the LLM context | Tool logic, verification |
 | `ErrorMapperService` | Translating internal errors to user-facing messages | Business logic, tool execution |
 
 #### O -- Open/Closed Principle
@@ -202,7 +202,7 @@ graph TD
     ToolsSubmodule["Tools<br/>(tool wrappers)"]
     VerificationSubmodule["Verification<br/>(4-layer pipeline)"]
     ObservabilitySubmodule["Observability<br/>(Langfuse tracing)"]
-    RedactionSubmodule["Redaction<br/>(data sanitization)<br/>(Planned -- Epic 14)"]
+    RedactionSubmodule["Redaction<br/>(data sanitization)"]
 
     AgentModule --> ToolsSubmodule
     AgentModule --> VerificationSubmodule
@@ -216,7 +216,7 @@ graph TD
     style RedactionSubmodule stroke-dasharray: 5 5
 ```
 
-**Note:** RedactionSubmodule is planned for Epic 14 and not yet implemented.
+**Note:** RedactionSubmodule is implemented in Epic 14 and runs in the tool pipeline before LLM context.
 
 ### Separation of Concerns
 
@@ -226,7 +226,7 @@ graph TD
 | LLM orchestration (tool loop, message history) | `AgentService` | Individual tool logic |
 | Tool execution (service calls, data formatting) | Individual Tool classes | LLM reasoning, verification |
 | Response verification (hallucination, math, citations) | `VerificationService` | Tool execution |
-| Data privacy (redaction before LLM) | `RedactionService` (Planned -- Epic 14) | Business logic |
+| Data privacy (redaction before LLM) | `RedactionService` | Business logic |
 | Observability (tracing, metrics) | Langfuse integration layer | Business logic |
 | Error UX (internal -> user-facing messages) | `ErrorMapperService` | Error detection |
 
@@ -269,7 +269,7 @@ graph LR
     AgentService --> Langfuse["Langfuse<br/>(Observability)"]
 ```
 
-**Note:** Redaction Layer is planned for Epic 14 and not yet implemented.
+**Note:** Redaction Layer is implemented in Epic 14.
 
 ### Agent Internal Architecture
 
@@ -330,7 +330,7 @@ graph TD
         AgentService["AgentService"]
         AgentToolsService["AgentToolsService"]
         VerificationService["VerificationService"]
-        RedactionService["RedactionService<br/>(Planned -- Epic 14)"]
+        RedactionService["RedactionService"]
         ErrorMapperService["ErrorMapperService"]
     end
 
@@ -1533,25 +1533,25 @@ LANGSMITH_PROJECT
 
 **Commit 1: `feat(redaction): implement RedactionService`**
 
-- [ ] Create `apps/api/src/app/endpoints/agent/redaction/redaction.service.ts`
-- [ ] Replace account names with generic labels ("Account A", "Account B", etc.)
-- [ ] Round exact balances to nearest $100
-- [ ] Strip any PII (email, user names) from tool output data
-- [ ] Apply redaction at the tool output level, before data enters LLM context
+- [x] Create `apps/api/src/app/endpoints/agent/redaction/redaction.service.ts`
+- [x] Replace account names with generic labels ("Account A", "Account B", etc.)
+- [x] Round exact balances to nearest $100
+- [x] Strip any PII (email, user names) from tool output data
+- [x] Apply redaction at the tool output level, before data enters LLM context
 
 **Commit 2: `feat(redaction): wire RedactionService into tool pipeline`**
 
-- [ ] Inject `RedactionService` into each tool wrapper
-- [ ] Apply redaction to tool outputs before they are returned to the LLM
-- [ ] Ensure redaction does not affect verification (verification runs on raw data, not redacted data)
+- [x] Inject `RedactionService` into the tool pipeline (via tool registry)
+- [x] Apply redaction to tool outputs before they are returned to the LLM
+- [x] Ensure redaction does not affect verification (verification runs on raw data, not redacted data)
 
 **Commit 3: `test(redaction): add tests for redaction logic`**
 
-- [ ] Test: account names are replaced with generic labels
-- [ ] Test: balances are rounded to nearest $100
-- [ ] Test: PII is stripped
-- [ ] Test: redaction is applied before LLM sees data but verification uses raw data
-- [ ] Run tests and verify they pass
+- [x] Test: account names are replaced with generic labels
+- [x] Test: balances are rounded to nearest $100
+- [x] Test: PII is stripped
+- [x] Test: redaction is applied before LLM sees data but verification uses raw data
+- [x] Run tests and verify they pass
 
 ---
 
