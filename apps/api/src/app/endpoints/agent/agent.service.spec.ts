@@ -24,6 +24,7 @@ import type { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { ConversationMemory } from './memory/conversation-memory';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ErrorMapperService } from './errors/error-mapper.service';
+import { LangfuseService } from './observability/langfuse.service';
 import { VerificationService } from './verification/verification.service';
 
 const mockGenerateText = generateText as jest.MockedFunction<
@@ -53,6 +54,12 @@ const makeFailingVerificationService = (reason = 'Hallucination detected') => {
     failedChecker: 'rules_validation',
     reason
   });
+  return svc;
+};
+
+const makeDisabledLangfuseService = () => {
+  const svc = new LangfuseService();
+  svc.onModuleInit(); // no env keys = disabled
   return svc;
 };
 
@@ -105,7 +112,8 @@ describe('AgentService', () => {
       conversationMemory,
       responseFormatter,
       verificationService,
-      errorMapperService
+      errorMapperService,
+      makeDisabledLangfuseService()
     );
   });
 
@@ -259,7 +267,8 @@ describe('AgentService', () => {
         conversationMemory,
         responseFormatter,
         verificationService,
-        errorMapperService
+        errorMapperService,
+        makeDisabledLangfuseService()
       );
 
       mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult());

@@ -22,6 +22,7 @@ import { AgentService } from './agent.service';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
+import { LangfuseService } from './observability/langfuse.service';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
 import { VerificationService } from './verification/verification.service';
 
@@ -53,6 +54,12 @@ const makeFailingVerificationService = (reason = 'Hallucination detected') => {
   return svc;
 };
 
+const makeDisabledLangfuseService = () => {
+  const svc = new LangfuseService();
+  svc.onModuleInit();
+  return svc;
+};
+
 const buildService = () => {
   const propertyService = makePropertyService();
   const performanceTool = makeToolMock();
@@ -76,7 +83,8 @@ const buildService = () => {
     memory,
     formatter,
     verificationService,
-    new ErrorMapperService()
+    new ErrorMapperService(),
+    makeDisabledLangfuseService()
   );
 
   return { service, memory, performanceTool, holdingsTool, rulesReportTool, verificationService };
@@ -105,7 +113,8 @@ const buildServiceWithOptions = (options: { verificationService?: VerificationSe
     memory,
     formatter,
     verificationService,
-    new ErrorMapperService()
+    new ErrorMapperService(),
+    makeDisabledLangfuseService()
   );
 
   return { service, memory, verificationService };

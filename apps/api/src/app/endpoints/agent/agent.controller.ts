@@ -18,7 +18,8 @@ import { REQUEST } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AgentService } from './agent.service';
-import type { AgentRequest, AgentResponse } from './types';
+import { LangfuseService } from './observability/langfuse.service';
+import type { AgentFeedbackRequest, AgentRequest, AgentResponse } from './types';
 import { InputValidationService, ValidationError } from './validation/input-validation.service';
 
 const VALIDATION_MESSAGES: Record<ValidationError, string> = {
@@ -32,7 +33,8 @@ export class AgentController {
   public constructor(
     private readonly agentService: AgentService,
     @Inject(REQUEST) private readonly request: RequestWithUser,
-    private readonly inputValidationService: InputValidationService
+    private readonly inputValidationService: InputValidationService,
+    private readonly langfuseService: LangfuseService
   ) {}
 
   @Post()
@@ -62,5 +64,31 @@ export class AgentController {
       sessionId: body.sessionId,
       userId: this.request.user.id
     });
+  }
+
+  @Post('feedback')
+  @HttpCode(HttpStatus.OK)
+  @HasPermission(permissions.readAiPrompt)
+  @UseGuards(AuthGuard('jwt'), HasPermissionGuard)
+  public async feedback(
+    @Body() body: AgentFeedbackRequest
+  ): Promise<{ success: boolean }> {
+    if (!body.sessionId || !body.score) {
+      throw new BadRequestException(
+        'sessionId and score (up/down) are required.'
+      );
+    }
+
+    if (body.score !== 'up' && body.score !== 'down') {
+      throw new BadRequestException('score must be "up" or "down".');
+    }
+
+    await this.langfuseService.recordFeedback({
+      sessionId: body.sessionId,
+      score: body.score,
+      comment: body.comment
+    });
+
+    return { success: true };
   }
 }

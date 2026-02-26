@@ -21,6 +21,7 @@ import { PortfolioPerformanceTool } from './tools/portfolio-performance.tool';
 import { RebalanceSimulatorTool } from './tools/rebalance-simulator.tool';
 import { TransactionHistoryTool } from './tools/transaction-history.tool';
 import { ErrorMapperService } from './errors/error-mapper.service';
+import { LangfuseService } from './observability/langfuse.service';
 import { InputValidationService } from './validation/input-validation.service';
 import { RulesValidationChecker } from './verification/rules-validation.checker';
 import { VerificationService } from './verification/verification.service';
@@ -59,6 +60,7 @@ describe('AgentModule', () => {
           { provide: TransactionHistoryTool, useValue: { execute: jest.fn() } },
           ErrorMapperService,
           InputValidationService,
+          LangfuseService,
           RulesValidationChecker,
           {
             inject: [RulesValidationChecker],
@@ -100,6 +102,7 @@ describe('AgentModule', () => {
           InputValidationService,
           Reflector,
           { provide: AgentService, useValue: { processQuery: jest.fn() } },
+          { provide: LangfuseService, useValue: { recordFeedback: jest.fn() } },
           { provide: 'REQUEST', useValue: {} }
         ]
       }).compile();

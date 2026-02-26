@@ -56,6 +56,7 @@ import { AgentService } from '../agent.service';
 import { ConversationMemory } from '../memory/conversation-memory';
 import { ErrorMapperService } from '../errors/error-mapper.service';
 import { ResponseFormatter } from '../formatters/response-formatter';
+import { LangfuseService } from '../observability/langfuse.service';
 import { VerificationService } from '../verification/verification.service';
 import type { EvalCase } from './eval-case.schema';
 import { EvalCaseArraySchema } from './eval-case.schema';
@@ -83,6 +84,12 @@ const makePropertyService = () => ({
 const makePassingVerificationService = () => {
   const svc = new VerificationService([]);
   jest.spyOn(svc, 'verify').mockResolvedValue({ passed: true });
+  return svc;
+};
+
+const makeDisabledLangfuseService = () => {
+  const svc = new LangfuseService();
+  svc.onModuleInit();
   return svc;
 };
 
@@ -119,7 +126,8 @@ const buildEvalService = (toolFixtures: {
     new ConversationMemory(),
     new ResponseFormatter(),
     makePassingVerificationService(),
-    new ErrorMapperService()
+    new ErrorMapperService(),
+    makeDisabledLangfuseService()
   );
 
   return { service, performanceTool, holdingsTool, rulesReportTool };

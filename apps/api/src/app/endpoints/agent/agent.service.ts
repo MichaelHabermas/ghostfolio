@@ -9,6 +9,9 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, type CoreMessage, type LanguageModel } from 'ai';
 
 import { ErrorMapperService } from './errors/error-mapper.service';
+import { estimateCostUsd } from './observability/cost-estimator';
+import { categorizeError } from './observability/error-categorizer';
+import { LangfuseService } from './observability/langfuse.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
 import { SYSTEM_PROMPT } from './prompts/system-prompt';
@@ -44,7 +47,8 @@ export class AgentService {
     private readonly conversationMemory: ConversationMemory,
     private readonly responseFormatter: ResponseFormatter,
     private readonly verificationService: VerificationService,
-    private readonly errorMapperService: ErrorMapperService
+    private readonly errorMapperService: ErrorMapperService,
+    private readonly langfuseService: LangfuseService
   ) {}
 
   public async processQuery({
@@ -57,6 +61,13 @@ export class AgentService {
     userId: string;
   }): Promise<AgentResponse> {
     const resolvedSessionId = sessionId ?? crypto.randomUUID();
+    const startTime = Date.now();
+
+    const trace = await this.langfuseService.createTrace({
+      userId,
+      sessionId: resolvedSessionId,
+      query
+    });
 
     try {
       const history = this.conversationMemory.getHistory(resolvedSessionId);
@@ -94,10 +105,25 @@ export class AgentService {
         toolOutputs
       );
 
+      const promptTokens = result.usage?.promptTokens ?? 0;
+      const completionTokens = result.usage?.completionTokens ?? 0;
+
       if (!verificationResult.passed) {
         this.logger.warn(
           `Verification failed: ${verificationResult.reason}`
         );
+
+        trace.recordMetadata({
+          promptTokens,
+          completionTokens,
+          totalTokens: promptTokens + completionTokens,
+          estimatedCostUsd: estimateCostUsd(promptTokens, completionTokens),
+          verificationPassed: false,
+          verificationReason: verificationResult.reason,
+          toolsCalled: [...toolsCalled.values()],
+          durationMs: Date.now() - startTime
+        });
+        trace.end();
 
         return {
           flags: ['verification_failed'],
@@ -118,6 +144,17 @@ export class AgentService {
         assistantMessage
       ]);
 
+      trace.recordMetadata({
+        promptTokens,
+        completionTokens,
+        totalTokens: promptTokens + completionTokens,
+        estimatedCostUsd: estimateCostUsd(promptTokens, completionTokens),
+        verificationPassed: true,
+        toolsCalled: [...toolsCalled.values()],
+        durationMs: Date.now() - startTime
+      });
+      trace.end();
+
       return {
         flags: formatted.flags,
         response: formatted.narrative,
@@ -127,6 +164,14 @@ export class AgentService {
       };
     } catch (error) {
       this.logger.error(`Agent processing failed: ${error}`);
+
+      trace.recordMetadata({
+        errorCategory: categorizeError(error),
+        errorMessage:
+          error instanceof Error ? error.message : 'Unknown error',
+        durationMs: Date.now() - startTime
+      });
+      trace.end();
 
       return {
         flags: ['error'],
