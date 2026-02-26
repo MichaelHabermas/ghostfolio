@@ -62,6 +62,16 @@ Initial failures were primarily caused by generic tool-only mock narratives that
 1. Keep deterministic mocked run in CI as regression gate.
 2. Add periodic real-LLM validation runs (`EVAL_USE_REAL_LLM=true`) for production confidence.
 
+## Epic 17 Final Run (2026-02-26)
+
+- **Commit:** test(final): run full eval suite and iterate on failures
+- **Total Cases:** 50
+- **Passed:** 50
+- **Failed:** 0
+- **Pass Rate:** 100.0% (target >80% MET)
+- **Failure analysis:** No failures; no iteration required. All categories (happy_path, edge_case, adversarial, multi_step) at 100%.
+- **Evidence:** `apps/api/src/app/endpoints/agent/eval/results/latest-eval-results.json`
+
 ## Conclusion
 
-Epic 12 eval execution is now **complete for PRD target** in deterministic mode: full 50-case suite runs with an evidence-backed **100%** pass rate and category breakdown persisted on each run.
+Epic 12 eval execution is now **complete for PRD target** in deterministic mode: full 50-case suite runs with an evidence-backed **100%** pass rate and category breakdown persisted on each run. Epic 17 final hardening confirms the same pass rate with no regressions.
