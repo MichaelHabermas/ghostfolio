@@ -48,9 +48,10 @@ jest.mock('@openrouter/ai-sdk-provider', () => {
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText } from 'ai';
 
-import { AgentService } from '../agent.service';
+import { AgentService, DEFAULT_MODEL } from '../agent.service';
 import { ConversationMemory } from '../memory/conversation-memory';
 import { ErrorMapperService } from '../errors/error-mapper.service';
 import { ResponseFormatter } from '../formatters/response-formatter';
@@ -66,18 +67,30 @@ import {
 } from './fixtures/seed-portfolio';
 
 const mockGenerateText = generateText as jest.MockedFunction<typeof generateText>;
+const mockCreateOpenRouter = createOpenRouter as jest.MockedFunction<
+  typeof createOpenRouter
+>;
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-const makePropertyService = () => ({
-  getByKey: jest.fn().mockImplementation((key: string) => {
-    if (key === 'API_KEY_OPENROUTER') return Promise.resolve('test-api-key');
-    if (key === 'OPENROUTER_MODEL') return Promise.resolve('anthropic/claude-3.5-sonnet');
-    return Promise.resolve(undefined);
-  })
-});
+const makePropertyService = () => {
+  const openRouterKey = USE_REAL_LLM
+    ? (process.env['OPENROUTER_API_KEY'] ?? 'test-api-key')
+    : 'test-api-key';
+  const openRouterModel =
+    USE_REAL_LLM
+      ? (process.env['OPENROUTER_MODEL'] ?? DEFAULT_MODEL)
+      : DEFAULT_MODEL;
+  return {
+    getByKey: jest.fn().mockImplementation((key: string) => {
+      if (key === 'API_KEY_OPENROUTER') return Promise.resolve(openRouterKey);
+      if (key === 'OPENROUTER_MODEL') return Promise.resolve(openRouterModel);
+      return Promise.resolve(undefined);
+    })
+  };
+};
 
 const makePassingVerificationService = () => {
   const svc = new VerificationService([]);
@@ -340,6 +353,29 @@ describe('MVP Eval Execution', () => {
     if (!USE_REAL_LLM) {
       jest.clearAllMocks();
     }
+  });
+
+  afterAll(async () => {
+    const propertyService = makePropertyService();
+    const model = await propertyService.getByKey('OPENROUTER_MODEL');
+    console.log('\n=== EVAL PROCESS CHECKS (after run) ===');
+    console.log(`Model (resolved for this run): ${model}`);
+    console.log(`Real LLM: ${USE_REAL_LLM}`);
+    const resultsPath = path.join(__dirname, 'results', 'latest-eval-results.json');
+    if (fs.existsSync(resultsPath)) {
+      try {
+        const data = JSON.parse(fs.readFileSync(resultsPath, 'utf-8'));
+        console.log(`Eval pass rate: ${data.passed}/${data.total} (${data.passRate}%)`);
+        if (data.responseFormatSummary) {
+          console.log(
+            `Response format: ${data.responseFormatSummary.parsed} parsed, ${data.responseFormatSummary.fallback} fallback`
+          );
+        }
+      } catch {
+        // ignore read/parse errors
+      }
+    }
+    console.log('=== END EVAL PROCESS CHECKS ===\n');
   });
 
   describe('Per-case execution', () => {
@@ -634,6 +670,53 @@ describe('MVP Eval Execution', () => {
     });
   });
 
+  describe('Eval gut-checks', () => {
+    it('should resolve the expected model for this eval run', async () => {
+      const model = await makePropertyService().getByKey('OPENROUTER_MODEL');
+      const expectedModel = USE_REAL_LLM
+        ? (process.env['OPENROUTER_MODEL'] ?? DEFAULT_MODEL)
+        : DEFAULT_MODEL;
+
+      console.log(`GUT-CHECK: model = ${model}`);
+      expect(model).toBe(expectedModel);
+    });
+
+    it('should return a non-empty, parseable response for mvp-001', async () => {
+      const evalCase = evalCases.find((c) => c.id === 'mvp-001');
+      expect(evalCase).toBeDefined();
+
+      const { service } = buildEvalService({});
+      configureGenerateTextMock(evalCase!);
+
+      const queryResult = await service.processQuery({
+        query: evalCase!.input_query,
+        userId: 'eval-user'
+      });
+
+      console.log(`GUT-CHECK: response preview = ${queryResult.response.slice(0, 200)}`);
+      expect(queryResult.response.length).toBeGreaterThan(0);
+      expect(queryResult.flags).not.toContain('plain_text_response');
+    });
+
+    it('should not include response_format json_object in AgentService provider setup', async () => {
+      const agentServicePath = path.join(__dirname, '..', 'agent.service.ts');
+      const source = fs.readFileSync(agentServicePath, 'utf-8');
+      expect(source).not.toContain("response_format: { type: 'json_object' }");
+
+      if (!USE_REAL_LLM) {
+        const { service } = buildEvalService({});
+        configureGenerateTextMock(evalCases[0]);
+        await service.callLlm({
+          messages: [{ role: 'user', content: 'gut-check provider call' }]
+        });
+
+        const chatFn = (mockCreateOpenRouter as any).mock.results[0].value.chat;
+        const firstChatCall = chatFn.mock.calls[0] ?? [];
+        expect(firstChatCall.length).toBe(1);
+      }
+    });
+  });
+
   describe('Full 50-case eval suite execution', () => {
     it('should execute all 50 cases and report pass rate', async () => {
       const results: Array<{
@@ -834,6 +917,6 @@ describe('MVP Eval Execution', () => {
 
       // Assert overall pass rate meets target
       expect(parseFloat(passRate)).toBeGreaterThanOrEqual(80);
-    }, 300000); // 5 minute timeout for 50 cases
+    }, 600000); // 10 minute timeout for 50 cases (real LLM runs exceed 5 min)
   });
 });

@@ -183,5 +183,14 @@ describe('ResponseFormatter', () => {
 
       expect(result.sources).toEqual([]);
     });
+
+    it('should parse JSON with trailing comma before closing brace (repair)', () => {
+      const withTrailingComma = '{"claims":[],"narrative":"ok",}';
+
+      const result = formatter.format(withTrailingComma);
+
+      expect(result.narrative).toBe('ok');
+      expect(result.flags).not.toContain('plain_text_response');
+    });
   });
 });

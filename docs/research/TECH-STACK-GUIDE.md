@@ -44,7 +44,7 @@ import { z } from 'zod';
 const openrouter = createOpenRouter({ apiKey: 'your-key' });
 
 const result = await generateText({
-  model: openrouter.chat('anthropic/claude-3.5-sonnet'),
+  model: openrouter.chat('google/gemini-2.5-flash'),
   system: 'You are a portfolio analysis assistant...',
   messages: conversationHistory,
   tools: {
@@ -84,7 +84,7 @@ Used for forcing the LLM to return a specific JSON structure (e.g., the structur
 import { generateObject } from 'ai';
 
 const result = await generateObject({
-  model: openrouter.chat('anthropic/claude-3.5-sonnet'),
+  model: openrouter.chat('google/gemini-2.5-flash'),
   schema: AgentResponseSchema, // Zod schema
   prompt: 'Analyze this portfolio data and return structured claims...',
 });
@@ -114,60 +114,7 @@ try {
   throw error;
 }
 ```
-
----
-
-## Anthropic Claude 3.5 Sonnet
-
-**Official docs:** [https://docs.anthropic.com](https://docs.anthropic.com)
-**Model ID:** `claude-3-5-sonnet-20241022` (pinned version)
-**Via OpenRouter:** `anthropic/claude-3.5-sonnet`
-**Purpose:** Primary LLM for reasoning, tool selection, and response generation
-
-### Tool-Use Protocol
-
-Claude supports native tool-use through its Messages API. When using the Vercel AI SDK, this is abstracted -- you define tools with Zod schemas and the SDK handles the protocol. Under the hood:
-
-1. The SDK sends tool definitions as JSON Schema in the API request
-2. Claude responds with `tool_use` content blocks when it wants to call a tool
-3. The SDK executes the tool and sends `tool_result` back
-4. Claude uses the results to generate its final response
-
-### Context Window
-
-- 200,000 tokens (input + output combined)
-- Our agent uses approximately 2,000-4,000 tokens per request (system prompt + portfolio data + conversation history)
-- For very large portfolios (>100 holdings), summarize to top 20 by value before sending to avoid context overflow
-
-### Model Version Pinning
-
-Always pin to a specific model version to avoid behavior changes during the sprint:
-
-```typescript
-const model = openrouter.chat('anthropic/claude-3-5-sonnet-20241022');
-```
-
-Do not use `anthropic/claude-3.5-sonnet` (which resolves to "latest") in production. Pin the version.
-
-### Pricing (Verify Before Submission)
-
-| Metric | Rate (2024 figures -- verify current) |
-|---|---|
-| Input tokens | ~$3 per 1M tokens |
-| Output tokens | ~$15 per 1M tokens |
-| Context window | 200k tokens |
-
-Check [OpenRouter pricing](https://openrouter.ai/docs#models) for current rates.
-
-### Best Practices for Tool-Use
-
-From the [Tool Calling lecture notes](../../docs/Tool-Calling-with-Aaron-Gallant.md):
-- **Atomic tools**: Each tool does exactly one thing
-- **Idempotent tools**: Multiple calls produce the same result (critical since agents retry)
-- **Well-documented tools**: Tool descriptions are the "prompts" Claude uses to decide which tool to call. Write them like you're explaining the tool to a colleague.
-- **Error-handled tools**: Return descriptive errors so Claude can reason about failures
-
----
+-----
 
 ## OpenRouter
 
@@ -187,7 +134,7 @@ const openRouterApiKey = await this.propertyService.getByKey<string>(
 );
 
 const openrouter = createOpenRouter({ apiKey: openRouterApiKey });
-const model = openrouter.chat('anthropic/claude-3.5-sonnet');
+const model = openrouter.chat('google/gemini-2.5-flash');
 ```
 
 ### Why OpenRouter Instead of Direct Anthropic

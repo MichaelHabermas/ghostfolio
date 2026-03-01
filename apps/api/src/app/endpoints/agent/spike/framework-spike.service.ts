@@ -9,8 +9,9 @@ import { generateText, tool } from 'ai';
 import { z } from 'zod';
 
 import { PropertyService } from '@ghostfolio/api/services/property/property.service';
+import { DEFAULT_MODEL } from '../agent.service';
 
-const PINNED_MODEL = 'anthropic/claude-3.5-sonnet';
+const PINNED_MODEL = DEFAULT_MODEL;
 
 export interface SpikeResult {
   text: string;

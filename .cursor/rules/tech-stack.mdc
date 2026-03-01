@@ -46,7 +46,7 @@ alwaysApply: false
 
 ### OpenRouter Provider (`@openrouter/ai-sdk-provider` v0.7.2 — already installed)
 - Use `createOpenRouter()` to create the provider instance
-- Pin model: `anthropic/claude-3.5-sonnet` (or the model set in admin panel)
+- Pin model: `google/gemini-2.5-flash` (or the model set in admin panel)
 - API key is stored in Ghostfolio's PropertyService as `PROPERTY_API_KEY_OPENROUTER`
 - Import: `import { createOpenRouter } from '@openrouter/ai-sdk-provider'`
 - Reference: https://openrouter.ai/docs

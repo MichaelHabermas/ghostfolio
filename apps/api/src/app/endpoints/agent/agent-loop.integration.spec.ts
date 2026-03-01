@@ -18,7 +18,7 @@ jest.mock('@openrouter/ai-sdk-provider', () => ({
 
 import { generateText } from 'ai';
 
-import { AgentService } from './agent.service';
+import { AgentService, DEFAULT_MODEL } from './agent.service';
 import { ErrorMapperService } from './errors/error-mapper.service';
 import { ResponseFormatter } from './formatters/response-formatter';
 import { ConversationMemory } from './memory/conversation-memory';
@@ -31,7 +31,7 @@ const mockGenerateText = generateText as jest.MockedFunction<typeof generateText
 const makePropertyService = () => ({
   getByKey: jest.fn().mockImplementation((key: string) => {
     if (key === 'API_KEY_OPENROUTER') return Promise.resolve('test-api-key');
-    if (key === 'OPENROUTER_MODEL') return Promise.resolve('anthropic/claude-3.5-sonnet');
+    if (key === 'OPENROUTER_MODEL') return Promise.resolve(DEFAULT_MODEL);
     return Promise.resolve(undefined);
   })
 });

@@ -18,6 +18,7 @@ jest.mock('@openrouter/ai-sdk-provider', () => ({
 
 import { generateText } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { DEFAULT_MODEL } from '../agent.service';
 
 const mockGenerateText = generateText as jest.MockedFunction<
   typeof generateText
@@ -37,7 +38,7 @@ describe('FrameworkSpikeService', () => {
       getByKey: jest.fn().mockImplementation((key: string) => {
         if (key === 'API_KEY_OPENROUTER') return Promise.resolve('test-key');
         if (key === 'OPENROUTER_MODEL')
-          return Promise.resolve('anthropic/claude-3.5-sonnet');
+          return Promise.resolve(DEFAULT_MODEL);
         return Promise.resolve(undefined);
       })
     };
@@ -132,7 +133,7 @@ describe('FrameworkSpikeService', () => {
       await service.runSpike();
 
       const chatFn = (mockCreateOpenRouter as any).mock.results[0].value.chat;
-      expect(chatFn).toHaveBeenCalledWith('anthropic/claude-3.5-sonnet');
+      expect(chatFn).toHaveBeenCalledWith(DEFAULT_MODEL);
     });
   });
 
@@ -187,7 +188,7 @@ describe('FrameworkSpikeService (live integration)', () => {
         getByKey: jest.fn().mockImplementation((key: string) => {
           if (key === 'API_KEY_OPENROUTER') return Promise.resolve(apiKey);
           if (key === 'OPENROUTER_MODEL')
-            return Promise.resolve('anthropic/claude-3.5-sonnet');
+            return Promise.resolve(DEFAULT_MODEL);
           return Promise.resolve(undefined);
         })
       };

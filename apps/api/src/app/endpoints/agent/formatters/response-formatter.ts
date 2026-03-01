@@ -15,7 +15,7 @@ interface AgentClaim {
   value?: unknown;
 }
 
-interface StructuredAgentOutput {
+export interface StructuredAgentOutput {
   claims?: AgentClaim[];
   narrative?: string;
   recommendations?: Array<{
@@ -48,22 +48,59 @@ export class ResponseFormatter {
     return { narrative, sources, flags };
   }
 
-  private tryParseJson(text: string): StructuredAgentOutput | null {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    const candidate = jsonMatch ? jsonMatch[0] : text.trim();
+  public tryParseJson(text: string): StructuredAgentOutput | null {
+    // 1. Trim
+    let cleanText = text.trim();
 
+    // 2. Strip markdown code fences if present
+    if (cleanText.startsWith('```')) {
+      // Remove starting fence (e.g., ```json)
+      cleanText = cleanText.replace(/^```[a-zA-Z]*\n?/, '');
+      // Remove ending fence
+      cleanText = cleanText.replace(/\n?```$/, '');
+      cleanText = cleanText.trim();
+    }
+
+    // 3. Attempt direct JSON.parse
     try {
-      const result = JSON.parse(candidate);
-
+      const result = JSON.parse(cleanText);
       if (typeof result === 'object' && result !== null) {
+        this.logger.debug('Agent response parsed successfully (direct)');
         return result as StructuredAgentOutput;
       }
-
-      return null;
-    } catch {
-      this.logger.debug('Agent response was not valid JSON; using plain text fallback');
-      return null;
+    } catch (e) {
+      // Direct parse failed, proceed to fallback
     }
+
+    // 4. Fallback extraction from first { to last }
+    const firstBrace = cleanText.indexOf('{');
+    const lastBrace = cleanText.lastIndexOf('}');
+    
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      const candidate = cleanText.substring(firstBrace, lastBrace + 1);
+      try {
+        const result = JSON.parse(candidate);
+        if (typeof result === 'object' && result !== null) {
+          this.logger.debug('Agent response parsed successfully (fallback extraction)');
+          return result as StructuredAgentOutput;
+        }
+      } catch (e) {
+        // One repair: remove trailing comma before } or ]
+        const repaired = candidate.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
+        try {
+          const result = JSON.parse(repaired);
+          if (typeof result === 'object' && result !== null) {
+            this.logger.debug('Agent response parsed successfully (trailing-comma repair)');
+            return result as StructuredAgentOutput;
+          }
+        } catch {
+          // Repair parse failed
+        }
+      }
+    }
+
+    this.logger.debug('Agent response was not valid JSON; using plain text fallback');
+    return null;
   }
 
   private extractSources(parsed: StructuredAgentOutput): AgentSource[] {

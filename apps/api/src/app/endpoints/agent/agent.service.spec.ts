@@ -14,7 +14,7 @@ jest.mock('@openrouter/ai-sdk-provider', () => ({
 import { generateText } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
-import { AgentService } from './agent.service';
+import { AgentService, DEFAULT_MODEL } from './agent.service';
 import type { GetHoldingsTool } from './tools/get-holdings.tool';
 import type { GetRulesReportTool } from './tools/get-rules-report.tool';
 import type { MarketDataTool } from './tools/market-data.tool';
@@ -86,7 +86,7 @@ describe('AgentService', () => {
         if (key === 'API_KEY_OPENROUTER')
           return Promise.resolve('test-api-key');
         if (key === 'OPENROUTER_MODEL')
-          return Promise.resolve('anthropic/claude-3.5-sonnet');
+          return Promise.resolve(DEFAULT_MODEL);
         return Promise.resolve(undefined);
       })
     };
@@ -410,7 +410,7 @@ describe('AgentService', () => {
       });
 
       const chatFn = (mockCreateOpenRouter as any).mock.results[0].value.chat;
-      expect(chatFn).toHaveBeenCalledWith('anthropic/claude-3.5-sonnet');
+      expect(chatFn).toHaveBeenCalledWith(DEFAULT_MODEL);
     });
 
     it('should fall back to default model when PropertyService returns null', async () => {
@@ -427,7 +427,7 @@ describe('AgentService', () => {
       });
 
       const chatFn = (mockCreateOpenRouter as any).mock.results[0].value.chat;
-      expect(chatFn).toHaveBeenCalledWith('anthropic/claude-3.5-sonnet');
+      expect(chatFn).toHaveBeenCalledWith(DEFAULT_MODEL);
     });
 
     it('should throw when API key is not configured', async () => {
@@ -443,7 +443,7 @@ describe('AgentService', () => {
 
     it('should fall back to OPENROUTER_API_KEY environment variable when property is missing', async () => {
       process.env['OPENROUTER_API_KEY'] = 'env-api-key';
-      process.env['OPENROUTER_MODEL'] = 'anthropic/claude-3.5-sonnet';
+      process.env['OPENROUTER_MODEL'] = DEFAULT_MODEL;
       propertyService.getByKey.mockResolvedValue(undefined);
       mockGenerateText.mockResolvedValue(makeDefaultGenerateTextResult('result'));
 

@@ -13,7 +13,7 @@
 | Claude 3.5 Sonnet (input) | ~$3 / 1M tokens | OpenRouter / Anthropic (verify current rates) |
 | Claude 3.5 Sonnet (output) | ~$15 / 1M tokens | OpenRouter / Anthropic (verify current rates) |
 
-The agent uses `anthropic/claude-3.5-sonnet` via OpenRouter. Per-request cost is computed in-app via `observability/cost-estimator.ts` and attached to Langfuse traces.
+The agent uses `google/gemini-2.5-flash` via OpenRouter. Per-request cost is computed in-app via `observability/cost-estimator.ts` and attached to Langfuse traces.
 
 ---
 

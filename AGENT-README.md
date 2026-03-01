@@ -98,7 +98,7 @@ Open https://localhost:4200/en in your browser and click **Get Started** to crea
 In the Ghostfolio admin panel, set the OpenRouter API key and model:
 - Navigate to Admin > Settings
 - Set `API_KEY_OPENROUTER` to your OpenRouter key
-- Set `OPENROUTER_MODEL` to `anthropic/claude-3.5-sonnet` (or your preferred model)
+- Set `OPENROUTER_MODEL` to `google/gemini-2.5-flash` (or your preferred model)
 
 ---
 

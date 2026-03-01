@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-02-28T18:02:07.722Z",
+  "totalSamples": 16,
+  "byReason": {
+    "brace_extraction_failed": 1,
+    "no_braces": 15
+  },
+  "samples": [
+    {
+      "caseId": "mvp-002",
+      "reason": "brace_extraction_failed",
+      "rawTextLength": 1210
+    },
+    {
+      "caseId": "edge-030",
+      "reason": "no_braces",
+      "rawTextLength": 109
+    },
+    {
+      "caseId": "mvp-005",
+      "reason": "no_braces",
+      "rawTextLength": 248
+    },
+    {
+      "caseId": "adv-033",
+      "reason": "no_braces",
+      "rawTextLength": 47
+    },
+    {
+      "caseId": "adv-034",
+      "reason": "no_braces",
+      "rawTextLength": 70
+    },
+    {
+      "caseId": "adv-036",
+      "reason": "no_braces",
+      "rawTextLength": 70
+    },
+    {
+      "caseId": "adv-037",
+      "reason": "no_braces",
+      "rawTextLength": 70
+    },
+    {
+      "caseId": "adv-038",
+      "reason": "no_braces",
+      "rawTextLength": 70
+    },
+    {
+      "caseId": "adv-039",
+      "reason": "no_braces",
+      "rawTextLength": 70
+    },
+    {
+      "caseId": "adv-040",
+      "reason": "no_braces",
+      "rawTextLength": 70
+    },
+    {
+      "caseId": "adv-041",
+      "reason": "no_braces",
+      "rawTextLength": 245
+    },
+    {
+      "caseId": "multi-043",
+      "reason": "no_braces",
+      "rawTextLength": 413
+    },
+    {
+      "caseId": "multi-046",
+      "reason": "no_braces",
+      "rawTextLength": 183
+    },
+    {
+      "caseId": "multi-047",
+      "reason": "no_braces",
+      "rawTextLength": 316
+    },
+    {
+      "caseId": "multi-050",
+      "reason": "no_braces",
+      "rawTextLength": 607
+    },
+    {
+      "caseId": "multi-052",
+      "reason": "no_braces",
+      "rawTextLength": 530
+    }
+  ]
+}

@@ -27,7 +27,7 @@ import type { AgentResponse, ToolResponse } from './types';
 import { VerificationService } from './verification/verification.service';
 import type { StructuredAgentResponse } from './verification/verification.types';
 
-const DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet';
+export const DEFAULT_MODEL = 'google/gemini-2.5-flash';
 const DEFAULT_MAX_STEPS = 5;
 
 const VERIFICATION_FAILURE_MESSAGE =
@@ -187,16 +187,10 @@ export class AgentService {
   }
 
   private toStructuredAgentResponse(text: string): StructuredAgentResponse {
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      const candidate = jsonMatch ? jsonMatch[0] : text.trim();
-      const parsed = JSON.parse(candidate);
+    const parsed = this.responseFormatter.tryParseJson(text);
 
-      if (typeof parsed === 'object' && parsed !== null) {
-        return parsed as StructuredAgentResponse;
-      }
-    } catch {
-      // Not JSON -- return empty structure; verification checkers handle gracefully
+    if (parsed) {
+      return parsed as StructuredAgentResponse;
     }
 
     return { claims: [], narrative: text };
